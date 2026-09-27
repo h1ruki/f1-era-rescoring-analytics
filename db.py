@@ -7,9 +7,11 @@ and Streamlit data caching for historical F1 standings and race data.
 
 import os
 import sqlite3
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 import pandas as pd
 import streamlit as st
+
+from engine import compute_season_standings
 
 # Base Directory & Database Path
 BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +44,6 @@ TEAM_COLORS: Dict[str, str] = {
     "McLaren-Honda": "#E60000",
     "Tyrrell": "#004080",
     "Brabham": "#002040",
-    "Lotus-Climax": "#004225",
 }
 
 # Historical F1 Point Systems Mapping
@@ -72,12 +73,7 @@ POINTS_REVISIONS: Dict[int, str] = {
 
 
 def get_db_connection(db_path: str = DB_PATH) -> sqlite3.Connection:
-    """
-    Establishes and returns a connection to the SQLite database.
-    
-    Raises:
-        FileNotFoundError: If the database file does not exist at `db_path`.
-    """
+    """Establishes and returns a connection to the SQLite database."""
     if not os.path.exists(db_path):
         raise FileNotFoundError(f"Database file not found at path: {db_path}")
     return sqlite3.connect(db_path)
@@ -127,16 +123,7 @@ def query_race_results(conn: sqlite3.Connection) -> pd.DataFrame:
 @st.cache_data(show_spinner="Computing F1 Championship Dominance Data...")
 def load_f1_data(selected_scoring_name: str) -> Tuple[pd.DataFrame, Dict[int, pd.DataFrame]]:
     """
-    Fetches raw database records, applies the selected scoring scheme (or official standings),
-    calculates season title margins, and returns structured data for visualizations.
-
-    Args:
-        selected_scoring_name: Key from `SCORING_SYSTEMS`.
-
-    Returns:
-        Tuple containing:
-            - pd.DataFrame: Season victory margins and dominance metrics.
-            - Dict[int, pd.DataFrame]: Top 10 driver standings per season.
+    Fetches raw database records and delegates data processing to the pure analytical engine.
     """
     try:
         conn = get_db_connection()
@@ -171,89 +158,4 @@ def load_f1_data(selected_scoring_name: str) -> Tuple[pd.DataFrame, Dict[int, pd
     finally:
         conn.close()
 
-    top10_by_season: Dict[int, pd.DataFrame] = {}
-    season_margins: List[Dict[str, Any]] = []
-
-    for season, group in df_raw.groupby("Season"):
-        clean_rows: List[Dict[str, Any]] = []
-        for (driver_id, driver_name), d_group in group.groupby(["DriverId", "Driver"]):
-            pos = d_group["Position"].min()
-            pts = d_group["TotalPoints"].max()
-            teams = [t for t in d_group["Team"].unique() if pd.notna(t)]
-            team_str = " / ".join(teams) if teams else "Unknown"
-            primary_team = teams[0] if teams else "Unknown"
-
-            clean_rows.append(
-                {
-                    "DriverId": driver_id,
-                    "Driver": driver_name,
-                    "Team": team_str,
-                    "Primary_Team": primary_team,
-                    "TotalPoints": pts,
-                    "Position": pos,
-                }
-            )
-
-        df_season = pd.DataFrame(clean_rows).sort_values("Position").reset_index(drop=True)
-        top10_by_season[int(season)] = df_season.head(10).copy()
-
-        p1_rows = df_season[df_season["Position"] == 1]
-        p2_rows = df_season[df_season["Position"] == 2]
-
-        if not p1_rows.empty and not p2_rows.empty:
-            p1 = p1_rows.iloc[0]
-            p2 = p2_rows.iloc[0]
-
-            gap = p1["TotalPoints"] - p2["TotalPoints"]
-            pct_gap = (gap / p1["TotalPoints"]) * 100 if p1["TotalPoints"] > 0 else 0
-
-            is_teammate = (p1["Primary_Team"] == p2["Primary_Team"]) and (
-                p1["Primary_Team"] != "Unknown"
-            )
-
-            teammate_info = "N/A"
-            if is_teammate:
-                teammate_info = "Runner-Up IS Teammate"
-            else:
-                same_team_drivers = df_season[
-                    (df_season["Primary_Team"] == p1["Primary_Team"])
-                    & (df_season["DriverId"] != p1["DriverId"])
-                ]
-                if not same_team_drivers.empty:
-                    best_teammate = same_team_drivers.iloc[0]
-                    tm_gap = p1["TotalPoints"] - best_teammate["TotalPoints"]
-                    tm_pct = (
-                        (tm_gap / p1["TotalPoints"]) * 100
-                        if p1["TotalPoints"] > 0
-                        else 0
-                    )
-                    teammate_info = f"{best_teammate['Driver']} (P{int(best_teammate['Position'])}) | Gap: {tm_gap:.1f} pts ({tm_pct:.1f}%)"
-                else:
-                    teammate_info = "No Teammate Data"
-
-            team_name = p1["Primary_Team"]
-            runnerup_team = p2["Primary_Team"]
-
-            champion_color = TEAM_COLORS.get(team_name, "#A0AEC0")
-            runnerup_color = TEAM_COLORS.get(runnerup_team, "#A0AEC0")
-
-            season_margins.append(
-                {
-                    "Season": int(season),
-                    "Champion": p1["Driver"],
-                    "Champion_Team": team_name,
-                    "Champion_Color": champion_color,
-                    "Champion_Points": p1["TotalPoints"],
-                    "RunnerUp": p2["Driver"],
-                    "RunnerUp_Team": runnerup_team,
-                    "RunnerUp_Color": runnerup_color,
-                    "RunnerUp_Points": p2["TotalPoints"],
-                    "Points_Gap": gap,
-                    "Pct_Gap": round(pct_gap, 2),
-                    "Is_Teammate_Title_Fight": "Yes" if is_teammate else "No",
-                    "Teammate_Gap_Info": teammate_info,
-                    "Is_Ongoing": True if season == 2026 else False,
-                }
-            )
-
-    return pd.DataFrame(season_margins), top10_by_season
+    return compute_season_standings(df_raw, TEAM_COLORS)

@@ -1,5 +1,4 @@
 import os
-import sqlite3
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -10,7 +9,12 @@ from db import (
     POINTS_REVISIONS,
     TEAM_COLORS,
 )
-
+from engine import (
+    get_contrast_text_color,
+    get_driver_initials,
+    filter_seasons_by_range,
+    calculate_key_metrics,
+)
 
 st.set_page_config(
     page_title="F1 Championship Dominance Analyzer",
@@ -22,18 +26,6 @@ st.title("🏎️ F1 World Championship Dominance & What-If Engine")
 st.markdown(
     "Analyze title victory margins, teammate gaps, and simulate historical title battles under alternate F1 point systems."
 )
-
-
-def get_contrast_text_color(hex_color):
-    """Returns black for light background hex colors and white for dark ones."""
-    hex_color = hex_color.lstrip("#")
-    if len(hex_color) != 6:
-        return "#FFFFFF"
-    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-    # Perceived luminance standard
-    luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    return "#0F172A" if luminance > 0.55 else "#FFFFFF"
-
 
 # 1. Sidebar Controls & Session State Syncing
 st.sidebar.header("Filter & What-If Simulation")
@@ -100,34 +92,24 @@ st.sidebar.slider(
 show_points_lines = st.sidebar.checkbox("Highlight Points System Revisions", True)
 
 year_range = st.session_state["year_range"]
-filtered_df = (
-    df_margins[
-        (df_margins["Season"] >= year_range[0])
-        & (df_margins["Season"] <= year_range[1])
-    ]
-    .sort_values("Season")
-    .reset_index(drop=True)
-)
+filtered_df = filter_seasons_by_range(df_margins, year_range)
 
 # 2. Key Metrics
 col1, col2, col3 = st.columns(3)
 
-if not filtered_df.empty:
-    most_dominant = filtered_df.loc[filtered_df["Pct_Gap"].idxmax()]
-    closest_title = filtered_df.loc[filtered_df["Pct_Gap"].idxmin()]
-    avg_gap = filtered_df["Pct_Gap"].mean()
-
+metrics = calculate_key_metrics(filtered_df)
+if metrics:
     col1.metric(
         "Most Dominant Season",
-        f"{most_dominant['Season']} ({most_dominant['Champion']})",
-        f"{most_dominant['Pct_Gap']}% Gap",
+        f"{metrics['most_dominant_season']} ({metrics['most_dominant_champion']})",
+        f"{metrics['most_dominant_gap']}% Gap",
     )
     col2.metric(
         "Closest Season",
-        f"{closest_title['Season']} ({closest_title['Champion']})",
-        f"{closest_title['Pct_Gap']}% Gap",
+        f"{metrics['closest_season']} ({metrics['closest_champion']})",
+        f"{metrics['closest_gap']}% Gap",
     )
-    col3.metric("Avg Dominance Margin", f"{round(avg_gap, 1)}%")
+    col3.metric("Avg Dominance Margin", f"{metrics['avg_dominance_margin']}%")
 
 # 3. Enhanced Interactive Plotly Chart
 st.subheader(f"Title Victory Margin (%) — Mode: {selected_scoring}")
@@ -198,7 +180,6 @@ if not filtered_df.empty:
                     )
                 )
         else:
-            # Clear, visible transition lines across team shifts
             fig.add_trace(
                 go.Scatter(
                     x=x_seg,
@@ -211,13 +192,7 @@ if not filtered_df.empty:
                 )
             )
 
-    def get_initials(name):
-        parts = name.strip().split()
-        if len(parts) >= 2:
-            return f"{parts[0][0]}{parts[-1][0]}".upper()
-        return name[:2].upper()
-
-    driver_initials = [get_initials(d) for d in filtered_df["Champion"]]
+    driver_initials = [get_driver_initials(d) for d in filtered_df["Champion"]]
     text_colors = [
         get_contrast_text_color(c) for c in filtered_df["Champion_Color"]
     ]
