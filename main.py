@@ -43,14 +43,23 @@ if df_margins.empty:
     st.warning("No data found or issue loading dataset.")
     st.stop()
 
+# Complete F1 Historical & Technical Eras Expansion (Unambiguous & Reverse Chronological)
 ERAS = {
     "All Eras (1950-Present)": (1950, 2026),
-    "V10 Era (1995-2005)": (1995, 2005),
-    "V8 Era (2006-2013)": (2006, 2013),
+    "Modern Ground Effect Era (2022-Present)": (2022, 2026),
     "Turbo-Hybrid Era (2014-2021)": (2014, 2021),
-    "Ground Effect Era (2022-Present)": (2022, 2026),
+    "V8 Era (2006-2013)": (2006, 2013),
+    "V10 Era (1995-2005)": (1995, 2005),
+    "Naturally Aspirated Era (1989-1994)": (1989, 1994),
+    "First Ground Effect & Early Turbo Era (1977-1988)": (1977, 1988),
+    "3.0-Litre Era (1966-1976)": (1966, 1976),
+    "1.5-Litre Era (1961-1965)": (1961, 1965),
+    "Early Years & Front-Engine Era (1950-1960)": (1950, 1960),
     "Custom Range": None,
 }
+
+# Fast lookup dict for slider-to-era reverse mapping
+RANGE_TO_ERA = {v: k for k, v in ERAS.items() if v is not None}
 
 if "selected_era" not in st.session_state:
     st.session_state["selected_era"] = "All Eras (1950-Present)"
@@ -66,12 +75,7 @@ def on_era_change():
 
 def on_slider_change():
     current_range = st.session_state["year_range"]
-    matched_era = "Custom Range"
-    for era_name, bounds in ERAS.items():
-        if bounds == current_range:
-            matched_era = era_name
-            break
-    st.session_state["selected_era"] = matched_era
+    st.session_state["selected_era"] = RANGE_TO_ERA.get(current_range, "Custom Range")
 
 
 st.sidebar.selectbox(
@@ -81,10 +85,13 @@ st.sidebar.selectbox(
     on_change=on_era_change,
 )
 
+min_year = int(df_margins["Season"].min()) if not df_margins.empty else 1950
+max_year = int(df_margins["Season"].max()) if not df_margins.empty else 2026
+
 st.sidebar.slider(
     "Select Year Range",
-    int(df_margins["Season"].min()),
-    int(df_margins["Season"].max()),
+    min_year,
+    max_year,
     key="year_range",
     on_change=on_slider_change,
 )
@@ -94,7 +101,7 @@ show_points_lines = st.sidebar.checkbox("Highlight Points System Revisions", Tru
 year_range = st.session_state["year_range"]
 filtered_df = filter_seasons_by_range(df_margins, year_range)
 
-# 2. Key Metrics
+# 2. Key Metrics Display
 col1, col2, col3 = st.columns(3)
 
 metrics = calculate_key_metrics(filtered_df)
@@ -117,7 +124,8 @@ st.subheader(f"Title Victory Margin (%) — Mode: {selected_scoring}")
 fig = go.Figure()
 
 if not filtered_df.empty:
-    for i in range(len(filtered_df) - 1):
+    n_rows = len(filtered_df)
+    for i in range(n_rows - 1):
         row_curr = filtered_df.iloc[i]
         row_next = filtered_df.iloc[i + 1]
 
@@ -263,7 +271,7 @@ if not filtered_df.empty:
         )
     )
 
-    # Larger Nodes with Dynamic High-Contrast Initials
+    # Dynamic Initials Nodes
     fig.add_trace(
         go.Scatter(
             x=filtered_df["Season"],
