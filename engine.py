@@ -1,11 +1,12 @@
 """
 engine.py - Core Analytical & Re-Scoring Engine for F1 ERA Analytics.
 
-Contains pure Python calculations for points re-scoring systems, title victory 
-margins, teammate gap comparisons, and technical era filtering.
+Contains pure Python and vectorized pandas calculations for points re-scoring 
+systems, title victory margins, teammate gap comparisons, and technical era filtering.
 """
 
 from typing import Any, Dict, List, Optional, Tuple
+import numpy as np
 import pandas as pd
 
 
@@ -23,7 +24,6 @@ def get_contrast_text_color(hex_color: str) -> str:
     if len(hex_color) != 6:
         return "#FFFFFF"
     r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-    # Standard perceived luminance formula
     luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
     return "#0F172A" if luminance > 0.55 else "#FFFFFF"
 
@@ -50,11 +50,10 @@ def compute_season_standings(
 ) -> Tuple[pd.DataFrame, Dict[int, pd.DataFrame]]:
     """
     Processes raw driver standing records into structured victory margins and 
-    per-season top-10 driver rankings.
+    per-season top-10 driver rankings using vectorized pandas operations.
 
     Args:
-        df_raw: Raw DataFrame from db.py containing Season, DriverId, Driver, Team, 
-                TotalPoints, and Position.
+        df_raw: Raw DataFrame containing Season, DriverId, Driver, Team, TotalPoints, Position.
         team_colors: Mapping of team names to primary brand hex colors.
 
     Returns:
@@ -62,110 +61,122 @@ def compute_season_standings(
             - pd.DataFrame: Calculated victory margins and gap statistics per season.
             - Dict[int, pd.DataFrame]: Top 10 driver standings dictionary keyed by season.
     """
-    top10_by_season: Dict[int, pd.DataFrame] = {}
-    season_margins: List[Dict[str, Any]] = []
+    if df_raw.empty:
+        return pd.DataFrame(), {}
 
-    for season, group in df_raw.groupby("Season"):
-        clean_rows: List[Dict[str, Any]] = []
-        for (driver_id, driver_name), d_group in group.groupby(["DriverId", "Driver"]):
-            pos = d_group["Position"].min()
-            pts = d_group["TotalPoints"].max()
-            teams = [t for t in d_group["Team"].unique() if pd.notna(t)]
-            team_str = " / ".join(teams) if teams else "Unknown"
-            primary_team = teams[0] if teams else "Unknown"
+    # 1. Vectorized aggregation per driver per season
+    df_clean = (
+        df_raw.groupby(["Season", "DriverId", "Driver"], as_index=False)
+        .agg(
+            Position=("Position", "min"),
+            TotalPoints=("TotalPoints", "max"),
+            Primary_Team=("Team", lambda x: x.dropna().iloc[0] if not x.dropna().empty else "Unknown"),
+            Team=("Team", lambda x: " / ".join(x.dropna().unique()) if not x.dropna().empty else "Unknown"),
+        )
+        .sort_values(["Season", "Position"])
+        .reset_index(drop=True)
+    )
 
-            clean_rows.append(
-                {
-                    "DriverId": driver_id,
-                    "Driver": driver_name,
-                    "Team": team_str,
-                    "Primary_Team": primary_team,
-                    "TotalPoints": pts,
-                    "Position": pos,
-                }
-            )
+    # 2. Extract Top 10 standings per season
+    top10_dict = {
+        int(season): group.head(10).copy().reset_index(drop=True)
+        for season, group in df_clean.groupby("Season")
+    }
 
-        df_season = pd.DataFrame(clean_rows).sort_values("Position").reset_index(drop=True)
-        top10_by_season[int(season)] = df_season.head(10).copy()
+    # 3. Vectorized P1 (Champion) and P2 (Runner-Up) extraction
+    p1_df = df_clean[df_clean["Position"] == 1].copy()
+    p2_df = df_clean[df_clean["Position"] == 2].copy()
 
-        p1_rows = df_season[df_season["Position"] == 1]
-        p2_rows = df_season[df_season["Position"] == 2]
+    merged = pd.merge(
+        p1_df,
+        p2_df,
+        on="Season",
+        suffixes=("_P1", "_P2"),
+        how="inner",
+    )
 
-        if not p1_rows.empty and not p2_rows.empty:
-            p1 = p1_rows.iloc[0]
-            p2 = p2_rows.iloc[0]
+    if merged.empty:
+        return pd.DataFrame(), top10_dict
 
-            gap = p1["TotalPoints"] - p2["TotalPoints"]
-            pct_gap = (gap / p1["TotalPoints"]) * 100 if p1["TotalPoints"] > 0 else 0.0
+    # Vectorized gap calculations
+    merged["Points_Gap"] = merged["TotalPoints_P1"] - merged["TotalPoints_P2"]
+    merged["Pct_Gap"] = np.where(
+        merged["TotalPoints_P1"] > 0,
+        (merged["Points_Gap"] / merged["TotalPoints_P1"]) * 100,
+        0.0,
+    ).round(2)
 
-            is_teammate = (p1["Primary_Team"] == p2["Primary_Team"]) and (
-                p1["Primary_Team"] != "Unknown"
-            )
+    merged["Is_Teammate"] = (
+        (merged["Primary_Team_P1"] == merged["Primary_Team_P2"])
+        & (merged["Primary_Team_P1"] != "Unknown")
+    )
 
-            if is_teammate:
-                teammate_info = "Runner-Up IS Teammate"
-            else:
-                same_team_drivers = df_season[
-                    (df_season["Primary_Team"] == p1["Primary_Team"])
-                    & (df_season["DriverId"] != p1["DriverId"])
-                ]
-                if not same_team_drivers.empty:
-                    best_teammate = same_team_drivers.iloc[0]
-                    tm_gap = p1["TotalPoints"] - best_teammate["TotalPoints"]
-                    tm_pct = (
-                        (tm_gap / p1["TotalPoints"]) * 100
-                        if p1["TotalPoints"] > 0
-                        else 0.0
-                    )
-                    teammate_info = (
-                        f"{best_teammate['Driver']} (P{int(best_teammate['Position'])}) | "
-                        f"Gap: {tm_gap:.1f} pts ({tm_pct:.1f}%)"
-                    )
-                else:
-                    teammate_info = "No Teammate Data"
+    # 4. Process Teammate Gap Information for Non-Teammate Title Fights
+    non_teammate_p1s = merged[~merged["Is_Teammate"]][["Season", "DriverId_P1", "Primary_Team_P1", "TotalPoints_P1"]]
+    
+    # Match P1 drivers with their actual teammates in the same season
+    tm_merged = pd.merge(
+        df_clean,
+        non_teammate_p1s,
+        left_on=["Season", "Primary_Team"],
+        right_on=["Season", "Primary_Team_P1"],
+    )
+    tm_candidates = tm_merged[tm_merged["DriverId"] != tm_merged["DriverId_P1"]].sort_values(
+        ["Season", "Position"]
+    )
+    best_teammates = tm_candidates.groupby("Season").first().reset_index()
 
-            team_name = p1["Primary_Team"]
-            runnerup_team = p2["Primary_Team"]
+    teammate_info_map = {}
+    for _, row in best_teammates.iterrows():
+        season = row["Season"]
+        p1_pts = row["TotalPoints_P1"]
+        tm_gap = p1_pts - row["TotalPoints"]
+        tm_pct = (tm_gap / p1_pts * 100) if p1_pts > 0 else 0.0
+        teammate_info_map[season] = (
+            f"{row['Driver']} (P{int(row['Position'])}) | Gap: {tm_gap:.1f} pts ({tm_pct:.1f}%)"
+        )
 
-            champion_color = team_colors.get(team_name, "#A0AEC0")
-            runnerup_color = team_colors.get(runnerup_team, "#A0AEC0")
+    # 5. Build output dataset
+    season_margins = []
+    for _, row in merged.iterrows():
+        season = int(row["Season"])
+        is_tm = row["Is_Teammate"]
+        
+        if is_tm:
+            tm_info = "Runner-Up IS Teammate"
+        else:
+            tm_info = teammate_info_map.get(season, "No Teammate Data")
 
-            season_margins.append(
-                {
-                    "Season": int(season),
-                    "Champion": p1["Driver"],
-                    "Champion_Team": team_name,
-                    "Champion_Color": champion_color,
-                    "Champion_Points": p1["TotalPoints"],
-                    "RunnerUp": p2["Driver"],
-                    "RunnerUp_Team": runnerup_team,
-                    "RunnerUp_Color": runnerup_color,
-                    "RunnerUp_Points": p2["TotalPoints"],
-                    "Points_Gap": gap,
-                    "Pct_Gap": round(pct_gap, 2),
-                    "Is_Teammate_Title_Fight": "Yes" if is_teammate else "No",
-                    "Teammate_Gap_Info": teammate_info,
-                    "Is_Ongoing": True if season == 2026 else False,
-                }
-            )
+        c_team = row["Primary_Team_P1"]
+        r_team = row["Primary_Team_P2"]
 
-    return pd.DataFrame(season_margins), top10_by_season
+        season_margins.append(
+            {
+                "Season": season,
+                "Champion": row["Driver_P1"],
+                "Champion_Team": c_team,
+                "Champion_Color": team_colors.get(c_team, "#A0AEC0"),
+                "Champion_Points": row["TotalPoints_P1"],
+                "RunnerUp": row["Driver_P2"],
+                "RunnerUp_Team": r_team,
+                "RunnerUp_Color": team_colors.get(r_team, "#A0AEC0"),
+                "RunnerUp_Points": row["TotalPoints_P2"],
+                "Points_Gap": row["Points_Gap"],
+                "Pct_Gap": row["Pct_Gap"],
+                "Is_Teammate_Title_Fight": "Yes" if is_tm else "No",
+                "Teammate_Gap_Info": tm_info,
+                "Is_Ongoing": season == 2026,
+            }
+        )
+
+    return pd.DataFrame(season_margins), top10_dict
 
 
 def filter_seasons_by_range(
     df_margins: pd.DataFrame, 
     year_range: Tuple[int, int]
 ) -> pd.DataFrame:
-    """
-    Filters the victory margin dataset down to a specific year range and orders by season.
-
-    Args:
-        df_margins: Season victory margins DataFrame.
-        year_range: Tuple of (start_year, end_year).
-
-    Returns:
-        Filtered and sorted pd.DataFrame.
-    """
+    """Filters the victory margin dataset down to a specific year range."""
     if df_margins.empty:
         return df_margins
 
@@ -180,20 +191,15 @@ def filter_seasons_by_range(
 
 
 def calculate_key_metrics(filtered_df: pd.DataFrame) -> Optional[Dict[str, Any]]:
-    """
-    Calculates key metrics (Most Dominant, Closest Season, Average Gap) for a given filtered dataset.
-
-    Args:
-        filtered_df: Filtered victory margins DataFrame.
-
-    Returns:
-        Dictionary with metric details or None if DataFrame is empty.
-    """
+    """Calculates key metrics for a given filtered dataset using pandas aggregations."""
     if filtered_df.empty:
         return None
 
-    most_dominant = filtered_df.loc[filtered_df["Pct_Gap"].idxmax()]
-    closest_title = filtered_df.loc[filtered_df["Pct_Gap"].idxmin()]
+    most_dominant_idx = filtered_df["Pct_Gap"].idxmax()
+    closest_title_idx = filtered_df["Pct_Gap"].idxmin()
+
+    most_dominant = filtered_df.loc[most_dominant_idx]
+    closest_title = filtered_df.loc[closest_title_idx]
     avg_gap = filtered_df["Pct_Gap"].mean()
 
     return {
