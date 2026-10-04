@@ -34,8 +34,8 @@ export function chartSpec(rows: AvailableSeason[], metric: Metric): {
   const stems: Data[] = ordered.map(row => ({
     type: 'scatter',
     mode: 'lines',
-    x: [0, metricValue(row, metric)],
-    y: [String(row.season), String(row.season)],
+    x: [String(row.season), String(row.season)],
+    y: [0, metricValue(row, metric)],
     line: { color: '#5a7088', width: 3 },
     hoverinfo: 'skip',
     showlegend: false,
@@ -43,8 +43,8 @@ export function chartSpec(rows: AvailableSeason[], metric: Metric): {
   const dots: Data = {
     type: 'scatter',
     mode: 'markers',
-    x: ordered.map(row => metricValue(row, metric)),
-    y: seasons,
+    x: seasons,
+    y: ordered.map(row => metricValue(row, metric)),
     marker: { color: '#dbe8f3', size: 13, line: { color: '#8fb7d1', width: 2 } },
     text: ordered.map(row => {
       const winner = escapeHover(row.champion.name ?? row.champion.id)
@@ -54,7 +54,7 @@ export function chartSpec(rows: AvailableSeason[], metric: Metric): {
       return `${row.season} · ${winner} over ${second}<br>`
         + `P1 ${exactText(p1.numerator, p1.denominator)} · P2 ${exactText(p2.numerator, p2.denominator)}`
     }),
-    hovertemplate: `%{text}<br>${metricLabel(metric)}: %{x:.2f}${metric === 'percentage' ? '%' : ' pts'}<extra></extra>`,
+    hovertemplate: `%{text}<br>${metricLabel(metric)}: %{y:.2f}${metric === 'percentage' ? '%' : ' pts'}<extra></extra>`,
     showlegend: false,
   }
   return {
@@ -65,19 +65,18 @@ export function chartSpec(rows: AvailableSeason[], metric: Metric): {
       font: { color: '#dbe8f3', family: 'Inter, Segoe UI, sans-serif', size: 13 },
       margin: { l: 62, r: 28, t: 16, b: 65 },
       xaxis: {
+        type: 'category',
+        categoryorder: 'array',
+        categoryarray: seasons,
+        title: { text: 'Season' },
+      },
+      yaxis: {
         title: { text: metricLabel(metric) },
         rangemode: 'tozero',
         zeroline: true,
         zerolinecolor: '#8092a7',
         gridcolor: '#26374c',
         ticksuffix: metric === 'percentage' ? '%' : '',
-      },
-      yaxis: {
-        type: 'category',
-        categoryorder: 'array',
-        categoryarray: seasons,
-        autorange: 'reversed',
-        title: { text: 'Season' },
       },
       showlegend: false,
       hovermode: 'closest',
