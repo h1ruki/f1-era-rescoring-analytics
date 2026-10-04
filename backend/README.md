@@ -1,16 +1,16 @@
-# F1 ERAs backend — repository foundation
+# F1 ERAs backend — repository and Original Drivers calculation
 
-Task 1 introduces source access beside the existing Streamlit prototype:
+Task 1 introduced source access beside the existing Streamlit prototype. Task 2
+adds pure Original Drivers calculations for 2010–2013:
 
 ```text
 immutable F1DB → data_access → typed source/domain records
                               → analytics → service/API → frontend (later tasks)
 ```
 
-The approved first Original Drivers candidate set is **2010, 2011, 2012, 2013**.
-This is a candidate set, not implemented scoring support or a completion flag.
-Repository readers can inspect any stored year. An absent year yields an empty
-tuple; calculation availability will be decided by a later service layer.
+The supported Original Drivers package set is **2010, 2011, 2012, 2013**.
+Repository readers can inspect any stored year; the analytics layer returns an
+explicit unavailable result for unsupported seasons and Constructor calculation.
 
 ## Environment and tests
 
@@ -106,7 +106,26 @@ Integration tests intentionally check this snapshot and audited source row count
 These are source-access checks, not golden championship outputs. Any later dataset
 update needs its own approved validation and provenance review.
 
-Task 1 contains no scoring, countback, contribution/identity interpretation,
-Constructor calculation, FastAPI, frontend or prototype changes. Driver and
-Constructor categories are vocabulary only at this stage. The Milestone 1A/1B
-records remain the authority for the later analytics and identity layers.
+## Original Drivers calculation
+
+`f1_eras.analytics.original_drivers.calculate_original_drivers` accepts the
+repository's immutable event, final GP classification, and recorded standing
+tuples. It has no database access. Each source year retains its own package
+identity. These four packages use 25–18–15–12–10–8–6–4–2–1 points, count all
+held GP results, and rank equal totals by counts of 1st places, then 2nd places,
+and so on through all classified finishing positions. No sprint or fastest-lap
+points apply. The source's final amended classification is scored directly;
+recorded penalties are not reapplied.
+
+Award, total, constructor-contribution, raw-gap, and percentage-gap arithmetic
+uses `fractions.Fraction`. Constructor contribution is each driver's counted
+Original points grouped by the constructor on the GP classification, not a
+calculated Constructors' Championship. Recorded event awards and final Driver
+standings remain separate comparison records. The result exposes differences
+from both sources; all four curated seasons currently reconcile with no
+differences. Unresolved countback, missing final GP classifications, unsupported
+years, and Constructor category return `CalculationUnavailable` with a reason
+and resolution condition. This task does not implement counterfactual scoring,
+identity presentation, an API, or frontend.
+
+The Milestone 1A/1B records remain authoritative as coverage expands.
