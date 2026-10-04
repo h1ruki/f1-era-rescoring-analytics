@@ -31,6 +31,34 @@ _PACKAGES = {2010: OriginalPackage.YEAR_2010, 2011: OriginalPackage.YEAR_2011,
              2012: OriginalPackage.YEAR_2012, 2013: OriginalPackage.YEAR_2013}
 _POINTS = (25, 18, 15, 12, 10, 8, 6, 4, 2, 1)
 CALCULATION_VERSION = "original-drivers-2010-2013-v1"
+SUPPORTED_ORIGINAL_DRIVERS_SEASONS = tuple(_PACKAGES)
+
+
+@dataclass(frozen=True, slots=True)
+class OriginalDriversRules:
+    package: OriginalPackage
+    points_by_position: tuple[int, ...]
+    results_counted: str
+    countback: str
+    sprint_points: str
+    fastest_lap_points: str
+    classification_basis: str
+
+
+def original_drivers_rules(year: int) -> OriginalDriversRules | None:
+    """Expose the implemented package facts without duplicating scoring rules."""
+    package = _PACKAGES.get(year)
+    if package is None:
+        return None
+    return OriginalDriversRules(
+        package=package,
+        points_by_position=_POINTS,
+        results_counted="All results from Grands Prix actually held",
+        countback="Most first places, then second places, through classified finishes",
+        sprint_points="None",
+        fastest_lap_points="None",
+        classification_basis="Final recorded amended GP classification",
+    )
 
 
 @dataclass(frozen=True, slots=True)

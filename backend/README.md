@@ -1,7 +1,8 @@
 # F1 ERAs backend — repository and Original Drivers calculation
 
 Task 1 introduced source access beside the existing Streamlit prototype. Task 2
-adds pure Original Drivers calculations for 2010–2013:
+added pure Original Drivers calculations for 2010–2013. Task 3 exposes them
+through a read-only service and versioned FastAPI interface:
 
 ```text
 immutable F1DB → data_access → typed source/domain records
@@ -14,14 +15,15 @@ explicit unavailable result for unsupported seasons and Constructor calculation.
 
 ## Environment and tests
 
-Runtime code uses only the Python standard library (Python 3.11+ syntax/APIs;
-the current workstation uses Python 3.14.7). The only Task 1 test dependency is
-`pytest==9.1.1`. Installation requires the product owner's approval.
+Analytics and data access use the Python standard library (Python 3.11+;
+the current workstation uses Python 3.14.7). The API requires
+`fastapi==0.142.2` and `uvicorn==0.54.0`. Tests use `pytest==9.1.1` and
+`httpx==0.28.1`. These direct dependencies are pinned in `pyproject.toml`.
 
-From the repository root, after that approval:
+From the repository root:
 
 ```powershell
-& .\.venv\Scripts\python.exe -m pip install "pytest==9.1.1"
+& .\.venv\Scripts\python.exe -m pip install "fastapi==0.142.2" "uvicorn==0.54.0" "httpx==0.28.1" "pytest==9.1.1"
 & .\.venv\Scripts\python.exe -B -m pytest -c backend/pyproject.toml backend/tests -q -p no:cacheprovider
 ```
 
@@ -126,6 +128,47 @@ from both sources; all four curated seasons currently reconcile with no
 differences. Unresolved countback, missing final GP classifications, unsupported
 years, and Constructor category return `CalculationUnavailable` with a reason
 and resolution condition. This task does not implement counterfactual scoring,
-identity presentation, an API, or frontend.
+identity presentation, or frontend.
+
+## Read-only service and API
+
+`ChampionshipService` invokes the repository and existing pure analytics. It
+returns a typed report with the result or explicit unavailable reason, package
+rules, and source snapshot identity. Unsupported seasons and the unimplemented
+Constructor category do not invoke source readers. API imports do not open the
+database; the Uvicorn factory constructs the repository from the local `f1db.db`
+or the explicit `F1_ERAS_DB_PATH` environment variable.
+
+From the repository root, serve with:
+
+```powershell
+$env:PYTHONPATH = "backend/src"
+& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory
+```
+
+The versioned GET endpoints are:
+
+- `/api/v1/capabilities`: curated seasons, supported category, package identities,
+  calculation version and implemented rule summaries.
+- `/api/v1/championship-margins`: defaults to all four seasons; repeat the
+  `seasons` query parameter to select years, e.g.
+  `?seasons=2010&seasons=2012`. Results are chronological.
+- `/api/v1/championships/{season}`: the same P1/P2 summary plus calculated
+  standings, separate recorded standings, event awards, source record keys, and
+  reconciliation differences.
+
+Both championship routes accept `category=drivers|constructors` and only
+`scoring=original`. Invalid parameters receive HTTP 422. Valid unsupported years
+and the Constructor category receive HTTP 200 with `availability=unavailable`,
+reason and resolution; their champion and margin are null. Source failures remain
+server errors.
+
+Authoritative numeric fields use `{ "exact": { "numerator": n, "denominator": d },
+"plot": number }`. The `plot` value is a floating-point projection for charts;
+calculation and reconciliation use exact fractions. The response supplies P1/P2
+totals, raw gap, and Championship Margin (%) directly, so a frontend does not
+need to calculate them. The rules include the margin formula. Provenance includes
+the F1DB snapshot SHA-256 and source record keys in detail responses. Regulatory
+source citations are not yet part of these four package records.
 
 The Milestone 1A/1B records remain authoritative as coverage expands.
