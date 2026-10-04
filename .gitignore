@@ -3,3 +3,5 @@ __pycache__/
 .DS_Store
 .streamlit/
 F1_ERAs_MASTER_BRIEF.md
+frontend/node_modules/
+frontend/dist/
