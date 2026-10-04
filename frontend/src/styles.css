@@ -1,0 +1,55 @@
+:root {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #e3edf7;
+  background: #09121e;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 320px; }
+
+button { font: inherit; }
+
+.shell { max-width: 1140px; margin: 0 auto; padding: 48px 28px 30px; }
+.eyebrow { color: #91bad2; font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+.page-header h1 { margin: 10px 0 8px; font-size: clamp(32px, 5vw, 54px); letter-spacing: -.045em; }
+.page-header p { margin: 0; color: #a5b6c8; line-height: 1.5; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 24px; margin: 36px 0 22px; }
+.control-group { display: flex; flex-direction: column; gap: 9px; }
+.control-label { font-size: 12px; color: #a5b6c8; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.segmented { display: flex; padding: 4px; gap: 3px; border: 1px solid #34465c; border-radius: 9px; background: #101c2b; }
+.segmented button, .static-control { padding: 10px 13px; color: #d8e4ef; border: 0; border-radius: 6px; background: transparent; white-space: nowrap; }
+.segmented button { cursor: pointer; }
+.segmented button[aria-pressed="true"], .static-control { color: #07111c; background: #b5d3e7; font-weight: 700; }
+.segmented button:disabled { color: #72869b; cursor: not-allowed; }
+.segmented button:not(:disabled):hover { outline: 1px solid #9cb9cf; }
+.static-control { display: inline-block; width: max-content; }
+
+.panel { border: 1px solid #293c52; border-radius: 14px; background: #101c2b; padding: 24px; box-shadow: 0 16px 46px #02060b55; }
+.panel-head { display: flex; justify-content: space-between; gap: 16px; align-items: end; }
+.panel-head h2 { margin: 7px 0 0; font-size: 24px; }
+.legend { color: #a8bbcc; font-size: 13px; white-space: nowrap; }
+.legend-dot { display: inline-block; width: 11px; height: 11px; margin-right: 8px; border: 2px solid #8fb7d1; border-radius: 50%; background: #dbe8f3; vertical-align: middle; }
+.chart { width: 100%; min-height: 410px; }
+.message { display: flex; align-items: center; gap: 16px; min-height: 280px; color: #b9cad9; }
+.retry { padding: 8px 12px; border: 1px solid #94b9d2; border-radius: 6px; color: #e3edf7; background: #1a354a; cursor: pointer; }
+.season-list { margin: 8px 0 0; padding: 0; list-style: none; border-top: 1px solid #26374c; }
+.season-list li { display: grid; grid-template-columns: 80px 1fr auto; gap: 12px; padding: 12px 6px; border-bottom: 1px solid #26374c; align-items: center; }
+.season-year { color: #97bdd6; font-variant-numeric: tabular-nums; font-weight: 700; }
+.season-driver { color: #dbe8f3; }
+.season-list strong { font-variant-numeric: tabular-nums; }
+.unavailable { margin-top: 16px; padding: 14px 18px; border: 1px solid #685446; border-radius: 8px; color: #ead3b3; background: #35271d; }
+.unavailable h3 { margin: 0 0 6px; font-size: 15px; }
+.unavailable p { margin: 4px 0; }
+footer { margin-top: 24px; color: #8297aa; font-size: 12px; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .shell { padding: 26px 14px; }
+  .panel { padding: 18px 10px; }
+  .panel-head { align-items: start; flex-direction: column; }
+  .segmented { flex-wrap: wrap; }
+  .season-list li { grid-template-columns: 56px 1fr; }
+  .season-list strong { grid-column: 2; }
+}
