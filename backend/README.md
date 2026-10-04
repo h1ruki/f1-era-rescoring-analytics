@@ -172,3 +172,34 @@ the F1DB snapshot SHA-256 and source record keys in detail responses. Regulatory
 source citations are not yet part of these four package records.
 
 The Milestone 1A/1B records remain authoritative as coverage expands.
+
+## Verification foundation (diagnostic only)
+
+The approved [verification decision record](../VERIFICATION_FOUNDATION_DECISION_RECORD.md)
+defines independent verification separately from existing F1DB reconciliation.
+`domain/verification.py` contains typed assessments and context;
+`verification/metadata.py` strictly loads JSON evidence;
+`verification/compare.py` compares complete standings with exact fractions;
+`verification/evaluate.py` is the shared fail-closed evaluator. These modules do
+not change current service/API support or scoring. No historical evidence has
+been populated; [metadata documentation](historical/README.md) describes the schema.
+Assessment success is `passed`; `historically_verified` is derived from historical
+scope and that passing result. Synthetic success never grants historical trust.
+
+Run the fixed 2010-2013 diagnostic from the repository root:
+
+```powershell
+$env:PYTHONPATH = "backend/src"
+& .\.venv\Scripts\python.exe -B -m f1_eras.verification.diagnostic
+```
+
+It prints JSON with reconstruction outcome, independent verification findings,
+F1DB difference counts and context. Expected output is successful reconstruction
+and blocked verification because rule, season-context and independent expected
+evidence are absent. An uncommitted tree adds `non_reproducible`. Exit 0 means the
+diagnostic completed, not that seasons verified; operational errors exit nonzero.
+`--db PATH` selects another read-only snapshot without changing the fixed year set.
+
+The complete backend pytest command above includes all new synthetic policy,
+schema and comparator tests and the four-season diagnostic integration test.
+The only example fixture is explicitly synthetic under `tests/fixtures/synthetic`.
