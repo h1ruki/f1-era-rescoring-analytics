@@ -166,7 +166,8 @@ def test_curated_source_coverage(project_source_db: Path, year: int, event_count
 
 @pytest.mark.integration
 def test_project_source_is_identified_and_unchanged(project_source_db: Path) -> None:
-    expected_hash = "6249c3d8e361b5358981a1dfba6a34218a471af35b5f3ab6d6deb19638ac5a71"
+    from f1_eras.verification.approval import load_snapshot_approval
+    expected_hash = load_snapshot_approval().sha256
     repository = F1DBRepository(project_source_db)
     before = repository.identify_snapshot()
     assert before.sha256 == expected_hash

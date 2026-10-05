@@ -1,4 +1,4 @@
-"""Verification contracts, separate from calculation and production availability."""
+"""Canonical trust and supplementary verification contracts, separate from scoring."""
 
 from dataclasses import dataclass
 from enum import StrEnum
@@ -44,6 +44,7 @@ class ClassificationState(StrEnum):
 
 
 class FindingCode(StrEnum):
+    CANONICAL_DATASET_REQUIRED = "canonical_dataset_required"
     RULE_EVIDENCE_MISSING = "rule_evidence_missing"
     EXPECTED_EVIDENCE_MISSING = "expected_evidence_missing"
     SEASON_EVIDENCE_MISSING = "season_evidence_missing"
@@ -183,3 +184,41 @@ class VerificationAssessment:
     @property
     def historically_verified(self) -> bool:
         return self.scope == VerificationScope.HISTORICAL and self.state == AssessmentState.PASSED
+
+
+@dataclass(frozen=True, slots=True)
+class ExternalAuditSummary:
+    """Previously completed research, not a new evaluator-produced audit claim."""
+
+    year: int
+    package_id: str
+    f1db_sha256: str
+    decision_record: str
+    summary: str
+    qualification: str
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalTrustAssessment:
+    """Normal-use trust is distinct from strict independent verification."""
+
+    year: int
+    package_id: str | None
+    calculation_version: str
+    f1db_sha256: str | None  # Unknown only when capture failed before identity was obtained.
+    rules_sha256: str
+    state: AssessmentState
+    reconstruction: ReconstructionOutcome
+    comparison: ComparisonOutcome
+    canonical_dataset_backed: bool
+    findings: tuple[VerificationFinding, ...]
+    external_audit: ExternalAuditSummary | None = None
+    external_audit_status: str = "unavailable"
+    policy_version: str = "drivers-original-canonical-trust-v1"
+
+    @property
+    def trusted_for_normal_use(self) -> bool:
+        return (self.state == AssessmentState.PASSED
+                and self.canonical_dataset_backed is True
+                and self.reconstruction == ReconstructionOutcome.COMPLETED
+                and self.comparison == ComparisonOutcome.MATCH)

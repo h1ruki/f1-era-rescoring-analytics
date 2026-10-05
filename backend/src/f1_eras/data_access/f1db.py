@@ -1,13 +1,16 @@
 """Parameterized F1DB readers. All queries and schema adaptation live here."""
 
 from datetime import date
+from contextlib import closing
+from dataclasses import dataclass
 from decimal import Decimal
 import hashlib
 from pathlib import Path
 import sqlite3
 
-from f1_eras.data_access.connection import SourceDatabaseError, open_read_only
+from f1_eras.data_access.connection import SourceDatabaseError, SourceSnapshotChanged, open_read_only
 from f1_eras.domain.models import (
+    CanonicalDriverPopulation,
     ConstructorIdentity,
     DriverIdentity,
     DriverStandingKey,
@@ -21,6 +24,16 @@ from f1_eras.domain.models import (
 
 class SourceSchemaError(SourceDatabaseError):
     """The source schema is incompatible with the fields these readers consume."""
+
+
+@dataclass(frozen=True, slots=True)
+class OriginalDriversSource:
+    snapshot: F1DBSnapshot
+    current_snapshot: F1DBSnapshot
+    population: CanonicalDriverPopulation
+    events: tuple[SeasonEvent, ...]
+    classifications: tuple[GPClassification, ...]
+    recorded: tuple[RecordedDriverStanding, ...]
 
 
 # Expected SQLite affinities and NOT NULL declarations for consumed columns.
@@ -244,6 +257,69 @@ class F1DBRepository:
             with self._path.open("rb") as source:
                 checksum = hashlib.file_digest(source, "sha256").hexdigest()
         after = self._path.stat()
-        if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
-            raise SourceDatabaseError("Source database changed during snapshot identification")
+        if _file_identity(before) != _file_identity(after):
+            raise SourceSnapshotChanged("Source database changed during snapshot identification")
         return F1DBSnapshot(checksum, after.st_size, schema_version, user_version)
+
+    def read_original_drivers_source(self, year: int) -> OriginalDriversSource:
+        """Read one assessment from exactly the bytes whose hash identifies it.
+
+        A request-local SQLite image avoids independent connections observing
+        A/B/A path replacements. There is no persistent copy, cache or version
+        store. All queries, including the unfiltered championship population,
+        use this same image. The source file is never opened for writing.
+        """
+        before = self._path.stat()
+        # Retain the standalone/WAL checks at the source boundary.
+        with open_read_only(self._path):
+            image = self._path.read_bytes()
+        after = self._path.stat()
+        if _file_identity(before) != _file_identity(after):
+            raise SourceSnapshotChanged("Source changed while capturing assessment image")
+        checksum = hashlib.sha256(image).hexdigest()
+        image_size = len(image)
+        with closing(sqlite3.connect(":memory:")) as connection:
+            connection.deserialize(image)
+            del image
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA query_only = ON")
+            connection.execute("PRAGMA temp_store = MEMORY")
+            validate_required_schema(connection)
+            if [row[0] for row in connection.execute("PRAGMA quick_check")] != ["ok"]:
+                raise SourceDatabaseError("Source SQLite integrity check failed")
+            snapshot = F1DBSnapshot(
+                checksum, image_size,
+                connection.execute("PRAGMA schema_version").fetchone()[0],
+                connection.execute("PRAGMA user_version").fetchone()[0],
+            )
+            reader = _BoundF1DBReader(connection)
+            population = CanonicalDriverPopulation(year, checksum, tuple(
+                row[0] for row in connection.execute(
+                    "SELECT driver_id FROM season_driver_standing WHERE year = ? "
+                    "ORDER BY position_display_order", (year,),
+                )
+            ))
+            events = reader.get_season_events(year)
+            classifications = reader.get_gp_classifications(year)
+            recorded = reader.get_recorded_driver_standings(year)
+            current = self.identify_snapshot()
+            final = self._path.stat()
+            if _file_identity(after) != _file_identity(final) and current == snapshot:
+                raise SourceSnapshotChanged("Source identity changed during assessment reads")
+            return OriginalDriversSource(snapshot, current, population, events, classifications, recorded)
+
+
+class _BoundF1DBReader(F1DBRepository):
+    """Reuse the same mappings and SQL against the captured assessment image."""
+
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self._connection = connection
+
+    def _read(self, sql: str, year: int, *parameters: object) -> list[sqlite3.Row]:
+        if type(year) is not int:
+            raise TypeError("year must be an integer")
+        return self._connection.execute(sql, (year, *parameters)).fetchall()
+
+
+def _file_identity(stat) -> tuple[int, int, int, int]:
+    return stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns

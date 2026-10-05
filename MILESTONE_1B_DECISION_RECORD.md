@@ -4,6 +4,16 @@ Status: **Approved by the product owner.** This record fixes the identity, chass
 
 ## Authority and scope
 
+Historical trust clarification: [HISTORICAL_DATA_TRUST_DECISION_RECORD.md](HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
+supersedes independent external-evidence prerequisites for normal project trust.
+The 2010-2013 Drivers / Original results use the same canonical-F1DB, integrity and
+complete-reconciliation trust path; only 2010 has supplementary completed audit
+coverage. Earlier curated-evidence language below retains its milestone context
+and does not require separate 2011-2013 historical dossiers to expose these results.
+Canonical trust is distinct from external corroboration and does not establish
+identity relationships or event-level chassis/teammate claims that F1DB cannot
+support. Those partial, ambiguous and unavailable states remain unchanged.
+
 [Milestone 1A](MILESTONE_1A_DECISION_RECORD.md) remains authoritative for championship scoring, eligible results, constructor scoring, sanctions, exclusions, exact calculation, ambiguity, unavailable states, and the preservation of every constructor contributing to a driver's counted championship points. Nothing in this record changes a recorded result or turns a reconstructed result into an official one.
 
 Historical identity, historical usage, and championship contribution answer different questions. A scoring package may change calculated championship contributions; it must not rewrite contemporary constructor attribution or verified historical participation. Final authoritative amended outcomes are the historical default unless a separate “as it stood at the time” analysis is approved later.

@@ -1,5 +1,6 @@
 """Service and HTTP contracts for the four curated Original Drivers seasons."""
 
+from dataclasses import replace
 from fractions import Fraction
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from f1_eras.api.http import create_app
 from f1_eras.application.championships import ChampionshipService
 from f1_eras.data_access.f1db import F1DBRepository
 from f1_eras.domain.models import ChampionshipCategory
+from f1_eras.verification.approval import load_snapshot_approval
 
 
 @pytest.fixture
@@ -58,13 +60,9 @@ def test_service_unavailable_boundaries_do_not_query_unsupported_source(
         assert isinstance(report.result, CalculationUnavailable)
         assert report.source_snapshot is None and report.rules is None
     class MissingFinalEvent:
-        get_season_events = repository.get_season_events
-        get_recorded_driver_standings = repository.get_recorded_driver_standings
-        identify_snapshot = repository.identify_snapshot
-
-        def get_gp_classifications(self, year: int):
-            rows = repository.get_gp_classifications(year)
-            return tuple(row for row in rows if row.round == 1)
+        def read_original_drivers_source(self, year: int):
+            source = repository.read_original_drivers_source(year)
+            return replace(source, classifications=tuple(row for row in source.classifications if row.round == 1))
 
     incomplete = ChampionshipService(MissingFinalEvent()).original_drivers(2012)
     assert isinstance(incomplete.result, CalculationUnavailable)
@@ -132,9 +130,7 @@ def test_margin_response_has_exact_values_and_independent_plot_projections(
         "event_awards_match": True, "recorded_driver_standings_match": True,
         "event_award_difference_count": 0, "standing_difference_count": 0,
     }
-    assert item["source_snapshot"]["sha256"] == (
-        "6249c3d8e361b5358981a1dfba6a34218a471af35b5f3ab6d6deb19638ac5a71"
-    )
+    assert item["source_snapshot"]["sha256"] == load_snapshot_approval().sha256
     assert item["rules"]["margin_formula"] == "(P1 - P2) / P1 * 100"
 
 

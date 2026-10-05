@@ -1,12 +1,12 @@
-# F1 ERAs backend — repository and Original Drivers calculation
+# F1 ERAs backend â€” repository and Original Drivers calculation
 
 Task 1 introduced source access beside the existing Streamlit prototype. Task 2
-added pure Original Drivers calculations for 2010–2013. Task 3 exposes them
+added pure Original Drivers calculations for 2010â€“2013. Task 3 exposes them
 through a read-only service and versioned FastAPI interface:
 
 ```text
-immutable F1DB → data_access → typed source/domain records
-                              → analytics → service/API → frontend (later tasks)
+immutable F1DB â†’ data_access â†’ typed source/domain records
+                              â†’ analytics â†’ service/API â†’ frontend (later tasks)
 ```
 
 The supported Original Drivers package set is **2010, 2011, 2012, 2013**.
@@ -88,7 +88,7 @@ file URI with `mode=ro&immutable=1`, sets `query_only=ON`, and closes the connec
 on success or failure. Missing paths fail without creating files. Nonempty WAL or
 journal sidecars are rejected because the source and its content hash must describe
 one standalone file. The source must remain unchanged throughout repository use;
-live updates/concurrent replacement are outside Task 1.
+source snapshots are standalone files; assessment reads use a bound image.
 
 `data_access/f1db.py` contains parameterized reader queries and schema checks.
 Required tables, consumed column affinities/non-nullability, and source primary
@@ -97,8 +97,10 @@ and columns are allowed. Schema errors explain the missing or incompatible field
 
 `identify_snapshot()` returns SHA-256, byte size and explicitly named SQLite schema
 and user-version counters. Neither counter is an F1DB release version.
-`upstream_release=None` means release provenance has not been verified. The current
-audited snapshot SHA-256 is:
+The reader's `upstream_release=None` means it does not infer an F1DB release from
+SQLite counters. The approved historical-data trust decision record establishes
+this snapshot as upstream `v2026.15.0`, release commit
+`45c6c50fb3d87ef39a0631c7472ea3e597699b4a`. Its SHA-256 is:
 
 ```text
 6249c3d8e361b5358981a1dfba6a34218a471af35b5f3ab6d6deb19638ac5a71
@@ -113,7 +115,7 @@ update needs its own approved validation and provenance review.
 `f1_eras.analytics.original_drivers.calculate_original_drivers` accepts the
 repository's immutable event, final GP classification, and recorded standing
 tuples. It has no database access. Each source year retains its own package
-identity. These four packages use 25–18–15–12–10–8–6–4–2–1 points, count all
+identity. These four packages use 25â€“18â€“15â€“12â€“10â€“8â€“6â€“4â€“2â€“1 points, count all
 held GP results, and rank equal totals by counts of 1st places, then 2nd places,
 and so on through all classified finishing positions. No sprint or fastest-lap
 points apply. The source's final amended classification is scored directly;
@@ -134,7 +136,12 @@ identity presentation, or frontend.
 
 `ChampionshipService` invokes the repository and existing pure analytics. It
 returns a typed report with the result or explicit unavailable reason, package
-rules, and source snapshot identity. Unsupported seasons and the unimplemented
+rules, source snapshot identity, and canonical trust assessment. The same generic
+trust gate serves every supported season: pinned immutable F1DB, passing integrity
+checks, and exact full championship reconciliation. Failed trust withholds results
+as unavailable with null champion/runner-up/margin; operational failures remain
+server errors. Snapshot identity is checked before reads and after reconstruction.
+Unsupported seasons and the unimplemented
 Constructor category do not invoke source readers. API imports do not open the
 database; the Uvicorn factory constructs the repository from the local `f1db.db`
 or the explicit `F1_ERAS_DB_PATH` environment variable.
@@ -173,18 +180,39 @@ source citations are not yet part of these four package records.
 
 The Milestone 1A/1B records remain authoritative as coverage expands.
 
-## Verification foundation (diagnostic only)
+## Canonical trust and supplementary external verification
 
 The approved [verification decision record](../VERIFICATION_FOUNDATION_DECISION_RECORD.md)
-defines independent verification separately from existing F1DB reconciliation.
+preserves the original foundation and records its supersession by
+[historical-data trust policy](../HISTORICAL_DATA_TRUST_DECISION_RECORD.md).
 `domain/verification.py` contains typed assessments and context;
 `verification/metadata.py` strictly loads JSON evidence;
 `verification/compare.py` compares complete standings with exact fractions;
-`verification/evaluate.py` is the shared fail-closed evaluator. These modules do
-not change current service/API support or scoring. No historical evidence has
-been populated; [metadata documentation](historical/README.md) describes the schema.
-Assessment success is `passed`; `historically_verified` is derived from historical
-scope and that passing result. Synthetic success never grants historical trust.
+`verification/evaluate.py` retains strict independent-audit evaluation.
+`verification/canonical.py` supplies the generic normal-use trust adapter used by
+the service/API and diagnostic, reusing exact comparison and typed findings.
+Integrity checks bind the award trace to source rows and supported rules, validate
+calendar/results keys and populations, reject unknown/unsupported classification
+and participation states, and reconcile contributions, countback and margins.
+Canonical standings are compared across the full driver population, exact points,
+sporting positions/classifications and championship-won consistency.
+
+The API's `trust` object separately reports `canonical_dataset_backed`,
+`comparison`, `state`, `findings`, derived `trusted_for_normal_use`, dataset/rules
+hashes, calculation/policy versions, and nullable `external_audit`. Unsupported
+requests without a reconstruction have `trust=null`. Independent evidence absence
+is not a gate. Normal-use trust requires `passed`, a completed reconstruction and
+canonical comparison `match`; changed snapshots are `stale`. Strict external
+verification remains a distinct `historically_verified` claim from the original
+evaluator. Synthetic success cannot grant historical trust.
+
+2010 has supplementary completed-audit summary metadata attributed to the approved
+decision record, including the FIA provisional-classification qualification.
+2011-2013 have no external-audit metadata; all four use identical trust logic.
+No complete machine-verification historical dossier has been populated; the summary
+does not claim a new strict evaluator pass. Unknown claim-level upstream F1DB
+lineage is non-blocking. [Metadata documentation](historical/README.md) describes
+both representations. New primary-source research is exception handling only.
 
 Run the fixed 2010-2013 diagnostic from the repository root:
 
@@ -193,13 +221,51 @@ $env:PYTHONPATH = "backend/src"
 & .\.venv\Scripts\python.exe -B -m f1_eras.verification.diagnostic
 ```
 
-It prints JSON with reconstruction outcome, independent verification findings,
-F1DB difference counts and context. Expected output is successful reconstruction
-and blocked verification because rule, season-context and independent expected
-evidence are absent. An uncommitted tree adds `non_reproducible`. Exit 0 means the
-diagnostic completed, not that seasons verified; operational errors exit nonzero.
+It prints JSON with the same canonical trust assessment as production, reconstruction
+outcome, findings, supplementary audit summary, F1DB difference counts, and Git
+identity/dirty status. All four pinned-snapshot seasons should pass normal-use
+trust. Dirty Git state is information for this path; the strict independent evaluator
+still requires a clean known commit. Exit 0 means the diagnostic completed, so
+inspect each assessment for trust; operational errors exit nonzero.
 `--db PATH` selects another read-only snapshot without changing the fixed year set.
 
 The complete backend pytest command above includes all new synthetic policy,
 schema and comparator tests and the four-season diagnostic integration test.
 The only example fixture is explicitly synthetic under `tests/fixtures/synthetic`.
+
+## Bound assessment and snapshot approval
+
+`historical/canonical_snapshot.json` is the machine-readable runtime approval
+source of truth (upstream release/commit, SHA-256 and size). Documentation records
+provenance but cannot grant runtime approval. Missing, unreadable or invalid
+approval fails closed; tests load the same approval mechanism.
+
+`read_original_drivers_source(year)` captures database bytes once, hashes those
+exact bytes, validates schema and SQLite integrity, and queries a temporary
+in-memory SQLite image. Calendar, GP classifications, comparison standings and an
+independently queried unfiltered championship driver population use that image.
+The adapter requires full population coverage, including ranked zero-point drivers,
+plus exact points and sporting ordering. Matching truncated inputs cannot pass.
+Source changes detected at capture or final identification are stale. Database or
+operational failures remain errors. Captured images prevent A/B/A path replacements
+from silently labelling B's input as approved A; no source file is rewritten.
+The request-local image costs roughly one database's size plus capture overhead;
+concurrent deployment capacity must account for that memory use.
+
+Canonical assessment does not read `external_audit_summaries.json`. Separate
+post-assessment enrichment attaches context-matching audit information and
+`external_audit_status` (`available`, `unavailable`, `invalid`). Missing, unreadable,
+malformed or invalid supplementary metadata cannot withhold valid canonical results
+or promote rejected ones. This isolation does not catch canonical source errors.
+
+The service preserves calculation counts separately from production availability.
+Diagnostics retain driver/award counts and known reconciliation difference counts
+for completed-but-rejected calculations; counts are null when calculation did not
+complete. Rejected API results still have null champion, runner-up and margin.
+
+For rotation: validate a separate candidate's provenance, schema, integrity and
+full supported historical inputs/results; review differences; formally approve the
+manifest; activate the standalone database with readers stopped and retain rollback.
+Update approval-dependent tests and documentation without altering historical
+scoring logic. Preserve historical audit bindings; they never transfer automatically.
+`data/f1db_newsnapshot.db` is ignored, local acceptance-test data and remains unapproved.

@@ -1,0 +1,10 @@
+[
+  {
+    "year": 2010,
+    "package_id": "original-2010",
+    "f1db_sha256": "6249c3d8e361b5358981a1dfba6a34218a471af35b5f3ab6d6deb19638ac5a71",
+    "decision_record": "HISTORICAL_DATA_TRUST_DECISION_RECORD.md#completed-2010-independent-historical-audit",
+    "summary": "Completed independent audit of applicable February 2010 FIA rules, the 19-event population, complete 27-driver ordering and points, and championship-affecting race-result amendments, as recorded by the product owner.",
+    "qualification": "FIA post-season corroboration retained a provisional classification heading. This is a preserved research summary, not an unqualified final-classification claim or a populated machine-verification dossier. Upstream claim-level F1DB lineage remains unknown."
+  }
+]

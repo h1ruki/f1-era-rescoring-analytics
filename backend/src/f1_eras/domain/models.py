@@ -96,3 +96,12 @@ class F1DBSnapshot:
     sqlite_schema_version: int
     sqlite_user_version: int
     upstream_release: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalDriverPopulation:
+    """Unfiltered championship IDs read independently in the bound source image."""
+
+    year: int
+    f1db_sha256: str
+    driver_ids: tuple[str, ...]

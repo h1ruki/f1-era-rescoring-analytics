@@ -4,6 +4,18 @@ Status: **Approved by the product owner.** This is a methodology and domain-cont
 
 ## Historical-rule transplantation
 
+Historical trust clarification: [HISTORICAL_DATA_TRUST_DECISION_RECORD.md](HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
+supersedes independent external-evidence prerequisites for normal Original trust.
+Canonical immutable F1DB input, supported deterministic rules, passing integrity
+checks and exact complete championship reconciliation suffice. The implemented
+2010-2013 Drivers / Original packages share one trust path; 2010 alone has
+supplementary completed external-audit metadata. Earlier research/golden-case
+statements below describe this milestone's original context, not a requirement
+for new 2011-2013 dossiers. Unsupported historical interpretations, incomplete
+seasons, ambiguity, sanctions/exclusions and exact arithmetic requirements remain
+authoritative. Further primary-source research addresses failures, conflicts,
+unsupported interpretations or deliberately selected historical edge cases.
+
 Select a complete, source-year championship package. Use recorded race and sprint classifications, DSQs, exclusions, and event outcomes as historical facts. Rescore those facts under the selected package; do not simulate different race outcomes.
 
 - An explicitly fixed best-N limit retains the same N on a target calendar of any length. If fewer than N eligible results exist, count those available.

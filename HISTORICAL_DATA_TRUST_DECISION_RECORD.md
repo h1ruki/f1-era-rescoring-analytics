@@ -1,4 +1,4 @@
-# Historical data trust — methodology decision record
+# Historical data trust â€” methodology decision record
 
 Status: **Approved by the product owner.** This record preserves the
 completed 2010 research outcome and records the product-owner methodology
@@ -83,3 +83,21 @@ metadata schemas, diagnostic outcomes, API availability or support status.
 The trust-model implementation and corresponding documentation updates
 require a separate reviewed change. Existing behaviour remains unchanged
 until that work is approved and implemented.
+
+## Implementation reference
+
+The approved methodology above is unchanged. The corresponding implementation uses
+`backend/historical/canonical_snapshot.json` as its machine-readable runtime snapshot
+approval authority. Its identity currently matches the established provenance above.
+An invalid or absent approval record fails closed.
+
+Complete reconciliation includes the unfiltered championship driver population
+queried independently of supplied comparison inputs in the same bound source image.
+Optional external-audit metadata is attached after canonical assessment and cannot
+change trust. Source rotation requires its own provenance, schema, integrity and
+supported-history validation review and explicit approval; existing external-audit
+snapshot bindings are preserved rather than automatically transferred.
+
+The earlier implementation-boundary section records this policy document's original
+scope; it is not a claim that a subsequent reviewed implementation must retain the
+superseded production gate.
