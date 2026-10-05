@@ -98,12 +98,13 @@ and columns are allowed. Schema errors explain the missing or incompatible field
 `identify_snapshot()` returns SHA-256, byte size and explicitly named SQLite schema
 and user-version counters. Neither counter is an F1DB release version.
 The reader's `upstream_release=None` means it does not infer an F1DB release from
-SQLite counters. The approved historical-data trust decision record establishes
-this snapshot as upstream `v2026.15.0`, release commit
-`45c6c50fb3d87ef39a0631c7472ea3e597699b4a`. Its SHA-256 is:
+SQLite counters. The authoritative approval manifest identifies the current
+snapshot as upstream `v2026.16.0`, release commit
+`2ba943cf908ace7d6b606e12b72472f54d442a12`, published 2026-10-04 at 12:21:35 UTC.
+Its SHA-256 is:
 
 ```text
-6249c3d8e361b5358981a1dfba6a34218a471af35b5f3ab6d6deb19638ac5a71
+28707a41bc45d9d4b787d655ef7e135644bdc9cb3307a947258647d83ecba642
 ```
 
 Integration tests intentionally check this snapshot and audited source row counts.
@@ -208,6 +209,9 @@ evaluator. Synthetic success cannot grant historical trust.
 
 2010 has supplementary completed-audit summary metadata attributed to the approved
 decision record, including the FIA provisional-classification qualification.
+That summary retains its `v2026.15.0` snapshot binding. After rotation to
+`v2026.16.0`, current responses have no matching external audit, including 2010;
+normal canonical trust remains available for all four seasons.
 2011-2013 have no external-audit metadata; all four use identical trust logic.
 No complete machine-verification historical dossier has been populated; the summary
 does not claim a new strict evaluator pass. Unknown claim-level upstream F1DB
@@ -268,4 +272,7 @@ full supported historical inputs/results; review differences; formally approve t
 manifest; activate the standalone database with readers stopped and retain rollback.
 Update approval-dependent tests and documentation without altering historical
 scoring logic. Preserve historical audit bindings; they never transfer automatically.
-`data/f1db_newsnapshot.db` is ignored, local acceptance-test data and remains unapproved.
+`v2026.16.0` was approved on 2026-10-05 after official-asset byte comparison and
+unchanged 2010-2013 input/reconciliation checks. The previous `v2026.15.0` snapshot
+is retained in Git history. `data/f1db_newsnapshot.db` remains an ignored local
+acceptance-test copy; its bytes now match the approved canonical snapshot.

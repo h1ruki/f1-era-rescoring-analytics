@@ -17,9 +17,10 @@ or production promotion. Implementing that policy is separate work.
 Milestone 1A/1B scoring, historical interpretation, identity, ambiguity and
 unavailable-state requirements remain authoritative.
 
-## Established F1DB snapshot provenance
+## Established F1DB snapshot provenance (initial approval)
 
-The checked-in `f1db.db` snapshot has the following established provenance:
+At initial policy approval, the checked-in `f1db.db` snapshot had the following
+established provenance. The later rotation below preserves this original record:
 
 - Upstream release: `v2026.15.0`
 - Release commit: `45c6c50fb3d87ef39a0631c7472ea3e597699b4a`
@@ -88,7 +89,8 @@ until that work is approved and implemented.
 
 The approved methodology above is unchanged. The corresponding implementation uses
 `backend/historical/canonical_snapshot.json` as its machine-readable runtime snapshot
-approval authority. Its identity currently matches the established provenance above.
+approval authority. The initial approved identity above is preserved; the current
+identity is recorded in that manifest and the rotation entry below.
 An invalid or absent approval record fails closed.
 
 Complete reconciliation includes the unfiltered championship driver population
@@ -101,3 +103,28 @@ snapshot bindings are preserved rather than automatically transferred.
 The earlier implementation-boundary section records this policy document's original
 scope; it is not a claim that a subsequent reviewed implementation must retain the
 superseded production gate.
+
+## Approved snapshot rotation (2026-10-05)
+
+Following the product-owner rotation instruction and successful provenance/safety
+checks, the canonical snapshot is now [F1DB v2026.16.0](https://github.com/f1db/f1db/releases/tag/v2026.16.0),
+published **2026-10-04 12:21:35 UTC**, release commit
+`2ba943cf908ace7d6b606e12b72472f54d442a12`.
+
+The official `f1db-sqlite.zip` asset has SHA-256
+`efd54b0fb99115024bc56c38871c8b03fead428051f895e0f44ff9a20d6acbab`.
+Its checksum was checked against both GitHub's asset digest and the released
+`checksums_sha256.txt`. The contained `f1db.db` was compared byte-for-byte with
+the local candidate: **73,777,152 bytes**, database SHA-256
+`28707a41bc45d9d4b787d655ef7e135644bdc9cb3307a947258647d83ecba642`.
+
+Schema and integrity checks passed. All consumed 2010-2013 historical inputs were
+identical to the previous snapshot and complete reconstruction reconciled without
+scoring or historical expectation changes. The approval manifest was updated and
+the canonical database replaced with those verified bytes.
+
+The previous `v2026.15.0` snapshot remains recoverable from Git history. The 2010
+external-audit summary keeps its original snapshot hash; it was not transferred
+to `v2026.16.0`. Current responses therefore have no matching external-audit summary,
+while all four seasons remain eligible for canonical normal-use trust. No new
+independent historical audit is claimed.

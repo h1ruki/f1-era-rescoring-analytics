@@ -2,6 +2,8 @@
 
 from dataclasses import replace
 import hashlib
+import json
+import shutil
 import sqlite3
 from contextlib import closing
 from pathlib import Path
@@ -60,7 +62,15 @@ def test_existing_2010_audit_cannot_override_failed_canonical_reconciliation(pro
 
     service = ChampionshipService(ConflictingSource(project_source_db))
     report = service.original_drivers(2010)
-    assert report.trust.external_audit is not None
+    assert report.trust.external_audit is None
+    # Exercise enrichment at the actual historical summary's original context.
+    # A failed assessment remains failed even when a matching audit can attach.
+    legacy = json.loads(external_audit.AUDIT_PATH.read_text(encoding="utf-8"))[0]
+    enriched = external_audit.enrich_external_audit(replace(report.trust, f1db_sha256=legacy["f1db_sha256"]))
+    assert enriched.external_audit is not None
+    assert enriched.state == report.trust.state
+    assert enriched.comparison == report.trust.comparison
+    assert not enriched.trusted_for_normal_use
     assert report.trust.comparison == ComparisonOutcome.MISMATCH
     assert not report.trust.trusted_for_normal_use
     assert isinstance(report.result, CalculationUnavailable)
@@ -145,17 +155,22 @@ def test_capture_change_is_stale_not_operational_error(project_source_db, monkey
 
 
 @pytest.fixture
-def candidate_db(project_source_db):
-    path = project_source_db.parent / "data" / "f1db_newsnapshot.db"
-    if not path.is_file():
-        pytest.skip("Optional local candidate snapshot is absent")
+def unapproved_db(project_source_db, tmp_path):
+    # Generic rejection no longer depends on the local candidate being unapproved.
+    # Alter only SQLite header metadata in a disposable copy, never source rows
+    # or either project database. All consumed historical facts remain identical.
+    path = tmp_path / "unapproved.db"
+    shutil.copyfile(project_source_db, path)
+    with closing(sqlite3.connect(path)) as connection:
+        version = connection.execute("PRAGMA user_version").fetchone()[0]
+        connection.execute(f"PRAGMA user_version = {version + 1}")
     return path
 
 
 @pytest.mark.integration
-def test_candidate_withheld_and_completed_diagnostics_preserved(project_source_db, candidate_db):
-    before = hashlib.sha256(candidate_db.read_bytes()).hexdigest()
-    candidate = F1DBRepository(candidate_db)
+def test_unapproved_snapshot_withheld_and_completed_diagnostics_preserved(project_source_db, unapproved_db):
+    before = hashlib.sha256(unapproved_db.read_bytes()).hexdigest()
+    candidate = F1DBRepository(unapproved_db)
     canonical = F1DBRepository(project_source_db)
     assert not load_snapshot_approval().matches(candidate.identify_snapshot())
     client = TestClient(create_app(ChampionshipService(candidate)))
@@ -169,18 +184,18 @@ def test_candidate_withheld_and_completed_diagnostics_preserved(project_source_d
         assert body["trust"]["comparison"] == "match"
         assert body["trust"]["reconstruction"] == "completed"
         assert not body["trust"]["canonical_dataset_backed"]
-    diagnostics = diagnose_baseline(candidate_db)
+    diagnostics = diagnose_baseline(unapproved_db)
     assert [(d.driver_count, d.award_count) for d in diagnostics] == [(27, 456), (28, 454), (25, 480), (23, 418)]
     assert all(d.f1db_award_difference_count == d.f1db_standing_difference_count == 0 for d in diagnostics)
-    assert hashlib.sha256(candidate_db.read_bytes()).hexdigest() == before
+    assert hashlib.sha256(unapproved_db.read_bytes()).hexdigest() == before
 
 
 @pytest.mark.integration
-def test_aba_provenance_cannot_label_candidate_reads_as_approved(project_source_db, candidate_db, monkeypatch):
+def test_aba_provenance_cannot_label_other_snapshot_reads_as_approved(project_source_db, unapproved_db, monkeypatch):
     # Initial/final on-disk provenance is A, but capture supplies B. The actual
     # captured bytes, rather than endpoint identity assertions, govern trust.
     original = Path.read_bytes
-    image = candidate_db.read_bytes()
+    image = unapproved_db.read_bytes()
     monkeypatch.setattr(Path, "read_bytes", lambda path: image if path == project_source_db else original(path))
     report = ChampionshipService(F1DBRepository(project_source_db)).original_drivers(2012)
     assert report.source_snapshot.sha256 == hashlib.sha256(image).hexdigest()

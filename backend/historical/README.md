@@ -17,7 +17,11 @@ all three context identifiers to match. The FIA provisional-classification headi
 is retained. This summary supplies no invented reviewer, retrieval date or official
 standings transcription and does not confer a strict evaluator success.
 No supplementary audit summary is populated for 2011-2013; its absence does not
-block normal-use trust. 2010 differs only in supplementary audit coverage.
+block normal-use trust. The 2010 record retains its original `v2026.15.0` hash.
+The current `v2026.16.0` approval does not transfer that audit: all four current
+season assessments have no matching supplementary audit, without blocking canonical
+trust. The previous approval and 2026-10-05 rotation remain documented in the
+historical-data trust decision record.
 
 No complete historical evidence/expected-standings bundle is populated. The strict
 bundle schema and evaluator below remain useful for supplementary independent audits

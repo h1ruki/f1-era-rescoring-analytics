@@ -29,7 +29,9 @@ def test_baseline_diagnostic_uses_canonical_trust(project_source_db: Path):
         assert assessment.state == AssessmentState.PASSED
         assert assessment.trusted_for_normal_use
         assert not assessment.findings
-        assert (assessment.external_audit is not None) == (assessment.year == 2010)
+        # The completed 2010 audit retains its previous-snapshot binding.
+        assert assessment.external_audit is None
+        assert assessment.external_audit_status == "unavailable"
         assert item.f1db_award_difference_count == item.f1db_standing_difference_count == 0
         assert assessment.f1db_sha256 == before.sha256
     assert repository.identify_snapshot() == before

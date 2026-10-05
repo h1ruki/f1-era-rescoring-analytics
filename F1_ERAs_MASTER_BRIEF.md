@@ -116,8 +116,11 @@ attached to the snapshot actually audited; they do not transfer automatically.
 Future automation may discover and validate releases in GitHub Actions and propose
 an update PR. It must not download source data during an application request or
 approve a snapshot solely because regression tests pass. Automation is deferred.
-The local candidate `data/f1db_newsnapshot.db` is an ignored acceptance-test artifact,
-not an approved snapshot or part of the proposed repository documentation.
+The local `data/f1db_newsnapshot.db` remains an ignored acceptance-test copy.
+Its bytes were verified against the official `v2026.16.0` SQLite release and
+approved for canonical use on 2026-10-05; the canonical copy is `f1db.db`. The
+2010 audit summary retains its previous `v2026.15.0` binding and is not attached
+to current-snapshot results. The historical-data trust record preserves both approvals.
 
 ## Architecture
 

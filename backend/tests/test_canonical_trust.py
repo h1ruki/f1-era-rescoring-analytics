@@ -3,6 +3,7 @@
 from dataclasses import replace
 from decimal import Decimal
 from fractions import Fraction
+import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -60,17 +61,20 @@ def test_same_service_path_trusts_every_season_without_external_evidence(project
 
 
 @pytest.mark.integration
-def test_api_distinguishes_recorded_exemplar_audit_from_reconciliation(project_source_db):
+def test_api_keeps_previous_exemplar_audit_separate_from_current_reconciliation(project_source_db):
     client = TestClient(create_app(ChampionshipService(F1DBRepository(project_source_db))))
     results = client.get("/api/v1/championship-margins").json()["results"]
     assert all(item["trust"]["trusted_for_normal_use"] for item in results)
-    exemplar = results[0]["trust"]["external_audit"]
+    # The preserved audit is evidence about the previous snapshot, not an audit
+    # automatically extended to the newly approved release.
+    exemplar = json.loads(external_audit.AUDIT_PATH.read_text(encoding="utf-8"))[0]
     assert exemplar["year"] == 2010
     assert exemplar["decision_record"].startswith("HISTORICAL_DATA_TRUST_DECISION_RECORD.md#")
     assert "provisional classification" in exemplar["qualification"]
     assert "unknown" in exemplar["qualification"]
-    assert all(item["trust"]["external_audit"] is None for item in results[1:])
-    # A summary of completed research never fabricates a strict evaluator success.
+    assert exemplar["f1db_sha256"] != results[0]["source_snapshot"]["sha256"]
+    assert all(item["trust"]["external_audit"] is None for item in results)
+    assert all(item["trust"]["external_audit_status"] == "unavailable" for item in results)
     assert "historically_verified" not in results[0]["trust"]
 
 
