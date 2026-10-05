@@ -1,4 +1,4 @@
-"""One pure verification policy, currently used only by tests and diagnostics."""
+"""Strict supplementary independent-audit policy; not the normal-use trust gate."""
 
 from f1_eras.domain.verification import (
     AssessmentState, ComparisonOutcome, FindingCode, POLICY_VERSION,

@@ -1,6 +1,6 @@
 """Read-only Original Drivers service; no championship mathematics here."""
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from fractions import Fraction
 from typing import cast
 
@@ -14,7 +14,23 @@ from f1_eras.analytics.original_drivers import (
     original_drivers_rules,
 )
 from f1_eras.data_access.f1db import F1DBRepository
+from f1_eras.data_access.connection import SourceSnapshotChanged
 from f1_eras.domain.models import ChampionshipCategory, F1DBSnapshot
+from f1_eras.domain.verification import (
+    AssessmentState, CanonicalTrustAssessment, ComparisonOutcome, FindingCode,
+    ReconstructionOutcome, VerificationFinding,
+)
+from f1_eras.verification.external_audit import enrich_external_audit
+from f1_eras.verification.metadata import content_hash
+from f1_eras.verification.canonical import assess_canonical_original
+
+
+@dataclass(frozen=True, slots=True)
+class CalculationDiagnostics:
+    driver_count: int
+    award_count: int
+    event_award_difference_count: int
+    standing_difference_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,6 +41,8 @@ class ChampionshipReport:
     result: OriginalDriversChampionship | CalculationUnavailable
     rules: OriginalDriversRules | None
     source_snapshot: F1DBSnapshot | None
+    trust: CanonicalTrustAssessment | None = None
+    calculation_diagnostics: CalculationDiagnostics | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,11 +84,36 @@ class ChampionshipService:
             unavailable = calculate_original_drivers(year, (), (), (), category)
             assert isinstance(unavailable, CalculationUnavailable)
             return ChampionshipReport(year, category, "original", unavailable, None, None)
-        events = self._repository.get_season_events(year)
-        classifications = self._repository.get_gp_classifications(year)
-        recorded = self._repository.get_recorded_driver_standings(year)
-        result = calculate_original_drivers(year, events, classifications, recorded, category)
+        try:
+            source = self._repository.read_original_drivers_source(year)
+        except SourceSnapshotChanged as error:
+            rules = original_drivers_rules(year)
+            assert rules is not None
+            unavailable = CalculationUnavailable(year, category, str(error), "Retry against a stable standalone snapshot")
+            trust = CanonicalTrustAssessment(
+                year, rules.package.value, CALCULATION_VERSION, None, content_hash(asdict(rules)),
+                AssessmentState.STALE, ReconstructionOutcome.NOT_ATTEMPTED, ComparisonOutcome.NOT_RUN, False,
+                (VerificationFinding(FindingCode.CONTEXT_STALE, str(error)),),
+            )
+            return ChampionshipReport(year, category, "original", unavailable, rules, None, trust)
+        result = calculate_original_drivers(year, source.events, source.classifications, source.recorded, category)
+        trust = assess_canonical_original(
+            year=year, snapshot=source.snapshot, current_snapshot=source.current_snapshot,
+            events=source.events, classifications=source.classifications, recorded=source.recorded,
+            population=source.population, result=result,
+        )
+        trust = enrich_external_audit(trust)
+        diagnostics = (CalculationDiagnostics(
+            len(result.standings), len(result.event_awards), len(result.event_award_differences),
+            len(result.standing_differences),
+        ) if isinstance(result, OriginalDriversChampionship) else None)
+        if isinstance(result, OriginalDriversChampionship) and not trust.trusted_for_normal_use:
+            result = CalculationUnavailable(
+                year, category, "Canonical Original trust assessment did not pass: "
+                + "; ".join(finding.message for finding in trust.findings),
+                "Resolve the reported source, reconciliation or reconstruction conflict and reassess",
+            )
         return ChampionshipReport(
             year, category, "original", result, original_drivers_rules(year),
-            self._repository.identify_snapshot(),
+            source.snapshot, trust, diagnostics,
         )

@@ -1,8 +1,70 @@
 # Drivers / Original verification foundation
 
-Status: approved architecture and product-owner refinements; first implementation
-slice only. This foundation does not activate a production gate or expand coverage.
-Milestone 1A/1B methodology remains authoritative.
+Status: approved foundation, updated with the canonical normal-use trust
+implementation under the historical-data trust decision. The initial slice is
+preserved below. Milestone 1A/1B methodology remains authoritative.
+
+## Current authority: canonical trust implementation
+
+[HISTORICAL_DATA_TRUST_DECISION_RECORD.md](HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
+supersedes the earlier independent-evidence prerequisites for normal project trust
+and production promotion. The original foundation design below is preserved as
+implementation history and remains the strict supplementary external-audit policy.
+Its earlier diagnostic-only and production-boundary statements describe that slice,
+not the current service behavior.
+
+Normal-use Drivers / Original trust now follows one generic adapter in
+`verification/canonical.py`: approved immutable F1DB snapshot, deterministic
+supported reconstruction, integrity/invariant checks, and exact full-population
+canonical championship reconciliation. `CanonicalTrustAssessment` reuses the
+passed/blocked/stale/error states, comparison outcomes, findings and exact standings
+comparator. It separately exposes `canonical_dataset_backed`, `comparison`, derived
+`trusted_for_normal_use`, and optional `external_audit`. Snapshot changes are stale;
+operational exceptions remain errors. An unsupported or ambiguous result cannot
+become trusted merely by matching totals. No per-season trust branches exist.
+
+The service binds reads and calculation to snapshots identified before and after
+each request. Integrity checks cover calendar/results population and identities,
+supported classification/participation states, source-to-award trace, exact awards,
+constructor contributions, countback and margins. Reconciliation checks every
+driver's membership, exact points, sporting position and classification, plus
+championship-won consistency. Unknown upstream claim-level F1DB lineage is documented
+and non-blocking. This is canonical reconciliation, not independent corroboration.
+
+The service/API expose results only when the canonical assessment passes; failures
+return unavailable with findings and null champion/runner-up/margin. Operational
+source/programming failures remain server errors. Existing capabilities describe
+implemented package support, not a promise that every source/request will pass.
+The frontend already respects availability and needs no additional evidence gate.
+Scoring and source records are unchanged.
+
+2010's completed external audit is preserved as snapshot/package-bound supplementary
+summary data in `backend/historical/external_audit_summaries.json`, attributed to the
+approved decision record and retaining the provisional-classification qualification.
+It is not a fabricated strict evaluator dossier. No audit summary is asserted for
+2011-2013. Absence of external audit evidence, including for 2010, does not block
+canonical trust. Further primary-source research is exception handling for
+reconciliation failures, conflicts, unsupported interpretations or selected edge cases.
+
+The strict `evaluate_verification` and evidence schemas retain provenance,
+human-review, ambiguity and fail-closed tests. Their `historically_verified` claim
+still means strict independent verification, distinct from normal-use trust and
+from the preserved research summary. Synthetic assessments cannot confer historical
+trust. No F1DB-derived expectation is labelled independent.
+
+For normal-use trust, the earlier clean-Git/independent-metadata prerequisites are
+superseded: the service freshly evaluates actual inputs, identified by dataset/rules
+hashes and calculation/policy versions, without requiring a committed checkout.
+The diagnostic shares the service path and reports Git identity/dirty state as
+information; it does not certify a clean implementation commit. The strict external
+evaluator retains its clean-Git requirement. Constructors, counterfactual scoring
+and broader historical support remain outside this implementation.
+
+## Original foundation design (preserved)
+
+Original status: approved architecture and product-owner refinements; first
+implementation slice only. This foundation did not activate a production gate or
+expand coverage. Milestone 1A/1B methodology remained authoritative.
 
 ## Authority and verification standard
 
@@ -109,3 +171,15 @@ baseline evidence, current-context verification, tested API exposure policy and
 then activation of the gate. No grandfathering into independently verified status.
 The legacy Streamlit prototype remains untouched. Constructors, counterfactual
 scoring, full-history auditing, CI and frontend work are out of scope.
+
+## Canonical trust architecture clarification
+
+Under the superseding historical-data policy, the runtime approval authority is
+`backend/historical/canonical_snapshot.json`. Each normal-use assessment binds
+source reads and the independent complete championship population to one captured
+snapshot image. Matching supplied subsets do not establish completeness.
+Supplementary audit summaries enrich an already completed canonical assessment;
+missing or invalid summaries cannot change production trust. Completed but rejected
+calculations retain diagnostic counts while production result fields stay unavailable.
+The strict evidence foundation above remains authoritative for explicit independent
+verification claims, not a canonical normal-use production gate.

@@ -1,5 +1,6 @@
 """Minimal FastAPI projection of the Original Drivers application service."""
 
+from dataclasses import asdict
 from fractions import Fraction
 import os
 from pathlib import Path
@@ -76,6 +77,9 @@ def _summary(report: ChampionshipReport) -> dict[str, object]:
         "scoring": report.scoring,
         "rules": _rules(report.rules),
         "source_snapshot": _snapshot(report.source_snapshot),
+        "trust": ({**asdict(report.trust),
+                   "trusted_for_normal_use": report.trust.trusted_for_normal_use}
+                  if report.trust is not None else None),
     }
     result = report.result
     if isinstance(result, CalculationUnavailable):

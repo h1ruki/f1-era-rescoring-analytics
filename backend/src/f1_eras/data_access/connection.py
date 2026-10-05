@@ -10,6 +10,10 @@ class SourceDatabaseError(RuntimeError):
     """The supplied file cannot be used as the expected source snapshot."""
 
 
+class SourceSnapshotChanged(SourceDatabaseError):
+    """The source changed while capturing an assessment image."""
+
+
 @contextmanager
 def open_read_only(db_path: str | Path) -> Iterator[sqlite3.Connection]:
     """Open an existing file without creating it; always close the connection.
