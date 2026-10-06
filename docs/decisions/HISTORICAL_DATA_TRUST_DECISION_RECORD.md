@@ -93,6 +93,10 @@ approval authority. The initial approved identity above is preserved; the curren
 identity is recorded in that manifest and the rotation entry below.
 An invalid or absent approval record fails closed.
 
+The current canonical file is `data/f1db.db`, relative to the repository root.
+Its relocation from root `f1db.db` preserves the approved bytes and snapshot
+identity. The provenance and rotation entries retain their historical filenames.
+
 Complete reconciliation includes the unfiltered championship driver population
 queried independently of supplied comparison inputs in the same bound source image.
 Optional external-audit metadata is attached after canonical assessment and cannot

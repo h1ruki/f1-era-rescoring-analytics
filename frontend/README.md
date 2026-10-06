@@ -23,7 +23,7 @@ npm.cmd run dev -- --host 127.0.0.1
 
 Open `http://127.0.0.1:5173/`. Vite proxies `/api` to the backend at
 `http://127.0.0.1:8000`, so browser CORS configuration is unnecessary for this
-local setup. The backend reads the repository's `f1db.db` by default; set
+local setup. The backend reads the repository's `data/f1db.db` by default; set
 `F1_ERAS_DB_PATH` before launching it to select another snapshot.
 
 ## Verify

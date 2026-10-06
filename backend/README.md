@@ -33,7 +33,7 @@ only needed if the backend is packaged/installed later; the commands above do no
 build or install the backend package.
 
 All tests run by default, including read-only integration tests against the tracked
-`f1db.db`. To run only synthetic fixtures, append `-m "not integration"`.
+`data/f1db.db`. To run only synthetic fixtures, append `-m "not integration"`.
 Synthetic tests create and modify SQLite files only in pytest's temporary directory.
 Write-rejection tests never attempt writes against the tracked source database.
 
@@ -49,7 +49,7 @@ import sys
 sys.path.insert(0, str(Path("backend/src").resolve()))
 from f1_eras.data_access.f1db import F1DBRepository
 
-repository = F1DBRepository(Path("f1db.db"))
+repository = F1DBRepository(Path("data/f1db.db"))
 print(repository.identify_snapshot())
 print(len(repository.get_season_events(2012)))
 print(len(repository.get_gp_classifications(2012)))
@@ -144,7 +144,7 @@ as unavailable with null champion/runner-up/margin; operational failures remain
 server errors. Snapshot identity is checked before reads and after reconstruction.
 Unsupported seasons and the unimplemented
 Constructor category do not invoke source readers. API imports do not open the
-database; the Uvicorn factory constructs the repository from the local `f1db.db`
+database; the Uvicorn factory constructs the repository from the local `data/f1db.db`
 or the explicit `F1_ERAS_DB_PATH` environment variable.
 
 From the repository root, serve with:

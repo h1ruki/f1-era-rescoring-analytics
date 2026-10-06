@@ -47,7 +47,7 @@ in [backend/pyproject.toml](backend/pyproject.toml) and
 | `frontend/` | React application, chart presentation and frontend tests |
 | `docs/` | Engineering brief and approved methodology/decision records |
 | `legacy/` | Original Streamlit prototype, retained as historical source |
-| `f1db.db` | Canonical database; deliberately retained at root for now |
+| `data/f1db.db` | Canonical immutable F1DB database |
 | `run_dev.bat` | Portable Windows launcher for the active backend/frontend |
 
 The local `data/f1db_newsnapshot.db` is an ignored temporary acceptance-test copy,

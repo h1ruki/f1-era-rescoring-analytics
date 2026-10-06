@@ -100,7 +100,7 @@ def diagnose_baseline(db_path: str | Path) -> tuple[BaselineDiagnostic, ...]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--db", type=Path, default=Path(__file__).resolve().parents[4] / "f1db.db")
+    parser.add_argument("--db", type=Path, default=Path(__file__).resolve().parents[4] / "data" / "f1db.db")
     args = parser.parse_args()
     diagnostics = diagnose_baseline(args.db)
     print(json.dumps([{**asdict(item), "assessment": {

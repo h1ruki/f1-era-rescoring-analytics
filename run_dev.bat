@@ -12,8 +12,8 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
     echo Missing root .venv. Follow the setup instructions in README.md.
     goto failure
 )
-if not exist "%~dp0f1db.db" (
-    echo Missing canonical f1db.db. Restore the tracked database before launching.
+if not exist "%~dp0data\f1db.db" (
+    echo Missing canonical data\f1db.db. Restore the tracked database before launching.
     goto failure
 )
 where node.exe >nul 2>nul

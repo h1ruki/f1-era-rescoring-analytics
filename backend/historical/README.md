@@ -31,6 +31,8 @@ conflicting records, unsupported interpretations or selected edge-case research.
 
 ## Runtime approval and repository population binding
 
+The canonical database is stored at `data/f1db.db`, relative to the repository
+root. Its location does not change snapshot identity or grant approval.
 `canonical_snapshot.json` is the sole machine-readable runtime approval record.
 It contains the approved upstream release, release commit, SHA-256 and byte size.
 Its loader rejects missing/unreadable files, invalid fields and duplicate keys;

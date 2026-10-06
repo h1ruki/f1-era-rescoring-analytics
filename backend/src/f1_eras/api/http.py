@@ -214,6 +214,6 @@ def create_app(service: ChampionshipService) -> FastAPI:
 def create_default_app() -> FastAPI:
     """Uvicorn factory: F1_ERAS_DB_PATH may override the local PoC snapshot."""
     db_path = Path(os.environ.get(
-        "F1_ERAS_DB_PATH", str(Path(__file__).resolve().parents[4] / "f1db.db")
+        "F1_ERAS_DB_PATH", str(Path(__file__).resolve().parents[4] / "data" / "f1db.db")
     ))
     return create_app(ChampionshipService(F1DBRepository(db_path)))

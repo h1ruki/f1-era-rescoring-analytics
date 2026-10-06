@@ -1,6 +1,7 @@
 """Diagnostics and production share canonical trust; audit remains separate."""
 
 from pathlib import Path
+import json
 
 import pytest
 
@@ -11,6 +12,18 @@ from f1_eras.domain.verification import (
 from f1_eras.verification.diagnostic import diagnose_baseline
 from f1_eras.verification import diagnostic
 from f1_eras.application import championships
+
+
+@pytest.mark.integration
+def test_diagnostic_cli_default_finds_canonical_data_from_another_directory(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("sys.argv", ["diagnostic"])
+    assert diagnostic.main() == 0
+    output = json.loads(capsys.readouterr().out)
+    assert [item["assessment"]["year"] for item in output] == [2010, 2011, 2012, 2013]
+    assert all(item["assessment"]["trusted_for_normal_use"] for item in output)
+    assert all(item["f1db_award_difference_count"] == 0
+               and item["f1db_standing_difference_count"] == 0 for item in output)
 
 
 @pytest.mark.integration
@@ -61,6 +74,5 @@ def test_diagnostic_cli_emits_json_and_returns_nonzero_for_error(project_source_
     monkeypatch.setattr(championships, "calculate_original_drivers", broken_calculation)
     monkeypatch.setattr("sys.argv", ["diagnostic", "--db", str(project_source_db)])
     assert diagnostic.main() == 1
-    import json
     output = json.loads(capsys.readouterr().out)
     assert [item["assessment"]["state"] for item in output] == ["error"] * 4
