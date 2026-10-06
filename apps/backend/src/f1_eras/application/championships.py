@@ -13,9 +13,11 @@ from f1_eras.analytics.original_drivers import (
     calculate_original_drivers,
     original_drivers_rules,
 )
-from f1_eras.data_access.f1db import F1DBRepository
+from f1_eras.analytics.teammates import TeammateDerivationAmbiguity, derive_teammate_context
 from f1_eras.data_access.connection import SourceSnapshotChanged
+from f1_eras.data_access.f1db import F1DBRepository
 from f1_eras.domain.models import ChampionshipCategory, F1DBSnapshot
+from f1_eras.domain.teammates import TeammateContext
 from f1_eras.domain.verification import (
     AssessmentState, CanonicalTrustAssessment, ComparisonOutcome, FindingCode,
     ReconstructionOutcome, VerificationFinding,
@@ -43,6 +45,7 @@ class ChampionshipReport:
     source_snapshot: F1DBSnapshot | None
     trust: CanonicalTrustAssessment | None = None
     calculation_diagnostics: CalculationDiagnostics | None = None
+    teammate_context: TeammateContext | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,7 +116,18 @@ class ChampionshipService:
                 + "; ".join(finding.message for finding in trust.findings),
                 "Resolve the reported source, reconciliation or reconstruction conflict and reassess",
             )
+        teammate_context = None
+        if isinstance(result, OriginalDriversChampionship) and source.entrant_assignments is not None:
+            try:
+                teammate_context = derive_teammate_context(
+                    year, result.p1.driver, source.events, source.entrant_assignments,
+                    source.classifications, source.recorded,
+                )
+            except TeammateDerivationAmbiguity:
+                # Supporting evidence must not override the core assessment.
+                teammate_context = None
         return ChampionshipReport(
             year, category, "original", result, original_drivers_rules(year),
             source.snapshot, trust, diagnostics,
+            teammate_context,
         )

@@ -19,6 +19,7 @@ from f1_eras.application.championships import (
 )
 from f1_eras.data_access.f1db import F1DBRepository
 from f1_eras.domain.models import ChampionshipCategory, F1DBSnapshot
+from f1_eras.domain.teammates import TeammateCandidate, TeammateContext
 
 
 def _exact(value: Fraction) -> dict[str, int]:
@@ -70,6 +71,32 @@ def _driver(standing: ReconstructedDriverStanding) -> dict[str, object]:
     }
 
 
+def _teammate(candidate: TeammateCandidate) -> dict[str, object]:
+    return {
+        "id": candidate.driver.id,
+        "name": candidate.driver.name,
+        "official_final_position": candidate.official_final_position,
+        "official_final_points": (_value(Fraction(candidate.official_final_points))
+                                  if candidate.official_final_points is not None else None),
+        "final_standing_recorded": candidate.final_standing_source_key is not None,
+        "shared_race_count": candidate.shared_race_count,
+        "entrants": [asdict(entrant) for entrant in sorted(
+            {race.entrant for race in candidate.shared_races}, key=lambda item: item.id,
+        )],
+    }
+
+
+def _teammate_context(context: TeammateContext | None) -> dict[str, object]:
+    primary = context.primary_teammate if context else None
+    return {
+        "primary_selection": context.primary_selection.value if context else "unavailable",
+        "primary_teammate": _teammate(primary) if primary else None,
+        "additional_teammates": [_teammate(item) for item in context.additional_teammates]
+        if context else [],
+        "tied_primary_candidate_ids": list(context.tied_primary_candidate_ids) if context else [],
+    }
+
+
 def _summary(report: ChampionshipReport) -> dict[str, object]:
     base: dict[str, object] = {
         "season": report.year,
@@ -77,6 +104,7 @@ def _summary(report: ChampionshipReport) -> dict[str, object]:
         "scoring": report.scoring,
         "rules": _rules(report.rules),
         "source_snapshot": _snapshot(report.source_snapshot),
+        "teammate_context": _teammate_context(report.teammate_context),
         "trust": ({**asdict(report.trust),
                    "trusted_for_normal_use": report.trust.trusted_for_normal_use}
                   if report.trust is not None else None),

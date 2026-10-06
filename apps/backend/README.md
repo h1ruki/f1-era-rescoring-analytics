@@ -39,6 +39,118 @@ All tests run by default, including read-only integration tests against the trac
 Synthetic tests create and modify SQLite files only in pytest's temporary directory.
 Write-rejection tests never attempt writes against the tracked source database.
 
+## Champion teammate context
+
+Drivers / Original remains limited to 2010–2013. Both championship detail and
+margin summaries now include a stable `teammate_context` object:
+
+```json
+{
+  "primary_selection": "unique",
+  "primary_teammate": {
+    "id": "mark-webber",
+    "name": "Mark Webber",
+    "official_final_position": 6,
+    "official_final_points": {
+      "exact": {"numerator": 179, "denominator": 1},
+      "plot": 179.0
+    },
+    "final_standing_recorded": true,
+    "shared_race_count": 20,
+    "entrants": [{"id": "red-bull-racing", "name": "Red Bull Racing"}]
+  },
+  "additional_teammates": [],
+  "tied_primary_candidate_ids": []
+}
+```
+
+`primary_selection` is `unique`, `none`, or `unresolved_tie`. Unavailable
+championships or unavailable teammate evidence use `unavailable`, not `none`.
+A unique primary appears only in
+`primary_teammate`; all other valid candidates appear individually in
+`additional_teammates`. For unresolved ties, `primary_teammate` is null and all
+candidates remain in `additional_teammates`; `tied_primary_candidate_ids`
+identifies the remaining contenders without duplicating their records. Empty
+lists are always included. Missing final standings produce null official points
+and position plus `final_standing_recorded=false`. A recorded unranked standing
+can retain its points and has `final_standing_recorded=true`.
+
+`domain/models.py` preserves entrant assignments and their composite source keys,
+raw and parsed round coverage, entrant/driver/constructor identities, and engine ID.
+The unused `test_driver` field is neither read, validated nor included in these
+models; no value is interpreted as teammate eligibility or race participation.
+Assignment reads use the same captured read-only SQLite
+image as the calendar, results and final standings. `domain/teammates.py` retains
+all candidates, official standing source keys/classification text, explicit
+primary selection, and per-race entrant, assignment and result-key evidence.
+HTTP omits the detailed race evidence.
+
+Teammate acquisition is optional: entrant-specific schema validation and SQL reads
+have a separate failure boundary after mandatory source reads. Acquisition errors
+set `entrant_assignments=null` and retain an internal `teammate_source_error`.
+Round parsing errors are retained on individual assignments as
+`round_coverage_error`, with unknown parsed coverage and the raw metadata preserved.
+This allows unrelated entrants' malformed round data to remain irrelevant.
+Integer-conversion failures, including oversized ASCII numeric tokens, are
+normalized to source errors without application-defined numeric limits.
+Mandatory schema, source integrity, calendar/results/standings and snapshot checks
+retain their existing behavior.
+The service catches only `TeammateDerivationAmbiguity` from teammate derivation.
+These enrichment failures produce `primary_selection="unavailable"`, null primary
+and empty additional/tie lists while the valid championship, trust and
+reconciliation survive. Unexpected programming errors are not swallowed.
+
+`analytics/teammates.py` starts with the champion's recorded entrant assignments
+by round, finds other drivers assigned to the same entrant at overlapping rounds,
+then checks both drivers' `RACE_RESULT` participation. The entrant roster defines
+the possible teammate population; unrelated participants are not attributed or
+validated. Constructor and engine IDs are retained as equipment evidence only:
+same-entrant teammates may have different equipment, and equipment equality never
+creates teammate identity.
+
+Only relevant uncertainty makes enrichment unavailable: missing/unknown champion
+coverage at a race they participated in, unknown candidate coverage that could
+overlap that entrant, unknown participation during possible overlap, or competing
+entrant assignments for that relevant driver/round. Known assignments outside
+shared rounds remain excluded, as do results under another established entrant.
+Drivers entirely outside the champion's entrant roster, their coverage errors and
+their multiple entrant assignments do not invalidate context. Non-participating
+results and events without champion participation create no overlap.
+
+The source primary key permits one driver to have multiple entrant assignments
+for the same round; read-only inspection found 53 historical driver/round cases
+and none in 2010–2013. Race results have no direct entrant ID. Relevant simultaneous
+assignments to different entrants therefore remain ambiguous; equipment matching
+is not used to invent an entrant winner. Multiple assignments to the same entrant
+retain contextual evidence without multiplying races. Shared races count distinct
+race IDs, including repeated/shared-drive rows. Primary
+selection uses greatest shared-race count, then better official final championship
+position. Missing/ambiguous classifications or identical best positions retain
+an unresolved tie. Driver IDs only order output; they never break selection ties.
+Points always come from official season standings, never the shared-race subset.
+
+Before implementation the canonical result states and assignment format were
+inspected through read-only SQL. The 2010–2013 result states are numeric finishes,
+DNF, NC, DNS, DNQ and DSQ. Numeric finishes consistent with the recorded position,
+DNF and NC establish participation. Zero-lap DNFs include first-lap collisions
+and still count. DNS/DNQ/DNPQ do not count. DSQ requires positive recorded race
+laps to establish participation independently of the exclusion; both current-slice
+DSQ rows have 58 laps. DSQ without that evidence, EX, DNP and unknown states are
+left uninterpreted and raise `TeammateDerivationAmbiguity` when relevant. Unknown
+round coverage or multiple possible entrants for a result likewise raise a
+derivation error, converted by the service to unavailable enrichment.
+No withdrawal-specific state occurs in the inspected database;
+unrecognized future states require review rather than an inferred meaning.
+Round IDs are the inspected semicolon-delimited `rounds` field, not parsed display
+ranges. Null coverage remains unknown; empty coverage remains empty.
+
+The current slice yields only Mark Webber: 242/258/179/199 official points,
+positions 3/3/6/3, and 19/19/20/19 shared races for 2010/2011/2012/2013. Fixture
+tests cover additional candidates, ties, team switches, multiple entrants and
+constructors, repeated results, and missing standings without adding production
+seasons. Shared-drive championship scoring remains unsupported by the existing
+reconstruction/trust gates. Championship calculations and trust policy are unchanged.
+
 ## Using the repository
 
 Supply an explicit path; imports never open a database or start the prototype.
@@ -67,8 +179,9 @@ calculated championship ranking. Multiple records for one event/driver are retai
 
 GP classifications explicitly select `RACE_RESULT` and enrich names through direct
 driver/constructor ID joins. A missing identity lookup preserves its ID and returns
-`name=None`; it does not drop the source row or invent a replacement. Season entrant
-associations are not used to determine event constructors, operations or teammates.
+`name=None`; it does not drop the source row or invent a replacement. Event
+constructors remain direct result facts; season entrant assignments independently
+supply the roster and round coverage for teammate derivation.
 
 Classification text is retained verbatim, including unknown codes. Optional awards,
 shared-car flags, laps, retirement reasons, fastest-lap flags and recorded race time
@@ -94,7 +207,9 @@ source snapshots are standalone files; assessment reads use a bound image.
 
 `data_access/f1db.py` contains parameterized reader queries and schema checks.
 Required tables, consumed column affinities/non-nullability, and source primary
-keys are validated at construction and before each read. Unrelated tables, indexes
+keys for mandatory championship inputs are validated at construction and before
+each read; teammate-specific schema is validated when assignments are read.
+Unrelated tables, indexes
 and columns are allowed. Schema errors explain the missing or incompatible fields.
 
 `identify_snapshot()` returns SHA-256, byte size and explicitly named SQLite schema
