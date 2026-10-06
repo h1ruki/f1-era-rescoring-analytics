@@ -46,9 +46,9 @@ export default function App() {
 
   return <main className="shell">
     <header className="page-header">
-      <div className="eyebrow">F1 ERAs · first visual slice</div>
-      <h1>Championship margins</h1>
-      <p>Reconstructed Original Drivers standings from final recorded Grand Prix classifications.</p>
+      <div className="eyebrow">Historical Formula 1 dominance analytics</div>
+      <h1>F1 ERAs</h1>
+      <p>How dominant was each F1 champion in their title-winning season?</p>
     </header>
 
     <section className="toolbar" aria-label="Chart controls">

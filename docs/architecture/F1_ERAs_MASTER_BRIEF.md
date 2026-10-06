@@ -1,12 +1,16 @@
 # F1 ERAs ? Master Engineering Brief
 
-F1 ERAs is an interactive Formula One historical analytics application. Its
-central question is how large the gap between championship first and second
-place was across seasons, eras and scoring systems. Championship margin is an
-analytical measure, not a complete measure of driver ability or dominance.
+F1 ERAs provides historical Formula 1 dominance analytics. Its central question
+is: “How dominant was each F1 champion in their title-winning season?” Compare
+every championship season in Formula 1 history by the gap between the champion
+and runner-up. Championship margin is an analytical measure, not a complete
+measure of driver ability or dominance.
 
 This specification records product direction, methodology and development
-boundaries. Roadmap requirements below do not imply implemented support.
+boundaries. The [README roadmap and release philosophy](../../README.md#roadmap)
+define the major-version scope: v1 Drivers / Historical Reality, v2 What If,
+and v3 Constructors. Requirements below span those versions and do not imply
+implemented support or inclusion in v1.
 
 ## Authority and current implementation
 
@@ -31,7 +35,12 @@ subsequent development follows the approved architecture and milestone decisions
 
 ## Product and analytical experience
 
-Product name: **F1 ERAs**. Subtitle: **Championship dominance across Formula One history**.
+Product name: **F1 ERAs**. Descriptor: **Historical Formula 1 dominance analytics**.
+
+The v1 headline comparison is the Drivers' champion versus runner-up. Teammate,
+team, competition and era context support that comparison. Constructor identity
+is required internally where needed for teammate determination, team colours,
+tooltips and historical identity; Constructors Championship analysis belongs to v3.
 
 The main experience is one interactive chronological lollipop chart comparing
 championship P1 and P2. Drivers and Constructors modes should ultimately share
@@ -147,9 +156,11 @@ assessments; deployment capacity must account for it before increasing concurren
 
 ## Historical scoring and counterfactual analysis
 
-V1's broader goal is to apply recognised historical scoring packages to recorded
-results. Original scoring remains available alongside explicitly supported packages.
-Custom points-entry forms and arbitrary hybrid rules are outside V1.
+V1 covers Drivers / Historical Reality under each season's Original rules.
+Alternative scoring systems and counterfactual rescoring belong to v2 — What If.
+The existing rescoring architecture is retained for that work, isolated from the
+released v1 experience until v2.0. Custom points-entry forms and arbitrary hybrid
+rules are outside V1.
 
 Counterfactual rescoring preserves recorded race outcomes. It does not simulate
 changed driver behaviour, strategy or incentives. Keep recorded Original standings,
@@ -250,10 +261,12 @@ Representative future regression cases include early/shared-drive/dropped-result
 eras, 1988, 2007, 2014 and 2021. These are test-planning candidates, not assertions
 of completed research or implemented support.
 
-V2 may add driver or constructor history, pairwise career comparisons, selected-season
-comparisons and trend views. Custom scoring, career rankings, unrelated dashboards
-and a weighted universal GOAT/dominance score remain outside V1. Contextual metrics
-may enrich interpretation without an arbitrary composite score.
+The locked major-version roadmap is v1 Drivers / Historical Reality, v2 What If,
+and v3 Constructors, as described in the README. Earlier exploratory ideas about
+career comparisons and trend views are not commitments in this roadmap. Custom
+scoring, career rankings, unrelated dashboards and a weighted universal
+GOAT/dominance score remain outside V1. Contextual metrics may enrich interpretation
+without an arbitrary composite score.
 
 Critical analytics, historical edge cases, exact margins, population completeness,
 countback, provenance, integrity failures and unsupported states need meaningful

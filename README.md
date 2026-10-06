@@ -1,16 +1,14 @@
 # F1 ERAs
 
-**Who were the most dominant F1 champions ever, accounting for teammate,
-competition and era?**
+Historical Formula 1 dominance analytics
 
-F1 ERAs explores Formula One championship margins across seasons and scoring
-contexts. Its starting measure is the gap between championship first and second
-place: raw points or `(P1 points - P2 points) / P1 points × 100`.
-Championship margin is an analytical lens, not a complete measure of driver ability.
+**How dominant was each F1 champion in their title-winning season?**
 
-The ambition is historically grounded comparison across eras, with teammate and
-competition context. The current application implements a deliberately limited,
-validated slice; broader coverage and contextual analysis remain roadmap work.
+Compare every championship season in Formula 1 history by the gap between the
+champion and runner-up.
+
+**Active v1 development:** the current supported slice is **Drivers / Original,
+2010–2013**. Full historical coverage is the v1 goal; it is not yet implemented.
 
 ## Current implementation
 
@@ -126,10 +124,24 @@ not automatically transfer to the current approved snapshot.
 
 ## Roadmap
 
-Approved direction includes broader historical coverage, supported counterfactual
-scoring packages, Constructors mode, curated historical identity/colour and
-teammate context, and controlled dataset-update automation. Each requires its own
-implementation and validation; the brief records the boundaries and deferred work.
+- **v1 — Drivers / Historical Reality:** champion versus runner-up across the full
+  history of the Drivers’ Championship. Teammate, team, competition and era
+  context can support this comparison. Constructor identity supports Drivers analysis;
+  Constructors Championship analysis is outside v1.
+- **v2 — What If:** alternative scoring systems and counterfactual rescoring.
+- **v3 — Constructors:** dedicated Constructors Championship analytics.
+
+### Release philosophy
+
+Once v1 is released, v1.x preserves its visible analytical contract and focuses
+on maintenance: bug fixes, data corrections, dependency/security fixes,
+documentation and small non-disruptive polish. Unfinished next-major functionality
+stays isolated from the released experience; v2 becomes user-visible at v2.0,
+and the same principle applies to v3. Major user-visible analytical changes arrive
+with their corresponding major version.
+
+Once releases begin, `main` represents the stable/released product line, while
+next-major development can proceed separately.
 
 ## Development
 
