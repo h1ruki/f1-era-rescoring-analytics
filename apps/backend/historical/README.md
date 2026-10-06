@@ -2,7 +2,7 @@
 
 ## Current canonical trust policy
 
-[HISTORICAL_DATA_TRUST_DECISION_RECORD.md](../../docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
+[HISTORICAL_DATA_TRUST_DECISION_RECORD.md](../../../docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
 supersedes the earlier requirement to populate independent evidence before normal
 project trust or production promotion. Immutable canonical F1DB input, supported
 deterministic reconstruction, passing integrity checks and exact full championship
@@ -107,7 +107,7 @@ are compared as recorded; neither row order nor driver ID resolves sporting ties
 For complete populations, a TIED row requires at least one counterpart at the same
 sporting position, with every member of that position group explicitly TIED.
 
-The only example bundle lives under `backend/tests/fixtures/synthetic/`. Its scope,
+The only example bundle lives under `apps/backend/tests/fixtures/synthetic/`. Its scope,
 source kind and title label it as synthetic. It must never be moved into historical
 coverage or relabelled as evidence. Tests explicitly request synthetic assessment
 scope; a synthetic PASSED assessment has `historically_verified == False`. Generic

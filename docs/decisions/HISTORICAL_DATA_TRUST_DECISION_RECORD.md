@@ -88,7 +88,7 @@ until that work is approved and implemented.
 ## Implementation reference
 
 The approved methodology above is unchanged. The corresponding implementation uses
-`backend/historical/canonical_snapshot.json` as its machine-readable runtime snapshot
+`apps/backend/historical/canonical_snapshot.json` as its machine-readable runtime snapshot
 approval authority. The initial approved identity above is preserved; the current
 identity is recorded in that manifest and the rotation entry below.
 An invalid or absent approval record fails closed.

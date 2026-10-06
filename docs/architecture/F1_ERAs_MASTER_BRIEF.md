@@ -74,7 +74,7 @@ replaces Original rules throughout the range.
 F1DB is the canonical historical dataset. Application code treats `data/f1db.db` as
 immutable source data and must never alter its records to satisfy a test.
 
-[backend/historical/canonical_snapshot.json](../../backend/historical/canonical_snapshot.json)
+[apps/backend/historical/canonical_snapshot.json](../../apps/backend/historical/canonical_snapshot.json)
 is the machine-readable runtime approval authority for release, release commit,
 database SHA-256 and byte size. SQLite schema/user counters are not release versions.
 Unknown claim-level upstream source lineage remains documented and non-blocking.
@@ -263,26 +263,33 @@ from calculation output. Source files remain immutable during tests.
 
 ## Windows development
 
-Use Windows PowerShell, VS Code, Git, Python 3.11+ and Node.js 26.x with npm.
+Use Windows PowerShell, Git, Python 3.11+ and compatible Node.js/npm tooling.
+Python has a declared minimum but no exact version pin; Node.js/npm have no
+project-level version pin. Node.js 26.x is the documented workstation convention,
+subject to the locked frontend dependencies' engine requirements. VS Code is an
+optional editor; no AI tooling or subscription is required.
 Use the project's `.venv` and frontend-local dependencies rather than global installs.
 The pinned backend and frontend manifests are the dependency authority.
+See [Development Setup](../SETUP.md) for authoritative fresh-machine instructions,
+prerequisite installation, environment preparation and troubleshooting.
 
 From the repository root:
 
 ```powershell
 python -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install -e './backend[test]'
-npm.cmd --prefix frontend ci
-& .\.venv\Scripts\python.exe -m pytest -c backend/pyproject.toml
-npm.cmd --prefix frontend test
-npm.cmd --prefix frontend run build
-$env:PYTHONPATH = 'backend/src'
-& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory
+& .\.venv\Scripts\python.exe -m pip install -e "./apps/backend[test]"
+npm.cmd --prefix apps/frontend ci
+& .\.venv\Scripts\python.exe -m pytest -c apps/backend/pyproject.toml
+npm.cmd --prefix apps/frontend test
+npm.cmd --prefix apps/frontend run build
+$env:PYTHONPATH = 'apps/backend/src'
+& .\.venv\Scripts\python.exe -B -m uvicorn f1_eras.api.http:create_default_app --factory --host 127.0.0.1 --port 8000
 ```
 
 Use `npm.cmd` in PowerShell when execution policy blocks the `npm.ps1` shim.
-Run the frontend in a separate terminal with `npm.cmd --prefix frontend run dev`.
-See [backend/README.md](../../backend/README.md) and [frontend/README.md](../../frontend/README.md)
+Run the frontend in a separate terminal with
+`npm.cmd --prefix apps/frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort`.
+See [apps/backend/README.md](../../apps/backend/README.md) and [apps/frontend/README.md](../../apps/frontend/README.md)
 for current endpoints, setup and development details. `F1_ERAS_DB_PATH` selects an
 explicit read-only source for local testing; it does not approve that source.
 

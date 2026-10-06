@@ -36,72 +36,61 @@ and manages interactions; it does not recalculate scoring or championship margin
 
 **Stack:** Python 3.11+, FastAPI, Uvicorn and SQLite; React, TypeScript, Vite and
 Plotly.js; pytest, Vitest and React Testing Library. Dependency versions are defined
-in [backend/pyproject.toml](backend/pyproject.toml) and
-[frontend/package.json](frontend/package.json), with the frontend lockfile tracked.
+in [apps/backend/pyproject.toml](apps/backend/pyproject.toml) and
+[apps/frontend/package.json](apps/frontend/package.json), with the frontend lockfile tracked.
 
 ## Repository structure
 
 | Path | Purpose |
 | --- | --- |
-| `backend/` | Source access, exact analytics, service/API, trust metadata and tests |
-| `frontend/` | React application, chart presentation and frontend tests |
-| `docs/` | Engineering brief and approved methodology/decision records |
+| `README.md` | Project overview and links to deeper documentation |
+| `run_dev.bat` | Portable Windows launcher for the active applications |
+| `run_dev.sh` | Bash development launcher for macOS/Linux |
+| `apps/` | The two active applications, grouped below |
+| `apps/backend/` | Source access, exact analytics, service/API, trust metadata and tests |
+| `apps/frontend/` | React application, chart presentation and frontend tests |
+| `data/` | Canonical immutable F1DB database at `data/f1db.db` |
+| `docs/` | Setup guide, engineering brief and approved decision records |
 | `legacy/` | Original Streamlit prototype, retained as historical source |
-| `data/f1db.db` | Canonical immutable F1DB database |
-| `run_dev.bat` | Portable Windows launcher for the active backend/frontend |
-
-The local `data/f1db_newsnapshot.db` is an ignored temporary acceptance-test copy,
-not a second runtime source or a tracked repository asset.
 
 ## Running locally
 
-Use Windows PowerShell, Python 3.11+ and Node.js 26.x with npm, following the
-project's documented development environment. From the repository root, perform
-the one-time dependency setup:
+Start with the **[Development Setup guide](docs/SETUP.md)** for requirements,
+cloning, root `.venv` creation and dependency installation. After setup, launch
+from the repository root:
 
-```powershell
-python -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install "fastapi==0.142.2" "uvicorn==0.54.0" "httpx==0.28.1" "pytest==9.1.1"
-npm.cmd --prefix frontend ci
-```
-
-Then launch the current application:
+**Windows** — double-click `run_dev.bat`, or use PowerShell:
 
 ```powershell
 .\run_dev.bat
 ```
 
-The launcher checks the local environment, opens separate backend/frontend log
-windows and opens <http://127.0.0.1:5173/> in your default browser after a short
-startup delay. Ports **8000** and **5173** must be available. Close both service
-windows to stop development. The launcher does not install dependencies or change
-the database; Vite may create its normal ignored development cache.
+**macOS / Linux** — use Bash:
 
-Alternatively, start the backend from the repository root in one terminal:
-
-```powershell
-& .\.venv\Scripts\python.exe -B -m uvicorn f1_eras.api.http:create_default_app --factory --app-dir backend/src --host 127.0.0.1 --port 8000
+```bash
+./run_dev.sh
 ```
 
-In another terminal, also from the repository root:
+`bash run_dev.sh` also works without executable permission. The Windows launcher
+opens separate service terminals; the Bash launcher keeps both services in the
+current terminal and stops them with Ctrl+C. Both attempt to open the frontend at
+<http://127.0.0.1:5173/>; the backend uses <http://127.0.0.1:8000/>. These fixed
+local development ports must be available. Close both service windows on Windows
+to stop. Neither launcher installs dependencies.
 
-```powershell
-npm.cmd --prefix frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort
-```
-
-Vite proxies `/api` to the backend at `http://127.0.0.1:8000`. See the component
-READMEs below for endpoint and development details. `npm.cmd` avoids PowerShell's
-`npm.ps1` execution-policy restriction.
+The setup guide includes **manual backend/frontend commands** for both platforms
+and troubleshooting.
 
 ## Validation
 
-Run from the repository root:
+Run from the repository root in PowerShell; equivalent macOS/Linux checks are in
+[Development Setup](docs/SETUP.md):
 
 ```powershell
-& .\.venv\Scripts\python.exe -B -m pytest -c backend/pyproject.toml backend/tests -q -p no:cacheprovider
-npm.cmd --prefix frontend test
-npm.cmd --prefix frontend run build
-$env:PYTHONPATH = 'backend/src'
+& .\.venv\Scripts\python.exe -B -m pytest -c apps/backend/pyproject.toml apps/backend/tests -q -p no:cacheprovider
+npm.cmd --prefix apps/frontend test
+npm.cmd --prefix apps/frontend run build
+$env:PYTHONPATH = 'apps/backend/src'
 & .\.venv\Scripts\python.exe -B -m f1_eras.verification.diagnostic
 ```
 
@@ -109,7 +98,7 @@ The backend suite includes synthetic policy tests and read-only integration chec
 against the tracked snapshot. The diagnostic reports canonical trust and
 reconciliation for 2010–2013; inspect each assessment, as exit code zero means the
 diagnostic completed. Frontend validation covers interaction and rendering, while
-the build checks TypeScript and produces ignored `frontend/dist/` output.
+the build checks TypeScript and produces ignored `apps/frontend/dist/` output.
 
 ## Data and trust
 
@@ -125,13 +114,14 @@ not automatically transfer to the current approved snapshot.
 
 ## Documentation
 
+- [Development Setup: fresh-machine instructions](docs/SETUP.md)
 - [Master engineering brief](docs/architecture/F1_ERAs_MASTER_BRIEF.md)
 - [Milestone 1A: championship methodology](docs/decisions/MILESTONE_1A_DECISION_RECORD.md)
 - [Milestone 1B: historical identity](docs/decisions/MILESTONE_1B_DECISION_RECORD.md)
 - [Historical data trust](docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
 - [Verification foundation and retained history](docs/decisions/VERIFICATION_FOUNDATION_DECISION_RECORD.md)
-- [Backend setup and API](backend/README.md)
-- [Frontend setup and validation](frontend/README.md)
+- [Backend setup and API](apps/backend/README.md)
+- [Frontend setup and validation](apps/frontend/README.md)
 - [Archived Streamlit prototype](legacy/streamlit-prototype/README.md)
 
 ## Roadmap

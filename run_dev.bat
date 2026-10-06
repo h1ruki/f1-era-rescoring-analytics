@@ -9,7 +9,7 @@ if /i "%~1"=="backend" goto backend
 if /i "%~1"=="frontend" goto frontend
 
 if not exist "%~dp0.venv\Scripts\python.exe" (
-    echo Missing root .venv. Follow the setup instructions in README.md.
+    echo Missing root .venv.
     goto failure
 )
 if not exist "%~dp0data\f1db.db" (
@@ -18,27 +18,27 @@ if not exist "%~dp0data\f1db.db" (
 )
 where node.exe >nul 2>nul
 if errorlevel 1 (
-    echo Node.js is missing from PATH. See README.md for prerequisites.
+    echo Node.js is missing from PATH.
     goto failure
 )
 where npm.cmd >nul 2>nul
 if errorlevel 1 (
-    echo npm.cmd is missing from PATH. See README.md for prerequisites.
+    echo npm.cmd is missing from PATH.
     goto failure
 )
-if not exist "%~dp0frontend\node_modules\.bin\vite.cmd" (
-    echo Frontend dependencies are missing. Run npm.cmd --prefix frontend ci first.
+if not exist "%~dp0apps\frontend\node_modules\.bin\vite.cmd" (
+    echo Frontend dependencies are missing.
     goto failure
 )
-set "PYTHONPATH=%~dp0backend\src"
+set "PYTHONPATH=%~dp0apps\backend\src"
 "%~dp0.venv\Scripts\python.exe" -B -c "import fastapi, uvicorn, f1_eras.api.http"
 if errorlevel 1 (
-    echo Backend dependencies are unavailable. Follow the setup instructions in README.md.
+    echo Backend dependencies are unavailable.
     goto failure
 )
-node.exe -e "for (const name of ['vite', 'react', 'react-dom', 'plotly.js']) require.resolve(name, {paths: [process.cwd() + '/frontend']})"
+node.exe -e "for (const name of ['vite', 'react', 'react-dom', 'plotly.js']) require.resolve(name, {paths: [process.cwd() + '/apps/frontend']})"
 if errorlevel 1 (
-    echo Frontend dependencies are incomplete. Run npm.cmd --prefix frontend ci first.
+    echo Frontend dependencies are incomplete.
     goto failure
 )
 
@@ -54,13 +54,13 @@ popd
 exit /b 0
 
 :backend
-"%~dp0.venv\Scripts\python.exe" -B -m uvicorn f1_eras.api.http:create_default_app --factory --app-dir "%~dp0backend\src" --host 127.0.0.1 --port 8000
+"%~dp0.venv\Scripts\python.exe" -B -m uvicorn f1_eras.api.http:create_default_app --factory --app-dir "%~dp0apps\backend\src" --host 127.0.0.1 --port 8000
 set "service_exit=%errorlevel%"
 popd
 exit /b %service_exit%
 
 :frontend
-pushd "%~dp0frontend"
+pushd "%~dp0apps\frontend"
 call npm.cmd run dev -- --host 127.0.0.1 --port 5173 --strictPort
 set "service_exit=%errorlevel%"
 popd
@@ -68,5 +68,7 @@ popd
 exit /b %service_exit%
 
 :failure
+echo Development environment is not ready.
+echo See docs\SETUP.md for setup instructions.
 popd
 exit /b 1
