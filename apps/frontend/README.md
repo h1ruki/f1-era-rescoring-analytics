@@ -6,30 +6,35 @@ plot values for chart geometry; it does not calculate points or margins.
 
 ## Run locally
 
+Follow [Development Setup](../../docs/SETUP.md) for prerequisites and dependency
+installation, or use the root `run_dev.bat` after setup.
+
 Open two PowerShell terminals at the repository root. In the first, start the
 read-only backend:
 
 ```powershell
-& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory --app-dir backend/src --host 127.0.0.1 --port 8000
+& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory --app-dir apps/backend/src --host 127.0.0.1 --port 8000
 ```
 
 In the second, install the lockfile dependencies if needed and start Vite:
 
 ```powershell
-cd frontend
+cd apps/frontend
 npm.cmd ci
-npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
 
 Open `http://127.0.0.1:5173/`. Vite proxies `/api` to the backend at
 `http://127.0.0.1:8000`, so browser CORS configuration is unnecessary for this
-local setup. The backend reads the repository's `f1db.db` by default; set
+local setup. The backend reads the repository's `data/f1db.db` by default; set
 `F1_ERAS_DB_PATH` before launching it to select another snapshot.
 
 ## Verify
 
+Run from the repository root:
+
 ```powershell
-cd frontend
+cd apps/frontend
 npm.cmd test
 npm.cmd run build
 ```

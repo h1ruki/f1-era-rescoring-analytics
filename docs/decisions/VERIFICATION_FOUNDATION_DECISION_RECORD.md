@@ -39,7 +39,7 @@ The frontend already respects availability and needs no additional evidence gate
 Scoring and source records are unchanged.
 
 2010's completed external audit is preserved as snapshot/package-bound supplementary
-summary data in `backend/historical/external_audit_summaries.json`, attributed to the
+summary data in `apps/backend/historical/external_audit_summaries.json`, attributed to the
 approved decision record and retaining the provisional-classification qualification.
 It is not a fabricated strict evaluator dossier. No audit summary is asserted for
 2011-2013. Absence of external audit evidence, including for 2010, does not block
@@ -175,7 +175,7 @@ scoring, full-history auditing, CI and frontend work are out of scope.
 ## Canonical trust architecture clarification
 
 Under the superseding historical-data policy, the runtime approval authority is
-`backend/historical/canonical_snapshot.json`. Each normal-use assessment binds
+`apps/backend/historical/canonical_snapshot.json`. Each normal-use assessment binds
 source reads and the independent complete championship population to one captured
 snapshot image. Matching supplied subsets do not establish completeness.
 Supplementary audit summaries enrich an already completed canonical assessment;

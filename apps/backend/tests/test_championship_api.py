@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from f1_eras.analytics.original_drivers import CalculationUnavailable, OriginalDriversChampionship
-from f1_eras.api.http import create_app
+from f1_eras.api.http import create_app, create_default_app
 from f1_eras.application.championships import ChampionshipService
 from f1_eras.data_access.f1db import F1DBRepository
 from f1_eras.domain.models import ChampionshipCategory
@@ -18,6 +18,29 @@ from f1_eras.verification.approval import load_snapshot_approval
 @pytest.fixture
 def api(project_source_db: Path) -> TestClient:
     return TestClient(create_app(ChampionshipService(F1DBRepository(project_source_db))))
+
+
+@pytest.mark.integration
+def test_default_factory_finds_canonical_data_from_another_directory(tmp_path, monkeypatch):
+    monkeypatch.delenv("F1_ERAS_DB_PATH", raising=False)
+    monkeypatch.chdir(tmp_path)
+    client = TestClient(create_default_app())
+    response = client.get("/api/v1/championship-margins")
+    assert response.status_code == 200
+    results = response.json()["results"]
+    assert [item["season"] for item in results] == [2010, 2011, 2012, 2013]
+    assert all(item["availability"] == "available" for item in results)
+    assert all(item["trust"]["trusted_for_normal_use"] for item in results)
+    assert all(item["source_snapshot"]["sha256"] == load_snapshot_approval().sha256
+               for item in results)
+
+
+def test_default_factory_does_not_fall_back_when_explicit_source_is_missing(tmp_path, monkeypatch):
+    missing = tmp_path / "explicit missing source.db"
+    monkeypatch.setenv("F1_ERAS_DB_PATH", str(missing))
+    with pytest.raises(FileNotFoundError):
+        create_default_app()
+    assert not missing.exists()
 
 
 @pytest.mark.integration

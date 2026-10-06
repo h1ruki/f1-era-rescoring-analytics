@@ -69,7 +69,10 @@ def test_api_keeps_previous_exemplar_audit_separate_from_current_reconciliation(
     # automatically extended to the newly approved release.
     exemplar = json.loads(external_audit.AUDIT_PATH.read_text(encoding="utf-8"))[0]
     assert exemplar["year"] == 2010
-    assert exemplar["decision_record"].startswith("HISTORICAL_DATA_TRUST_DECISION_RECORD.md#")
+    assert exemplar["decision_record"] == (
+        "docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md"
+        "#completed-2010-independent-historical-audit"
+    )
     assert "provisional classification" in exemplar["qualification"]
     assert "unknown" in exemplar["qualification"]
     assert exemplar["f1db_sha256"] != results[0]["source_snapshot"]["sha256"]

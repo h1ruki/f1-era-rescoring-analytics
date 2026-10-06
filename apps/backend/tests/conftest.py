@@ -115,6 +115,6 @@ def repository(source_db: Path) -> F1DBRepository:
 
 @pytest.fixture
 def project_source_db() -> Path:
-    path = Path(__file__).resolve().parents[2] / "f1db.db"
+    path = Path(__file__).resolve().parents[3] / "data" / "f1db.db"
     assert path.is_file(), "Tracked F1DB snapshot is required for integration tests"
     return path
