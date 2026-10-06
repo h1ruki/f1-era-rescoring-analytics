@@ -4,11 +4,26 @@ Set up a fresh computer to run F1 ERAs. Windows instructions use PowerShell;
 macOS/Linux instructions use Bash. Internet access is needed for cloning and
 dependency installation. All application commands run from the repository root.
 
+## Runtime requirements
+
+Python's canonical requirement is declared in
+[pyproject.toml](../apps/backend/pyproject.toml): **3.11 is the minimum supported
+version**. CI validates **Python 3.11 and 3.14**; **Python 3.14** is recommended
+for a fresh setup. There is no exact interpreter pin.
+
+The canonical supported Node.js range is declared in
+[package.json](../apps/frontend/package.json) under `engines.node`. Prefer
+**Node 24 LTS** for a fresh setup, using a version that satisfies that range.
+CI currently validates **Node 24 on Ubuntu**. **Node 26** is also supported;
+**Node 26.10.0** is known to work in local development, but Node 26 is not
+currently CI-validated. Node.js includes npm; there is no exact npm pin.
+
 ## Windows setup
 
 ### Install prerequisites with PowerShell
 
-Install Git, Python and Node.js with Windows Package Manager:
+Install Git, Python and Node.js with Windows Package Manager, following the
+[runtime requirements](#runtime-requirements):
 
 ```powershell
 winget install --id Git.Git --exact --source winget
@@ -19,12 +34,6 @@ winget install --id OpenJS.NodeJS.LTS --exact --source winget
 These package identifiers were verified against the official winget catalog.
 Node.js includes npm. If `winget` is unavailable, install the same required
 software through another package manager or installer, then continue below.
-
-Python's formal project requirement is **3.11 or newer**, with no exact
-interpreter pin. Python 3.14 is the recommended, tested setup. Use a current
-**Node.js LTS** release for the locked frontend toolchain; Node.js 26.x was also
-tested. The project has no exact Node.js or npm pin. These recommendations do
-not require a specific patch version.
 
 Open a **new PowerShell terminal** after installation and verify:
 
@@ -101,9 +110,10 @@ npm.cmd --prefix apps/frontend run dev -- --host 127.0.0.1 --port 5173 --strictP
 
 ## macOS / Linux setup
 
-Install **Git, Python 3.11 or newer, Node.js/npm and Bash** using your normal
-system/package-management method. Use a current Node.js LTS release. Python must
-include `pip`, `venv` and `sqlite3`; no separate SQLite installation is needed.
+Install **Git, Python, Node.js/npm and Bash** using your normal
+system/package-management method, following the
+[runtime requirements](#runtime-requirements). Python must include `pip`, `venv`
+and `sqlite3`; no separate SQLite installation is needed.
 Verify the tools with `git --version`, `python3 --version`, `node --version`,
 `npm --version` and `bash --version`.
 
