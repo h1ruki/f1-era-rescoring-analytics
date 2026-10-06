@@ -14,11 +14,14 @@ from f1_eras.domain.models import (
     ConstructorIdentity,
     DriverIdentity,
     DriverStandingKey,
+    EntrantDriverAssignmentKey,
+    EntrantIdentity,
     F1DBSnapshot,
     GPClassification,
     GPClassificationKey,
     RecordedDriverStanding,
     SeasonEvent,
+    SeasonEntrantDriverAssignment,
 )
 
 
@@ -34,6 +37,8 @@ class OriginalDriversSource:
     events: tuple[SeasonEvent, ...]
     classifications: tuple[GPClassification, ...]
     recorded: tuple[RecordedDriverStanding, ...]
+    entrant_assignments: tuple[SeasonEntrantDriverAssignment, ...] | None
+    teammate_source_error: str | None = None
 
 
 # Expected SQLite affinities and NOT NULL declarations for consumed columns.
@@ -81,6 +86,23 @@ _REQUIRED_KEYS = {
     "season_driver_standing": ("year", "position_display_order"),
 }
 
+# These tables enrich the report; they are not championship trust inputs.
+_TEAMMATE_COLUMNS = {
+    "entrant": {"id": ("TEXT", True), "name": ("TEXT", True)},
+    "season_entrant_driver": {
+        "year": ("INTEGER", True), "entrant_id": ("TEXT", True),
+        "constructor_id": ("TEXT", True), "engine_manufacturer_id": ("TEXT", True),
+        "driver_id": ("TEXT", True), "rounds": ("TEXT", False),
+        "rounds_text": ("TEXT", False),
+    },
+}
+_TEAMMATE_KEYS = {
+    "entrant": ("id",),
+    "season_entrant_driver": (
+        "year", "entrant_id", "constructor_id", "engine_manufacturer_id", "driver_id",
+    ),
+}
+
 _EVENTS_SQL = """
 SELECT id, year, round, date, grand_prix_id, official_name, laps,
        CAST(distance AS TEXT) AS distance,
@@ -118,6 +140,41 @@ WHERE s.year = ? ORDER BY s.position_display_order
 """
 
 
+_ENTRANT_ASSIGNMENTS_SQL = """
+SELECT a.year, a.entrant_id, a.constructor_id, a.engine_manufacturer_id, a.driver_id,
+       a.rounds, a.rounds_text,
+       e.name AS entrant_name, c.name AS constructor_name, d.name AS driver_name
+FROM season_entrant_driver a
+LEFT JOIN entrant e ON e.id = a.entrant_id
+LEFT JOIN constructor c ON c.id = a.constructor_id
+LEFT JOIN driver d ON d.id = a.driver_id
+WHERE a.year = ?
+ORDER BY a.entrant_id, a.constructor_id, a.engine_manufacturer_id, a.driver_id
+"""
+
+
+def _assignment_rounds(value: str | None) -> tuple[int, ...] | None:
+    """Read the inspected semicolon-delimited round IDs, never the display ranges."""
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise SourceDatabaseError(f"Unrecognized entrant assignment rounds: {value!r}")
+    if value == "":
+        return ()
+    tokens = value.split(";")
+    if any(not token.isascii() or not token.isdecimal() for token in tokens):
+        raise SourceDatabaseError(f"Unrecognized entrant assignment rounds: {value!r}")
+    try:
+        rounds = tuple(int(token) for token in tokens)
+    except ValueError as error:
+        raise SourceDatabaseError(f"Unparseable entrant assignment rounds: {error}") from error
+    if any(round_ < 1 for round_ in rounds):
+        raise SourceDatabaseError(f"Unrecognized entrant assignment rounds: {value!r}")
+    if len(set(rounds)) != len(rounds):
+        raise SourceDatabaseError(f"Duplicate entrant assignment rounds: {value!r}")
+    return rounds
+
+
 def _affinity(declared_type: str) -> str:
     declaration = declared_type.upper()
     if "INT" in declaration:
@@ -131,7 +188,9 @@ def _affinity(declared_type: str) -> str:
     return "NUMERIC"
 
 
-def validate_required_schema(connection: sqlite3.Connection) -> None:
+def validate_required_schema(
+    connection: sqlite3.Connection, *, include_teammates: bool = False,
+) -> None:
     """Check consumed fields and exact source primary keys, not a version guess."""
     tables = {
         row[0] for row in connection.execute(
@@ -139,7 +198,9 @@ def validate_required_schema(connection: sqlite3.Connection) -> None:
         )
     }
     problems: list[str] = []
-    for table, requirements in _REQUIRED_COLUMNS.items():
+    required_columns = {**_REQUIRED_COLUMNS, **_TEAMMATE_COLUMNS} if include_teammates else _REQUIRED_COLUMNS
+    required_keys = {**_REQUIRED_KEYS, **_TEAMMATE_KEYS} if include_teammates else _REQUIRED_KEYS
+    for table, requirements in required_columns.items():
         if table not in tables:
             problems.append(f"missing table {table}")
             continue
@@ -158,7 +219,7 @@ def validate_required_schema(connection: sqlite3.Connection) -> None:
         primary_key = tuple(
             row[1] for row in sorted(columns, key=lambda row: row[5]) if row[5]
         )
-        if primary_key != _REQUIRED_KEYS[table]:
+        if primary_key != required_keys[table]:
             problems.append(f"unexpected primary key for {table}: {primary_key}")
     if problems:
         raise SourceSchemaError("Incompatible F1DB schema: " + "; ".join(problems))
@@ -188,11 +249,15 @@ class F1DBRepository:
         with open_read_only(self._path) as connection:
             validate_required_schema(connection)
 
-    def _read(self, sql: str, year: int, *parameters: object) -> list[sqlite3.Row]:
+    def _read(
+        self, sql: str, year: int, *parameters: object, include_teammates: bool = False,
+    ) -> list[sqlite3.Row]:
         if type(year) is not int:
             raise TypeError("year must be an integer")
         with open_read_only(self._path) as connection:
             validate_required_schema(connection)
+            if include_teammates:
+                validate_required_schema(connection, include_teammates=True)
             return connection.execute(sql, (year, *parameters)).fetchall()
 
     def get_season_events(self, year: int) -> tuple[SeasonEvent, ...]:
@@ -246,6 +311,31 @@ class F1DBRepository:
                 championship_won=bool(_optional_bool(row["championship_won"], "championship_won")),
             ) for row in self._read(_DRIVER_STANDINGS_SQL, year)
         )
+
+    def get_season_entrant_assignments(self, year: int) -> tuple[SeasonEntrantDriverAssignment, ...]:
+        assignments = []
+        for row in self._read(_ENTRANT_ASSIGNMENTS_SQL, year, include_teammates=True):
+            coverage_error = None
+            try:
+                rounds = _assignment_rounds(row["rounds"])
+            except SourceDatabaseError as error:
+                # Preserve entrant/driver identity so relevance can be decided
+                # without letting another entrant's malformed coverage block it.
+                rounds = None
+                coverage_error = str(error)
+            assignments.append(SeasonEntrantDriverAssignment(
+                source_key=EntrantDriverAssignmentKey(
+                    row["year"], row["entrant_id"], row["constructor_id"],
+                    row["engine_manufacturer_id"], row["driver_id"],
+                ),
+                entrant=EntrantIdentity(row["entrant_id"], row["entrant_name"]),
+                constructor=ConstructorIdentity(row["constructor_id"], row["constructor_name"]),
+                driver=DriverIdentity(row["driver_id"], row["driver_name"]),
+                rounds=rounds, recorded_rounds=row["rounds"],
+                rounds_text=row["rounds_text"],
+                round_coverage_error=coverage_error,
+            ))
+        return tuple(assignments)
 
     def identify_snapshot(self) -> F1DBSnapshot:
         """Identify the standalone file; SQLite schema counters are not releases."""
@@ -302,11 +392,22 @@ class F1DBRepository:
             events = reader.get_season_events(year)
             classifications = reader.get_gp_classifications(year)
             recorded = reader.get_recorded_driver_standings(year)
+            # Only this optional reader's source/schema/parsing failures degrade
+            # enrichment. Core reads, integrity and snapshot checks stay fatal.
+            teammate_source_error = None
+            try:
+                assignments = reader.get_season_entrant_assignments(year)
+            except (SourceDatabaseError, sqlite3.DatabaseError) as error:
+                assignments = None
+                teammate_source_error = str(error)
             current = self.identify_snapshot()
             final = self._path.stat()
             if _file_identity(after) != _file_identity(final) and current == snapshot:
                 raise SourceSnapshotChanged("Source identity changed during assessment reads")
-            return OriginalDriversSource(snapshot, current, population, events, classifications, recorded)
+            return OriginalDriversSource(
+                snapshot, current, population, events, classifications, recorded,
+                assignments, teammate_source_error,
+            )
 
 
 class _BoundF1DBReader(F1DBRepository):
@@ -315,9 +416,13 @@ class _BoundF1DBReader(F1DBRepository):
     def __init__(self, connection: sqlite3.Connection) -> None:
         self._connection = connection
 
-    def _read(self, sql: str, year: int, *parameters: object) -> list[sqlite3.Row]:
+    def _read(
+        self, sql: str, year: int, *parameters: object, include_teammates: bool = False,
+    ) -> list[sqlite3.Row]:
         if type(year) is not int:
             raise TypeError("year must be an integer")
+        if include_teammates:
+            validate_required_schema(self._connection, include_teammates=True)
         return self._connection.execute(sql, (year, *parameters)).fetchall()
 
 

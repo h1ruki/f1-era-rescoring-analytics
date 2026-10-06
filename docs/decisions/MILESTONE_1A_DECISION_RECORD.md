@@ -1,6 +1,24 @@
 # Milestone 1A — Championship methodology decision record
 
-Status: **Approved by the product owner.** This is a methodology and domain-contract record, not an implementation. Milestone 1B requires separate approval.
+Status: **Methodology approved by the product owner; partially implemented.**
+Milestone 1B was subsequently approved in its own record. See the
+[milestone status](../README.md#milestone-status) for the current completion assessment.
+
+## Current role and implementation boundary
+
+This record preserves the original rescoring-oriented analytical groundwork.
+Its historical-rule, exactness, ambiguity and classification principles support
+v1's champion-versus-runner-up comparison under Original rules. Cross-year rule
+transplantation and counterfactual views belong to v2; Constructors Championship
+calculations belong to v3. Milestone numbers do not designate product versions.
+
+The implemented 1A slice is 2010–2013 Original Drivers scoring, countback, exact
+points/margins, constructor contributions and explicit unavailable states, with
+complete canonical reconciliation and regression coverage. Best-N/split-season
+execution, general sanctions/exclusions, other historical packages and cross-year
+transplantation are not implemented by that slice. Remaining historical Original
+requirements are dependencies of [Milestone 2](MILESTONE_2_DECISION_RECORD.md).
+This approved methodology is not a claim that those capabilities already exist.
 
 ## Historical-rule transplantation
 
@@ -54,6 +72,6 @@ The domain response must identify the calculation and selected package versions;
 
 ## Regression and research gates
 
-The regression suite must separately exercise a verified fixed best-N rule on short and long target calendars; the 1979 formula and split on different calendar lengths; and the 1981 formula on different calendar lengths. It must also test reconciliation, complete-package behaviour, sanctions, exclusions, ambiguity, unavailable states, unfinished seasons, source-linked explanations, and persistent counterfactual identification. The previously proposed historical golden cases remain candidates pending source verification. No tests have been implemented.
+The regression suite must separately exercise a verified fixed best-N rule on short and long target calendars; the 1979 formula and split on different calendar lengths; and the 1981 formula on different calendar lengths. It must also test reconciliation, complete-package behaviour, sanctions, exclusions, ambiguity, unavailable states, unfinished seasons, source-linked explanations, and persistent counterfactual identification. The previously proposed historical golden cases remain candidates pending source verification. At this record's original approval no tests had been implemented. The current slice has scoring, reconciliation, trust and unavailable-state tests; it does not yet implement the best-N/split/transplantation regression programme above. Cross-year and counterfactual tests are v2 work; source-year rules required for historical Original results remain v1 work.
 
 Research must still certify original clauses and amendments for early result limits and countback; the 1970s shortened-race transition and boundary wording; exceptional entry eligibility and sanctions; shared-drive participation exceptions and cross-era compatibility; historically tied fastest laps under later packages; historical scoring-car nominations; and event facts needed for shortened-race decisions. Affected calculations remain unavailable until the necessary evidence or an expressly approved rule exists.

@@ -69,6 +69,6 @@ exit /b %service_exit%
 
 :failure
 echo Development environment is not ready.
-echo See docs\SETUP.md for setup instructions.
+echo See SETUP.md for setup instructions.
 popd
 exit /b 1

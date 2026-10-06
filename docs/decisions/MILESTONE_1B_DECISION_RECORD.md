@@ -2,6 +2,29 @@
 
 Status: **Approved by the product owner.** This record fixes the identity, chassis, visual-attribution, and teammate methodology below. It is a methodology and domain-contract record, not an implementation or a claim of complete historical evidence coverage. The remaining research and presentation decisions are listed at the end.
 
+Implementation status: **partial**; see the [milestone assessment](../README.md#milestone-status).
+Driver/constructor IDs and names, counted constructor contributions and entrant-based
+teammate API enrichment exist for the current 2010–2013 slice. The frontend does not
+yet present that teammate context, historical colours or F1-record nationality.
+The season teammate set below is the final approved v1 contract; the current
+entrant-based implementation still needs alignment and full-history coverage.
+
+## Product-version boundary
+
+For v1, this methodology supplies identity and context for the historical Drivers
+champion-versus-runner-up dominance comparison. Constructor identity, attribution,
+colours and teammate context belong in v1 where needed for that answer. References
+below to counterfactual packages apply to v2; full Constructor views apply to v3.
+The broader chassis/engine/identity research programme is preserved, not silently
+made a requirement for the first v1 release. Milestone 1B is not a product version.
+
+## Driver country and nationality
+
+Represent a driver using the country/nationality under which they are represented
+in their Formula 1 record, not merely their birthplace. Alexander Albon is represented
+as Thailand despite being British-born. This is identity/context metadata, never a
+scoring input; the current driver model exposes only ID and name.
+
 ## Authority and scope
 
 Historical trust clarification: [HISTORICAL_DATA_TRUST_DECISION_RECORD.md](HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
@@ -72,11 +95,55 @@ If the reconstructed Original contributions tie, are ambiguous under valid Miles
 
 ## Teammate eligibility and grouping
 
-Teammates are a **pairwise, dated relationship** between drivers in the same racing operation with verified concurrent GP race participation in at least one common round. Record the overlapping rounds and extent, including partial-season overlap. A shared constructor make alone is insufficient: independent entrants and operations can race the same make. A shared season roster without verified concurrent GP participation is distinct from confirmed concurrent teammates.
+**Semantic definition:** a driver belongs to the champion's **season teammate set**
+if that driver shared at least one championship event with the champion as part of
+the same racing operation/team. The relationship is pairwise and event-level, then
+aggregated across the season. Raw entrant equality is not the definition, and a
+shared constructor name or make is not automatically sufficient.
 
-Entrant and championship-entry identity are evidence about an operation, not automatic substitutes for it. A documented operation may continue across an entrant replacement while the formal entries and their championship standings remain separate. For a **same-constructor teammate** claim, also verify the same contemporary constructor make during the overlapping participation. In multi-constructor seasons, assess the relationship at the relevant events, not from either driver's season-level chart-colour anchor.
+**Normal structured determination:** establish event overlap using normalized
+entrant/team/racing-operation identity as the principal structured evidence,
+supported by participation/entry information and other available historical data.
+A season roster alone does not establish a shared event. Same-constructor labels
+additionally require the same contemporary make at the event; that is not a
+condition of teammate-set membership.
 
-Preserve confirmed concurrent, same-operation-but-not-verified-concurrent, separate-operation, and unresolved states with provenance. Pairwise overlaps are not transitive: overlapping A–B and B–C tenures do not establish A–C concurrent teammate status. A P1–P2 teammate-title-battle fact requires confirmed concurrent participation and must retain overlap extent so a brief overlap cannot be mistaken for an entire-season battle. The eventual visual indication remains separate from driver identity patterns.
+**Historical exceptions:** use canonical reconciliation/overrides, retaining
+evidence and provenance, where raw identifiers do not correctly capture the shared
+operation. An operation may continue across an entrant replacement while formal
+entries and championship standings remain separate. Exhaustive manual historical
+verification is not the default mechanism. Preserve partial, ambiguous or
+unavailable evidence rather than inventing a relationship.
+
+**Season output:** retain all qualifying teammates, including partial-season,
+replacement and seat-change relationships. Represent teammate identity, shared
+championship events/rounds and overlap/stint context where appropriate. Do not
+select or rank a primary, main, highest-scoring or most frequent teammate;
+performance and duration are attributes, not membership criteria. Pairwise overlaps
+are not transitive: A–B and B–C overlap does not establish A–C overlap.
+
+**Teammate battle:** `runner_up in champion_season_teammates`. Record **Yes** if the
+championship runner-up belongs to that set and **No** otherwise. Any qualifying
+shared event is sufficient, including partial-season overlap; a whole-season shared
+constructor is not required. Retain overlap context so Yes does not imply a
+season-long relationship; presentation details are not prescribed. Unavailable
+evidence must not become a false No. This context never changes P1/P2 or margins.
+
+## Current teammate implementation and remaining work
+
+The [backend implementation reference](../../apps/backend/README.md#champion-teammate-context)
+describes a later entrant-based slice: overlapping recorded entrant assignments
+plus both drivers' GP race participation establish API candidates. It selects a
+primary by shared-race count, then official final championship position, preserving
+unresolved ties and additional candidates. This context does not replace the
+championship runner-up or change the dominance calculation.
+
+That primary/additional selection is current implementation behavior, not the
+approved v1 methodology. [Milestone 2](MILESTONE_2_DECISION_RECORD.md) must align the
+implementation with complete season teammate sets, event-level aggregation,
+historical reconciliation where needed, runner-up membership and product context.
+The four-season entrant-derived output does not establish full-history compliance.
+Scoring and canonical trust remain independent of teammate enrichment.
 
 ## Driver visual identity
 
@@ -96,12 +163,12 @@ Keep official recorded Original standings distinct from reconstructed matching s
 
 The curated identity layer should be checked against, at minimum, the Jordan → Midland → Spyker → Force India → Racing Point → Aston Martin succession, Tyrrell → BAR → Honda → Brawn → Mercedes, Sauber → BMW Sauber → Sauber → Alfa Romeo → Sauber/Audi, distinct Lotus usages, the separate Mercedes 1954–55 and modern participation contexts, historical Alfa Romeo works activity versus its later Sauber branding, and the 2018 Force India entrant transition. Listing a chain here identifies a research case; it **does not** declare its members the same constructor. The [FIA's 2018 decision](https://www.fia.com/news/fia-approves-mid-season-entry-racing-point-force-india) documents why entrant transition, operational continuity, and Constructors' Championship treatment must be kept separate. [Formula 1's account of Rob Walker's Cooper](https://www.formula1.com/en/latest/article/argentina-58-moss-bluffs-his-way-to-victory-and-ushers-in-new-era.g34lnPj7q41eIAS0HbA9d) illustrates why a constructor make need not identify one racing operation.
 
-The inspected F1DB `season_entrant_chassis` records season/entrant associations, while `race_data` has no chassis or entrant field. Those associations cannot alone establish a driver's GP chassis appearances, a constructor's chassis car starts, or chassis-level championship contribution. Event-level evidence and curated operation relationships require source-linked research. Unsupported historical claims remain partial, ambiguous, or unavailable.
+The inspected F1DB `season_entrant_chassis` records season/entrant associations, while `race_data` has no chassis or entrant field. Those associations cannot alone establish a driver's GP chassis appearances, a constructor's chassis car starts, or chassis-level championship contribution. Event-level chassis evidence requires source-linked research; teammate relationships use the structured determination and canonical exception handling above. Unsupported historical claims remain partial, ambiguous, or unavailable.
 
 ## First proof of concept and deferred decisions
 
 The first PoC may deliberately use a **curated subset of historical seasons and cases with sufficient verified evidence**. It must not imply equal evidence coverage across all seasons. Unsupported seasons or fields use explicit partial, ambiguous, or unavailable states rather than inferred values. The PoC should demonstrate that the shared domain represents those states correctly so broader historical coverage can be added without redesigning its identity model.
 
-Before the PoC asserts a particular chassis primary or contribution, establish event-level evidence and rules for GP race appearance, car start, shared-car cases, and model/specification attribution in its curated cases. Where that evidence is absent, show only supported associations and an unavailable primary or contribution. Before rendering a unique multi-constructor colour, verify the reconstructed Original counted-contribution comparison; otherwise use multiple/unresolved attribution. If patterns are rendered, use a fixed, versioned mapping for the displayed drivers. Confirmed teammate-title-battle claims require sourced operation and round overlap.
+Before the PoC asserts a particular chassis primary or contribution, establish event-level evidence and rules for GP race appearance, car start, shared-car cases, and model/specification attribution in its curated cases. Where that evidence is absent, show only supported associations and an unavailable primary or contribution. Before rendering a unique multi-constructor colour, verify the reconstructed Original counted-contribution comparison; otherwise use multiple/unresolved attribution. If patterns are rendered, use a fixed, versioned mapping for the displayed drivers. Teammate-battle claims use the season set and evidence model above, including supported shared-event overlap.
 
 Intentionally deferred beyond the first PoC are comprehensive historical event-level chassis coverage; full historical colour curation; exact modern-colour eligibility mappings; exact era-preset boundaries; full engine lineage and rebadging research; exhaustive racing-operation succession curation; final tooltip and detail layouts; complete pattern vocabulary and rendering; and visual-regression implementation. These items remain open Milestone 1B or downstream work as appropriate. Their absence does not authorise invented historical identities or calculations.

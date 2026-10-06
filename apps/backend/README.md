@@ -3,6 +3,10 @@
 The active backend provides source access, pure Original Drivers reconstruction
 for 2010–2013, and a read-only service with a versioned FastAPI interface.
 The React frontend renders its results; the original Streamlit code is archived.
+This is the implemented foundation for v1's historical champion-versus-runner-up
+comparison. The [roadmap](../../docs/README.md) owns product scope and milestone status;
+the [master brief](../../docs/architecture/F1_ERAs_MASTER_BRIEF.md#v1-visible-analytical-contract)
+owns the visible analytical contract.
 
 ```text
 immutable F1DB → data_access → typed source/domain records
@@ -15,29 +19,149 @@ explicit unavailable result for unsupported seasons and Constructor calculation.
 
 ## Environment and tests
 
-Follow [Development Setup](../../docs/SETUP.md) to prepare a fresh machine. The
-component commands below assume the root `.venv` has already been created.
+Follow [Development Setup](../../SETUP.md) for prerequisites, installation, startup
+and verification on each OS. The component commands below assume that setup is complete.
 
-Analytics and data access use the Python standard library (Python 3.11+;
-the current workstation uses Python 3.14.7). The API requires
-`fastapi==0.142.2` and `uvicorn==0.54.0`. Tests use `pytest==9.1.1` and
-`httpx==0.28.1`. These direct dependencies are pinned in `pyproject.toml`.
+Analytics and data access use the Python standard library. The API uses FastAPI
+and Uvicorn; tests use pytest and httpx, with Ruff for lint. Python requirements and
+direct dependency versions are declared in [pyproject.toml](pyproject.toml).
 
 From the repository root:
 
 ```powershell
-& .\.venv\Scripts\python.exe -m pip install -e "./apps/backend[test]"
 & .\.venv\Scripts\python.exe -B -m pytest -c apps/backend/pyproject.toml apps/backend/tests -q -p no:cacheprovider
 ```
 
-The install command uses the declared `test` extra and installs the backend in
-editable mode. Pip supplies the declared build requirements in an isolated build
-environment. Pytest also adds `apps/backend/src` to its import path.
+Pytest adds `apps/backend/src` to its import path.
 
 All tests run by default, including read-only integration tests against the tracked
 `data/f1db.db`. To run only synthetic fixtures, append `-m "not integration"`.
 Synthetic tests create and modify SQLite files only in pytest's temporary directory.
 Write-rejection tests never attempt writes against the tracked source database.
+
+## Champion teammate context
+
+This section describes current entrant-based implementation behavior, including
+its primary/additional selection; that ranking is not normative v1 methodology.
+[Milestone 1B's final contract](../../docs/decisions/MILESTONE_1B_DECISION_RECORD.md#teammate-eligibility-and-grouping)
+retains all drivers who shared a championship event with the champion in the same
+racing operation/team, using normalized identity and participation/entry evidence
+with canonical reconciliation for historical exceptions. **Teammate battle** means
+runner-up membership in that season set, including partial-season overlap.
+[Milestone 2](../../docs/decisions/MILESTONE_2_DECISION_RECORD.md) must align the API
+with that contract and complete historical coverage; the current enrichment does
+not establish compliance. Teammate context never replaces the championship runner-up
+or changes points/margins, and the frontend does not yet render it.
+
+Drivers / Original remains limited to 2010–2013. Both championship detail and
+margin summaries now include a stable `teammate_context` object:
+
+```json
+{
+  "primary_selection": "unique",
+  "primary_teammate": {
+    "id": "mark-webber",
+    "name": "Mark Webber",
+    "official_final_position": 6,
+    "official_final_points": {
+      "exact": {"numerator": 179, "denominator": 1},
+      "plot": 179.0
+    },
+    "final_standing_recorded": true,
+    "shared_race_count": 20,
+    "entrants": [{"id": "red-bull-racing", "name": "Red Bull Racing"}]
+  },
+  "additional_teammates": [],
+  "tied_primary_candidate_ids": []
+}
+```
+
+`primary_selection` is `unique`, `none`, or `unresolved_tie`. Unavailable
+championships or unavailable teammate evidence use `unavailable`, not `none`.
+A unique primary appears only in
+`primary_teammate`; all other valid candidates appear individually in
+`additional_teammates`. For unresolved ties, `primary_teammate` is null and all
+candidates remain in `additional_teammates`; `tied_primary_candidate_ids`
+identifies the remaining contenders without duplicating their records. Empty
+lists are always included. Missing final standings produce null official points
+and position plus `final_standing_recorded=false`. A recorded unranked standing
+can retain its points and has `final_standing_recorded=true`.
+
+`domain/models.py` preserves entrant assignments and their composite source keys,
+raw and parsed round coverage, entrant/driver/constructor identities, and engine ID.
+The unused `test_driver` field is neither read, validated nor included in these
+models; no value is interpreted as teammate eligibility or race participation.
+Assignment reads use the same captured read-only SQLite
+image as the calendar, results and final standings. `domain/teammates.py` retains
+all candidates, official standing source keys/classification text, explicit
+primary selection, and per-race entrant, assignment and result-key evidence.
+HTTP omits the detailed race evidence.
+
+Teammate acquisition is optional: entrant-specific schema validation and SQL reads
+have a separate failure boundary after mandatory source reads. Acquisition errors
+set `entrant_assignments=null` and retain an internal `teammate_source_error`.
+Round parsing errors are retained on individual assignments as
+`round_coverage_error`, with unknown parsed coverage and the raw metadata preserved.
+This allows unrelated entrants' malformed round data to remain irrelevant.
+Integer-conversion failures, including oversized ASCII numeric tokens, are
+normalized to source errors without application-defined numeric limits.
+Mandatory schema, source integrity, calendar/results/standings and snapshot checks
+retain their existing behavior.
+The service catches only `TeammateDerivationAmbiguity` from teammate derivation.
+These enrichment failures produce `primary_selection="unavailable"`, null primary
+and empty additional/tie lists while the valid championship, trust and
+reconciliation survive. Unexpected programming errors are not swallowed.
+
+`analytics/teammates.py` starts with the champion's recorded entrant assignments
+by round, finds other drivers assigned to the same entrant at overlapping rounds,
+then checks both drivers' `RACE_RESULT` participation. The entrant roster defines
+the possible teammate population; unrelated participants are not attributed or
+validated. Constructor and engine IDs are retained as equipment evidence only:
+same-entrant teammates may have different equipment, and equipment equality never
+creates teammate identity.
+
+Only relevant uncertainty makes enrichment unavailable: missing/unknown champion
+coverage at a race they participated in, unknown candidate coverage that could
+overlap that entrant, unknown participation during possible overlap, or competing
+entrant assignments for that relevant driver/round. Known assignments outside
+shared rounds remain excluded, as do results under another established entrant.
+Drivers entirely outside the champion's entrant roster, their coverage errors and
+their multiple entrant assignments do not invalidate context. Non-participating
+results and events without champion participation create no overlap.
+
+The source primary key permits one driver to have multiple entrant assignments
+for the same round; read-only inspection found 53 historical driver/round cases
+and none in 2010–2013. Race results have no direct entrant ID. Relevant simultaneous
+assignments to different entrants therefore remain ambiguous; equipment matching
+is not used to invent an entrant winner. Multiple assignments to the same entrant
+retain contextual evidence without multiplying races. Shared races count distinct
+race IDs, including repeated/shared-drive rows. Primary
+selection uses greatest shared-race count, then better official final championship
+position. Missing/ambiguous classifications or identical best positions retain
+an unresolved tie. Driver IDs only order output; they never break selection ties.
+Points always come from official season standings, never the shared-race subset.
+
+Before implementation the canonical result states and assignment format were
+inspected through read-only SQL. The 2010–2013 result states are numeric finishes,
+DNF, NC, DNS, DNQ and DSQ. Numeric finishes consistent with the recorded position,
+DNF and NC establish participation. Zero-lap DNFs include first-lap collisions
+and still count. DNS/DNQ/DNPQ do not count. DSQ requires positive recorded race
+laps to establish participation independently of the exclusion; both current-slice
+DSQ rows have 58 laps. DSQ without that evidence, EX, DNP and unknown states are
+left uninterpreted and raise `TeammateDerivationAmbiguity` when relevant. Unknown
+round coverage or multiple possible entrants for a result likewise raise a
+derivation error, converted by the service to unavailable enrichment.
+No withdrawal-specific state occurs in the inspected database;
+unrecognized future states require review rather than an inferred meaning.
+Round IDs are the inspected semicolon-delimited `rounds` field, not parsed display
+ranges. Null coverage remains unknown; empty coverage remains empty.
+
+The current slice yields only Mark Webber: 242/258/179/199 official points,
+positions 3/3/6/3, and 19/19/20/19 shared races for 2010/2011/2012/2013. Fixture
+tests cover additional candidates, ties, team switches, multiple entrants and
+constructors, repeated results, and missing standings without adding production
+seasons. Shared-drive championship scoring remains unsupported by the existing
+reconstruction/trust gates. Championship calculations and trust policy are unchanged.
 
 ## Using the repository
 
@@ -67,8 +191,9 @@ calculated championship ranking. Multiple records for one event/driver are retai
 
 GP classifications explicitly select `RACE_RESULT` and enrich names through direct
 driver/constructor ID joins. A missing identity lookup preserves its ID and returns
-`name=None`; it does not drop the source row or invent a replacement. Season entrant
-associations are not used to determine event constructors, operations or teammates.
+`name=None`; it does not drop the source row or invent a replacement. Event
+constructors remain direct result facts; season entrant assignments independently
+supply the roster and round coverage for teammate derivation.
 
 Classification text is retained verbatim, including unknown codes. Optional awards,
 shared-car flags, laps, retirement reasons, fastest-lap flags and recorded race time
@@ -94,7 +219,9 @@ source snapshots are standalone files; assessment reads use a bound image.
 
 `data_access/f1db.py` contains parameterized reader queries and schema checks.
 Required tables, consumed column affinities/non-nullability, and source primary
-keys are validated at construction and before each read. Unrelated tables, indexes
+keys for mandatory championship inputs are validated at construction and before
+each read; teammate-specific schema is validated when assignments are read.
+Unrelated tables, indexes
 and columns are allowed. Schema errors explain the missing or incompatible fields.
 
 `identify_snapshot()` returns SHA-256, byte size and explicitly named SQLite schema
@@ -118,7 +245,7 @@ update needs its own approved validation and provenance review.
 `f1_eras.analytics.original_drivers.calculate_original_drivers` accepts the
 repository's immutable event, final GP classification, and recorded standing
 tuples. It has no database access. Each source year retains its own package
-identity. These four packages use 25â€“18â€“15â€“12â€“10â€“8â€“6â€“4â€“2â€“1 points, count all
+identity. These four packages use 25–18–15–12–10–8–6–4–2–1 points, count all
 held GP results, and rank equal totals by counts of 1st places, then 2nd places,
 and so on through all classified finishing positions. No sprint or fastest-lap
 points apply. The source's final amended classification is scored directly;
@@ -132,8 +259,9 @@ standings remain separate comparison records. The result exposes differences
 from both sources; all four curated seasons currently reconcile with no
 differences. Unresolved countback, missing final GP classifications, unsupported
 years, and Constructor category return `CalculationUnavailable` with a reason
-and resolution condition. Counterfactual scoring and historical identity
-presentation remain unimplemented; the active frontend lives in `apps/frontend/`.
+and resolution condition. Counterfactual scoring, general historical rule packages
+and historical identity presentation remain unimplemented; supporting constructor
+contributions and teammate API context do exist. The active frontend lives in `apps/frontend/`.
 
 ## Read-only service and API
 
@@ -149,12 +277,7 @@ Constructor category do not invoke source readers. API imports do not open the
 database; the Uvicorn factory constructs the repository from the local `data/f1db.db`
 or the explicit `F1_ERAS_DB_PATH` environment variable.
 
-From the repository root, serve with:
-
-```powershell
-$env:PYTHONPATH = "apps/backend/src"
-& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory
-```
+Use the startup commands in [SETUP.md](../../SETUP.md#running-the-project).
 
 The versioned GET endpoints are:
 
@@ -223,7 +346,6 @@ both representations. New primary-source research is exception handling only.
 Run the fixed 2010-2013 diagnostic from the repository root:
 
 ```powershell
-$env:PYTHONPATH = "apps/backend/src"
 & .\.venv\Scripts\python.exe -B -m f1_eras.verification.diagnostic
 ```
 
@@ -235,7 +357,7 @@ still requires a clean known commit. Exit 0 means the diagnostic completed, so
 inspect each assessment for trust; operational errors exit nonzero.
 `--db PATH` selects another read-only snapshot without changing the fixed year set.
 
-The complete backend pytest command above includes all new synthetic policy,
+The complete backend pytest command above includes the synthetic policy,
 schema and comparator tests and the four-season diagnostic integration test.
 The only example fixture is explicitly synthetic under `tests/fixtures/synthetic`.
 
@@ -276,5 +398,5 @@ Update approval-dependent tests and documentation without altering historical
 scoring logic. Preserve historical audit bindings; they never transfer automatically.
 `v2026.16.0` was approved on 2026-10-05 after official-asset byte comparison and
 unchanged 2010-2013 input/reconciliation checks. The previous `v2026.15.0` snapshot
-is retained in Git history. `data/f1db_newsnapshot.db` remains an ignored local
-acceptance-test copy; its bytes now match the approved canonical snapshot.
+is retained in Git history. `data/f1db_newsnapshot.db` is an ignored path for an
+optional local acceptance-test copy, not a required file in a fresh checkout.

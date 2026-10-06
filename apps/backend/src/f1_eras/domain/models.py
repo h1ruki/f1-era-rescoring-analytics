@@ -28,6 +28,33 @@ class ConstructorIdentity:
 
 
 @dataclass(frozen=True, slots=True)
+class EntrantIdentity:
+    id: str
+    name: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class EntrantDriverAssignmentKey:
+    year: int
+    entrant_id: str
+    constructor_id: str
+    engine_manufacturer_id: str
+    driver_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class SeasonEntrantDriverAssignment:
+    source_key: EntrantDriverAssignmentKey
+    entrant: EntrantIdentity
+    constructor: ConstructorIdentity
+    driver: DriverIdentity
+    rounds: tuple[int, ...] | None  # None is unknown; () is recorded empty coverage.
+    recorded_rounds: str | bytes | None
+    rounds_text: str | None
+    round_coverage_error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class SeasonEvent:
     race_id: int
     year: int

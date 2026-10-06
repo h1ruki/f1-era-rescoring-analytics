@@ -41,7 +41,13 @@ CREATE TABLE season_driver_standing (
     championship_won BOOLEAN NOT NULL,
     PRIMARY KEY (year, position_display_order)
 );
-CREATE TABLE season_entrant_driver (year INTEGER, driver_id TEXT, entrant_id TEXT);
+CREATE TABLE entrant (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL);
+CREATE TABLE season_entrant_driver (
+    year INTEGER NOT NULL, entrant_id TEXT NOT NULL, constructor_id TEXT NOT NULL,
+    engine_manufacturer_id TEXT NOT NULL, driver_id TEXT NOT NULL,
+    rounds TEXT, rounds_text TEXT, test_driver BOOLEAN NOT NULL,
+    PRIMARY KEY (year, entrant_id, constructor_id, engine_manufacturer_id, driver_id)
+);
 CREATE TABLE season_entrant_constructor (year INTEGER, entrant_id TEXT, constructor_id TEXT);
 """
 
@@ -95,8 +101,12 @@ def source_db(tmp_path: Path) -> Path:
             (2012, 3, 2, "2", "driver-b", 0, 0),
             (2013, 1, 1, "1", "driver-b", 25, 1),
         ])
-        connection.executemany("INSERT INTO season_entrant_driver VALUES (?, ?, ?)", [
-            (2012, "driver-a", "entrant-a"), (2012, "driver-a", "entrant-b"),
+        connection.executemany("INSERT INTO entrant VALUES (?, ?)", [
+            ("entrant-a", "Entrant A"), ("entrant-b", "Entrant B"),
+        ])
+        connection.executemany("INSERT INTO season_entrant_driver VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+            (2012, "entrant-a", "constructor-a", "engine-a", "driver-a", "1;2", "1-2", 0),
+            (2012, "entrant-b", "constructor-b", "engine-b", "driver-a", "1", "1", 0),
         ])
         connection.executemany("INSERT INTO season_entrant_constructor VALUES (?, ?, ?)", [
             (2012, "entrant-a", "constructor-a"), (2012, "entrant-a", "constructor-b"),
