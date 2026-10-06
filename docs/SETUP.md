@@ -51,8 +51,8 @@ or installation before continuing.
 ### Clone and install dependencies
 
 ```powershell
-git clone --branch development/v1 https://github.com/h1ruki/f1-era-rescoring-analytics.git
-cd f1-era-rescoring-analytics
+git clone --branch development/v1 https://github.com/h1ruki/f1-eras.git
+cd f1-eras
 ```
 
 Run the following commands from this **repository root**. Paths containing
@@ -120,8 +120,8 @@ Verify the tools with `git --version`, `python3 --version`, `node --version`,
 Clone and prepare the applications:
 
 ```bash
-git clone --branch development/v1 https://github.com/h1ruki/f1-era-rescoring-analytics.git
-cd f1-era-rescoring-analytics
+git clone --branch development/v1 https://github.com/h1ruki/f1-eras.git
+cd f1-eras
 python3 -m venv .venv
 .venv/bin/python -m pip install -e "./apps/backend[test]"
 npm --prefix apps/frontend ci
