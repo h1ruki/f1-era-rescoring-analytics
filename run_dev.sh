@@ -2,7 +2,7 @@
 set -u
 
 fail() {
-    printf '%s\nSee docs/SETUP.md for setup instructions.\n' "$1" >&2
+    printf '%s\nSee SETUP.md for setup instructions.\n' "$1" >&2
     exit 1
 }
 

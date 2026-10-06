@@ -1,4 +1,4 @@
-# F1 ERAs ? Master Engineering Brief
+# F1 ERAs — Master Engineering Brief
 
 F1 ERAs provides historical Formula 1 dominance analytics. Its central question
 is: “How dominant was each F1 champion in their title-winning season?” Compare
@@ -6,11 +6,14 @@ every championship season in Formula 1 history by the gap between the champion
 and runner-up. Championship margin is an analytical measure, not a complete
 measure of driver ability or dominance.
 
-This specification records product direction, methodology and development
-boundaries. The [README roadmap and release philosophy](../../README.md#roadmap)
+This brief is authoritative for architecture, the visible analytical contract and
+presentation direction. The [documentation roadmap and release policy](../README.md#product-versions-and-release-policy)
 define the major-version scope: v1 Drivers / Historical Reality, v2 What If,
 and v3 Constructors. Requirements below span those versions and do not imply
-implemented support or inclusion in v1.
+implemented support or inclusion in v1. Milestones are internal development stages;
+the [milestone assessment](../README.md#milestone-status) records partial Milestone 1
+completion and [Milestone 2](../decisions/MILESTONE_2_DECISION_RECORD.md) defines the
+next integration stage within v1.
 
 ## Authority and current implementation
 
@@ -24,10 +27,20 @@ implemented support or inclusion in v1.
   preserves the earlier independent-evidence methodology and its supersession
   as a normal-use production gate.
 
-The implemented calculation/API scope is **2010?2013 Drivers / Original**.
+The implemented calculation/API scope is **2010–2013 Drivers / Original**.
 Other seasons, Constructors calculations and counterfactual packages remain
 unavailable until their rules and implementation are approved and validated.
 Broader historical coverage is a product goal, not a current capability claim.
+
+| Area | Implemented now | Target or remaining work |
+| --- | --- | --- |
+| Analytics and trust | Four Original Drivers packages, exact standings/margins, complete canonical reconciliation, source approval and integrity gate | Full-history Original rules and exception coverage for v1; transplantation for v2 |
+| API and context | Capabilities, summaries/details, constructor contributions and entrant-based champion teammate enrichment | Context presentation, nationality, historical colours and alignment with 1B's approved season teammate set contract |
+| Frontend | Chronological lollipop chart, points/% toggle, P1/P2 hover, season list, loading/error/retry and unavailable states | Range/era navigation, pinned detail, historical identity/context and release UX validation |
+
+The current frontend does not consume the API's teammate/trust metadata or detail
+route; the backend enforces availability. Generic chart colours are not curated team
+colours. A disabled Constructors control is a PoC placeholder, not v1 feature scope.
 
 The initial repository/data audit is complete. Its former audit-only instructions
 are retired. The prototype and decision records retain historical context;
@@ -41,36 +54,65 @@ The v1 headline comparison is the Drivers' champion versus runner-up. Teammate,
 team, competition and era context support that comparison. Constructor identity
 is required internally where needed for teammate determination, team colours,
 tooltips and historical identity; Constructors Championship analysis belongs to v3.
+Keep the visible product simple; users need not learn the historical engine before
+understanding the question. The following is target presentation direction, except
+where the implementation table above explicitly says it exists.
 
 The main experience is one interactive chronological lollipop chart comparing
 championship P1 and P2. Drivers and Constructors modes should ultimately share
 its interaction model. Each season is an independent observation with a meaningful
 zero baseline; connecting markers with a line would imply interpolation.
 
-The chart supports hover, pinned selection and a detail drawer, season-range
-changes, era presets, margin metrics, scoring packages and colour modes. Full-history
-view is a long-term goal; the current view must respect available calculation scope.
+The v1 target supports hover, pinned selection and a detail drawer, season-range
+changes, approved era presets and margin metrics. Scoring-package selection belongs
+to v2; Constructors mode belongs to v3. Historical colours support v1 context;
+modern-colour mappings remain deferred. Full-history view is the v1 goal;
+the current view must respect available calculation scope.
 
 The default product state is Drivers, Championship Margin (%), Original scoring,
 All F1 range and historical colours. V1 uses a restrained dark theme, designed
 primarily for desktop analytical viewing with reasonable small-screen behaviour.
-Avoid excessive gradients, decorative effects and motorsport clich?s.
+Avoid excessive gradients, decorative effects and motorsport clichés.
+
+### v1 visible analytical contract
+
+Champion (P1) and runner-up (P2) mean the first and second Drivers in the final
+amended championship classification under that season's historical Original rules,
+including counted-result limits, sanctions/exclusions and sporting tie-breaks where
+applicable. The runner-up is not necessarily the champion's teammate. Reconstructed
+results must reconcile with the complete canonical classification before publication;
+they remain distinct from the recorded standings used for comparison.
 
 The primary metric is:
 
-`Championship Margin (%) = (P1 points - P2 points) / P1 points ? 100`
+`Championship Margin (%) = (P1 points - P2 points) / P1 points * 100`
 
 Raw Points Gap is `P1 points - P2 points`. Percentage margin makes comparisons
 less directly dependent on points inflation, but it does not remove differences
 in rules, event populations or historical context. Exact calculation values govern
 ranking and reconciliation; floats and rounding are display projections only.
 An undefined denominator must not yield an invented valid margin.
+Equal points resolved by the applicable sporting countback produce a zero points
+gap and zero percentage gap, not an invented positive margin; explain the resolution.
+Unresolved ranking or unavailable calculation is not a zero gap. Display rounding
+never selects the champion or runner-up. Once v1 ships, these visible meanings are
+stable under the roadmap's release policy.
+
+Constructor contributions/colours and teammate, nationality, competition and era
+context explain this comparison; they are not alternative scoring inputs.
+Follow [1B's F1-record nationality principle](../decisions/MILESTONE_1B_DECISION_RECORD.md#driver-country-and-nationality).
+Follow [1B's approved season teammate set](../decisions/MILESTONE_1B_DECISION_RECORD.md#teammate-eligibility-and-grouping).
+**Teammate battle: Yes** means the championship runner-up belongs to the champion's
+season teammate set; otherwise **No**. Any qualifying shared championship event
+counts, including partial-season overlap. Unavailable evidence remains explicit.
 
 Hover should give concise season, P1/P2, constructor attribution, points, gap,
 active scoring package and relevant historical context. The drawer may expose
-countback, event awards, all constructor contributions, wins, podiums, poles,
-reliability, supported teammate status, constructor championship context and
-source provenance. Unsupported contextual fields remain explicitly unavailable.
+countback, event awards, constructor contributions, supported teammate status and
+source provenance needed to explain the title result. Other statistics are optional
+context only where they materially aid that explanation, not a generic dashboard
+commitment. Constructors Championship analytics remains v3. Unsupported contextual
+fields remain explicitly unavailable.
 
 A historical average line uses only completed, available seasons in the selected
 mode, metric, scoring package and range. Recalculate it when those selections
@@ -104,7 +146,7 @@ becoming available production results. Operational failures remain errors.
 Independent external auditing is supplementary. **2010 alone** has the completed
 independent historical audit and deep-validation summary, including its FIA
 provisional-classification qualification. No equivalent audit is claimed for
-2011?2013. Optional audit information is attached after canonical assessment;
+2011–2013. Optional audit information is attached after canonical assessment;
 missing, unreadable or invalid audit metadata cannot change normal-use trust.
 The strict independent-evidence evaluator remains available for explicit audit
 claims and retains its stricter evidence requirements.
@@ -125,22 +167,30 @@ attached to the snapshot actually audited; they do not transfer automatically.
 Future automation may discover and validate releases in GitHub Actions and propose
 an update PR. It must not download source data during an application request or
 approve a snapshot solely because regression tests pass. Automation is deferred.
-The local `data/f1db_newsnapshot.db` remains an ignored acceptance-test copy.
-Its bytes were verified against the official `v2026.16.0` SQLite release and
-approved for canonical use on 2026-10-05; the canonical copy is `data/f1db.db`. The
+The ignored acceptance-test path `data/f1db_newsnapshot.db` is optional local work,
+not a required checkout file. The candidate bytes were verified against the official
+`v2026.16.0` SQLite release and approved for canonical use on 2026-10-05;
+the canonical copy is `data/f1db.db`. The
 2010 audit summary retains its previous `v2026.15.0` binding and is not attached
 to current-snapshot results. The historical-data trust record preserves both approvals.
 
 ## Architecture
 
-The target stack is React, TypeScript, Vite and Plotly.js for presentation;
+The implemented stack is React, TypeScript, Vite and Plotly.js for presentation;
 Python and FastAPI for services and analytics; and SQLite for source data.
-Use pandas where appropriate to analysis, without making it a requirement for
-exact championship mathematics. Tests use pytest, Vitest and React Testing Library.
+Current analytics/data access use the Python standard library, including Fraction
+for exact championship mathematics; pandas is not an active dependency.
+Tests use pytest, Vitest and React Testing Library. The dependency manifests and
+frontend lockfile own tool versions, and SETUP.md owns workstation requirements.
 
 The dependency flow is:
 
-`F1DB ? repository ? domain models ? analytics ? application service ? FastAPI ? React`
+`F1DB → repository → domain models → analytics → application service → FastAPI → React`
+
+The application service invokes canonical verification before publishing results
+and attaches optional teammate/external-audit context separately. Verification is
+not a frontend responsibility. Source approval and supporting audit metadata live
+under `apps/backend/historical/`; tests live alongside each application.
 
 SQL and schema adaptation belong in the repository. Analytics consumes typed
 source facts without database or presentation concerns. Python is the source of
@@ -158,9 +208,10 @@ assessments; deployment capacity must account for it before increasing concurren
 
 V1 covers Drivers / Historical Reality under each season's Original rules.
 Alternative scoring systems and counterfactual rescoring belong to v2 — What If.
-The existing rescoring architecture is retained for that work, isolated from the
-released v1 experience until v2.0. Custom points-entry forms and arbitrary hybrid
-rules are outside V1.
+The retained rescoring methodology and shared analytical foundation support that
+future work; a general transplantation engine is not yet implemented in the active
+backend. Keep v2 work isolated from the released v1 experience until v2.0.
+Custom points-entry forms and arbitrary hybrid rules are outside v1.
 
 Counterfactual rescoring preserves recorded race outcomes. It does not simulate
 changed driver behaviour, strategy or incentives. Keep recorded Original standings,
@@ -171,8 +222,10 @@ points, shortened/partial-points events, double-points events, sprints, construc
 rules, exclusions and sanctions. Unsupported provisions must not be approximated.
 When a package excludes sprint scoring, disclose that exclusion and test it.
 
-Use the approved countback rules for equal totals: wins, then second places, then
-subsequent finishing positions. An unresolved sporting tie remains unavailable;
+Use each supported season's applicable countback rules. The implemented 2010–2013
+packages use wins, then second places, then subsequent finishing positions; this
+is not an assertion that every historical package uses an identical rule.
+An unresolved sporting tie remains unavailable;
 database order, driver ID and display order are not sporting tie-breakers.
 
 Preserve all constructor contributions to a driver's counted championship points.
@@ -196,16 +249,21 @@ contributions retain multiple/unresolved attribution. Changing the selected scor
 package does not recolour that historical anchor; expose the package-dependent
 contribution leader separately.
 
-Teammates are a pairwise, dated relationship requiring the same racing operation
-and verified concurrent GP participation in at least one round. Shared constructor
-make alone is insufficient. A same-constructor teammate claim also requires the
-same contemporary make during the overlap. Retain overlap extent and unresolved
-states; pairwise overlap is not transitive. A P1/P2 teammate-title-battle indication,
-possibly an outer ring, must remain separate from driver identity patterns.
+The champion's season teammate set retains every driver who shared at least one
+championship event with the champion in the same racing operation/team. Establish
+pairwise event-level relationships normally from normalized entrant/team identity
+and participation/entry evidence, then aggregate all qualifying relationships.
+Use canonical historical reconciliation/overrides where raw identifiers do not
+capture the operation; exhaustive manual verification is not the default. Raw
+entrant equality and shared constructor name alone do not define teammates.
+Retain identities, shared events/rounds, overlap context and unresolved states,
+including substitutions and seat changes, without selecting or ranking a primary
+teammate. Pairwise overlap is not transitive. The runner-up membership indicator
+must remain separate from driver identity patterns.
 
 Patterns use a versioned **driver + constructor-episode identity mapping** independent
 of championships, wins, points and scoring package. The former provisional
-championships ? wins ? points hierarchy is superseded as a pattern-assignment rule.
+championships → wins → points hierarchy is superseded as a pattern-assignment rule.
 Performance may supply later contextual statistics, never the meaning of a pattern.
 Exact motifs and collision/rendering policies remain presentation decisions.
 
@@ -216,9 +274,12 @@ Season/entrant chassis associations alone cannot establish event usage or primar
 chassis. Usage identity remains stable across scoring packages; scoring-dependent
 chassis contribution is a separate analytical result.
 
-Previously open multi-constructor attribution, teammate eligibility and pattern
-assignment questions are resolved by Milestone 1B. Comprehensive identity curation,
-event-level chassis evidence, full colour mappings and exact presentation remain
+Milestone 1B resolves multi-constructor attribution, pattern assignment and the
+season teammate set contract. The later entrant-based API's primary/additional
+selection and incomplete historical reconciliation remain Milestone 2 implementation
+work; current output does not establish full-history methodology coverage.
+Comprehensive identity curation, event-level chassis evidence, full colour mappings
+and exact presentation remain
 deferred. F1DB limitations must produce partial, ambiguous or unavailable claims.
 
 Historical colours use curated contemporary constructor identity. Modern colours
@@ -246,24 +307,26 @@ and driver-pattern meanings. Active-season production support is currently defer
 
 ## Delivery roadmap and quality
 
-Develop one reviewed milestone at a time. Preserve existing decision history and
-complete the current scope before expanding it. Changes should describe their
+Develop reviewed slices against the [milestone plan](../README.md#milestone-status).
+Preserve existing decision history and carry incomplete foundation dependencies
+explicitly into integration work. Changes should describe their
 purpose, files, validation and limitations for contributor review. Commits should
 be coherent and descriptive, such as `feat(analytics): add championship margin`
 or `test(rescoring): cover countback ambiguity`. Source rotation is a distinct
 reviewed change with provenance and rollback documentation.
 
-The next coverage expansion should validate the shared historical domain and
-unavailable states before presenting broader results. Subsequent work includes
-identity/colour curation, approved scoring packages, Constructors mode, broader
-historical coverage, provisional-season handling and controlled update automation.
+Milestone 2 joins remaining v1 Original coverage, supporting identity/colour context
+and presentation/integration work. Validate the historical domain and unavailable
+states before presenting broader results. Counterfactual packages belong to v2,
+Constructors mode to v3; provisional-season support and update automation remain
+deferred rather than prerequisites for the completed-season v1 comparison.
 Representative future regression cases include early/shared-drive/dropped-result
 eras, 1988, 2007, 2014 and 2021. These are test-planning candidates, not assertions
 of completed research or implemented support.
 
 The locked major-version roadmap is v1 Drivers / Historical Reality, v2 What If,
-and v3 Constructors, as described in the README. Earlier exploratory ideas about
-career comparisons and trend views are not commitments in this roadmap. Custom
+and v3 Constructors, as defined in the documentation roadmap. Earlier exploratory
+ideas about career comparisons and trend views are not commitments in this roadmap. Custom
 scoring, career rankings, unrelated dashboards and a weighted universal
 GOAT/dominance score remain outside V1. Contextual metrics may enrich interpretation
 without an arbitrary composite score.
@@ -274,36 +337,23 @@ regressions. Frontend tests cover interaction/state and fail-closed rendering.
 Fixtures must be grounded in reviewed policy and validated data, not copied blindly
 from calculation output. Source files remain immutable during tests.
 
-## Windows development
+Current CI runs backend tests on Python 3.11 and 3.14, with lint and the historical
+diagnostic, plus frontend tests/build and Bash syntax validation on Ubuntu with
+Node 24. It runs for pushes to `development/v1`/`main` and pull requests targeting
+`main`. This is not a browser end-to-end suite or Windows/macOS runtime validation.
+See [.github/workflows/ci.yml](../../.github/workflows/ci.yml) for the executable checks.
+
+## Development environment
 
 Use Windows PowerShell, Git, Python 3.11+ and compatible Node.js/npm tooling.
-Python has a declared minimum but no exact version pin; Node.js/npm have no
-project-level version pin. Node.js 26.x is the documented workstation convention,
-subject to the locked frontend dependencies' engine requirements. VS Code is an
-optional editor; no AI tooling or subscription is required.
+VS Code is an optional editor; no AI tooling or subscription is required.
 Use the project's `.venv` and frontend-local dependencies rather than global installs.
 The pinned backend and frontend manifests are the dependency authority.
-See [Development Setup](../SETUP.md) for authoritative fresh-machine instructions,
+See [Development Setup](../../SETUP.md) for authoritative fresh-machine instructions,
 prerequisite installation, environment preparation and troubleshooting.
 
-From the repository root:
-
-```powershell
-python -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install -e "./apps/backend[test]"
-npm.cmd --prefix apps/frontend ci
-& .\.venv\Scripts\python.exe -m pytest -c apps/backend/pyproject.toml
-npm.cmd --prefix apps/frontend test
-npm.cmd --prefix apps/frontend run build
-$env:PYTHONPATH = 'apps/backend/src'
-& .\.venv\Scripts\python.exe -B -m uvicorn f1_eras.api.http:create_default_app --factory --host 127.0.0.1 --port 8000
-```
-
-Use `npm.cmd` in PowerShell when execution policy blocks the `npm.ps1` shim.
-Run the frontend in a separate terminal with
-`npm.cmd --prefix apps/frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort`.
 See [apps/backend/README.md](../../apps/backend/README.md) and [apps/frontend/README.md](../../apps/frontend/README.md)
-for current endpoints, setup and development details. `F1_ERAS_DB_PATH` selects an
+for current endpoints and development details. `F1_ERAS_DB_PATH` selects an
 explicit read-only source for local testing; it does not approve that source.
 
 The project uses AI-assisted engineering with human-led product direction,

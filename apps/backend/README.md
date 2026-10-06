@@ -3,6 +3,10 @@
 The active backend provides source access, pure Original Drivers reconstruction
 for 2010–2013, and a read-only service with a versioned FastAPI interface.
 The React frontend renders its results; the original Streamlit code is archived.
+This is the implemented foundation for v1's historical champion-versus-runner-up
+comparison. The [roadmap](../../docs/README.md) owns product scope and milestone status;
+the [master brief](../../docs/architecture/F1_ERAs_MASTER_BRIEF.md#v1-visible-analytical-contract)
+owns the visible analytical contract.
 
 ```text
 immutable F1DB → data_access → typed source/domain records
@@ -15,24 +19,20 @@ explicit unavailable result for unsupported seasons and Constructor calculation.
 
 ## Environment and tests
 
-Follow [Development Setup](../../docs/SETUP.md) to prepare a fresh machine. The
-component commands below assume the root `.venv` has already been created.
+Follow [Development Setup](../../SETUP.md) for prerequisites, installation, startup
+and verification on each OS. The component commands below assume that setup is complete.
 
-Analytics and data access use the Python standard library (Python 3.11+;
-the current workstation uses Python 3.14.7). The API requires
-`fastapi==0.142.2` and `uvicorn==0.54.0`. Tests use `pytest==9.1.1` and
-`httpx==0.28.1`. These direct dependencies are pinned in `pyproject.toml`.
+Analytics and data access use the Python standard library. The API uses FastAPI
+and Uvicorn; tests use pytest and httpx, with Ruff for lint. Python requirements and
+direct dependency versions are declared in [pyproject.toml](pyproject.toml).
 
 From the repository root:
 
 ```powershell
-& .\.venv\Scripts\python.exe -m pip install -e "./apps/backend[test]"
 & .\.venv\Scripts\python.exe -B -m pytest -c apps/backend/pyproject.toml apps/backend/tests -q -p no:cacheprovider
 ```
 
-The install command uses the declared `test` extra and installs the backend in
-editable mode. Pip supplies the declared build requirements in an isolated build
-environment. Pytest also adds `apps/backend/src` to its import path.
+Pytest adds `apps/backend/src` to its import path.
 
 All tests run by default, including read-only integration tests against the tracked
 `data/f1db.db`. To run only synthetic fixtures, append `-m "not integration"`.
@@ -40,6 +40,18 @@ Synthetic tests create and modify SQLite files only in pytest's temporary direct
 Write-rejection tests never attempt writes against the tracked source database.
 
 ## Champion teammate context
+
+This section describes current entrant-based implementation behavior, including
+its primary/additional selection; that ranking is not normative v1 methodology.
+[Milestone 1B's final contract](../../docs/decisions/MILESTONE_1B_DECISION_RECORD.md#teammate-eligibility-and-grouping)
+retains all drivers who shared a championship event with the champion in the same
+racing operation/team, using normalized identity and participation/entry evidence
+with canonical reconciliation for historical exceptions. **Teammate battle** means
+runner-up membership in that season set, including partial-season overlap.
+[Milestone 2](../../docs/decisions/MILESTONE_2_DECISION_RECORD.md) must align the API
+with that contract and complete historical coverage; the current enrichment does
+not establish compliance. Teammate context never replaces the championship runner-up
+or changes points/margins, and the frontend does not yet render it.
 
 Drivers / Original remains limited to 2010–2013. Both championship detail and
 margin summaries now include a stable `teammate_context` object:
@@ -233,7 +245,7 @@ update needs its own approved validation and provenance review.
 `f1_eras.analytics.original_drivers.calculate_original_drivers` accepts the
 repository's immutable event, final GP classification, and recorded standing
 tuples. It has no database access. Each source year retains its own package
-identity. These four packages use 25â€“18â€“15â€“12â€“10â€“8â€“6â€“4â€“2â€“1 points, count all
+identity. These four packages use 25–18–15–12–10–8–6–4–2–1 points, count all
 held GP results, and rank equal totals by counts of 1st places, then 2nd places,
 and so on through all classified finishing positions. No sprint or fastest-lap
 points apply. The source's final amended classification is scored directly;
@@ -247,8 +259,9 @@ standings remain separate comparison records. The result exposes differences
 from both sources; all four curated seasons currently reconcile with no
 differences. Unresolved countback, missing final GP classifications, unsupported
 years, and Constructor category return `CalculationUnavailable` with a reason
-and resolution condition. Counterfactual scoring and historical identity
-presentation remain unimplemented; the active frontend lives in `apps/frontend/`.
+and resolution condition. Counterfactual scoring, general historical rule packages
+and historical identity presentation remain unimplemented; supporting constructor
+contributions and teammate API context do exist. The active frontend lives in `apps/frontend/`.
 
 ## Read-only service and API
 
@@ -264,12 +277,7 @@ Constructor category do not invoke source readers. API imports do not open the
 database; the Uvicorn factory constructs the repository from the local `data/f1db.db`
 or the explicit `F1_ERAS_DB_PATH` environment variable.
 
-From the repository root, serve with:
-
-```powershell
-$env:PYTHONPATH = "apps/backend/src"
-& .\.venv\Scripts\python.exe -m uvicorn f1_eras.api.http:create_default_app --factory
-```
+Use the startup commands in [SETUP.md](../../SETUP.md#running-the-project).
 
 The versioned GET endpoints are:
 
@@ -338,7 +346,6 @@ both representations. New primary-source research is exception handling only.
 Run the fixed 2010-2013 diagnostic from the repository root:
 
 ```powershell
-$env:PYTHONPATH = "apps/backend/src"
 & .\.venv\Scripts\python.exe -B -m f1_eras.verification.diagnostic
 ```
 
@@ -350,7 +357,7 @@ still requires a clean known commit. Exit 0 means the diagnostic completed, so
 inspect each assessment for trust; operational errors exit nonzero.
 `--db PATH` selects another read-only snapshot without changing the fixed year set.
 
-The complete backend pytest command above includes all new synthetic policy,
+The complete backend pytest command above includes the synthetic policy,
 schema and comparator tests and the four-season diagnostic integration test.
 The only example fixture is explicitly synthetic under `tests/fixtures/synthetic`.
 
@@ -391,5 +398,5 @@ Update approval-dependent tests and documentation without altering historical
 scoring logic. Preserve historical audit bindings; they never transfer automatically.
 `v2026.16.0` was approved on 2026-10-05 after official-asset byte comparison and
 unchanged 2010-2013 input/reconciliation checks. The previous `v2026.15.0` snapshot
-is retained in Git history. `data/f1db_newsnapshot.db` remains an ignored local
-acceptance-test copy; its bytes now match the approved canonical snapshot.
+is retained in Git history. `data/f1db_newsnapshot.db` is an ignored path for an
+optional local acceptance-test copy, not a required file in a fresh checkout.
