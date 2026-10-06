@@ -177,6 +177,7 @@ metric. See the [frontend README](../apps/frontend/README.md) for implemented sc
 Run the existing health checks from the repository root. In PowerShell:
 
 ```powershell
+& .\.venv\Scripts\python.exe -m ruff check --no-cache --config apps/backend/pyproject.toml apps/backend/src apps/backend/tests
 & .\.venv\Scripts\python.exe -B -m pytest -c apps/backend/pyproject.toml apps/backend/tests -q -p no:cacheprovider
 npm.cmd --prefix apps/frontend test
 npm.cmd --prefix apps/frontend run build
@@ -187,11 +188,16 @@ $env:PYTHONPATH = 'apps/backend/src'
 On macOS/Linux:
 
 ```bash
+.venv/bin/python -m ruff check --no-cache --config apps/backend/pyproject.toml apps/backend/src apps/backend/tests
 .venv/bin/python -B -m pytest -c apps/backend/pyproject.toml apps/backend/tests -q -p no:cacheprovider
 npm --prefix apps/frontend test
 npm --prefix apps/frontend run build
 PYTHONPATH=apps/backend/src .venv/bin/python -B -m f1_eras.verification.diagnostic
 ```
+
+Ruff is lint-only in the current baseline; formatting is not enforced. The
+frontend build includes unused-local and unused-parameter compiler checks through
+`tsconfig.json`.
 
 Tests should pass and the frontend build should complete. In the diagnostic,
 all four seasons should report `state: passed`, `comparison: match`,
