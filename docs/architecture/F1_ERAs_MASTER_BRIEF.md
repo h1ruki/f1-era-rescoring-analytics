@@ -10,13 +10,13 @@ boundaries. Roadmap requirements below do not imply implemented support.
 
 ## Authority and current implementation
 
-- [Milestone 1A](MILESTONE_1A_DECISION_RECORD.md) governs scoring, eligible
+- [Milestone 1A](../decisions/MILESTONE_1A_DECISION_RECORD.md) governs scoring, eligible
   results, countback, sanctions, exact arithmetic, ambiguity and unavailable states.
-- [Milestone 1B](MILESTONE_1B_DECISION_RECORD.md) governs historical identity,
+- [Milestone 1B](../decisions/MILESTONE_1B_DECISION_RECORD.md) governs historical identity,
   chassis usage, constructor attribution, teammate relationships and driver patterns.
-- [Historical data trust](HISTORICAL_DATA_TRUST_DECISION_RECORD.md) governs
+- [Historical data trust](../decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md) governs
   canonical trust and supplementary external auditing.
-- [Verification foundation](VERIFICATION_FOUNDATION_DECISION_RECORD.md)
+- [Verification foundation](../decisions/VERIFICATION_FOUNDATION_DECISION_RECORD.md)
   preserves the earlier independent-evidence methodology and its supersession
   as a normal-use production gate.
 
@@ -74,7 +74,7 @@ replaces Original rules throughout the range.
 F1DB is the canonical historical dataset. Application code treats `f1db.db` as
 immutable source data and must never alter its records to satisfy a test.
 
-[backend/historical/canonical_snapshot.json](backend/historical/canonical_snapshot.json)
+[backend/historical/canonical_snapshot.json](../../backend/historical/canonical_snapshot.json)
 is the machine-readable runtime approval authority for release, release commit,
 database SHA-256 and byte size. SQLite schema/user counters are not release versions.
 Unknown claim-level upstream source lineage remains documented and non-blocking.
@@ -282,7 +282,7 @@ $env:PYTHONPATH = 'backend/src'
 
 Use `npm.cmd` in PowerShell when execution policy blocks the `npm.ps1` shim.
 Run the frontend in a separate terminal with `npm.cmd --prefix frontend run dev`.
-See [backend/README.md](backend/README.md) and [frontend/README.md](frontend/README.md)
+See [backend/README.md](../../backend/README.md) and [frontend/README.md](../../frontend/README.md)
 for current endpoints, setup and development details. `F1_ERAS_DB_PATH` selects an
 explicit read-only source for local testing; it does not approve that source.
 

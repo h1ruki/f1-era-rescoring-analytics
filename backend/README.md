@@ -183,9 +183,9 @@ The Milestone 1A/1B records remain authoritative as coverage expands.
 
 ## Canonical trust and supplementary external verification
 
-The approved [verification decision record](../VERIFICATION_FOUNDATION_DECISION_RECORD.md)
+The approved [verification decision record](../docs/decisions/VERIFICATION_FOUNDATION_DECISION_RECORD.md)
 preserves the original foundation and records its supersession by
-[historical-data trust policy](../HISTORICAL_DATA_TRUST_DECISION_RECORD.md).
+[historical-data trust policy](../docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md).
 `domain/verification.py` contains typed assessments and context;
 `verification/metadata.py` strictly loads JSON evidence;
 `verification/compare.py` compares complete standings with exact fractions;

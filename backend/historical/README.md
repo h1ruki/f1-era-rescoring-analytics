@@ -2,7 +2,7 @@
 
 ## Current canonical trust policy
 
-[HISTORICAL_DATA_TRUST_DECISION_RECORD.md](../../HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
+[HISTORICAL_DATA_TRUST_DECISION_RECORD.md](../../docs/decisions/HISTORICAL_DATA_TRUST_DECISION_RECORD.md)
 supersedes the earlier requirement to populate independent evidence before normal
 project trust or production promotion. Immutable canonical F1DB input, supported
 deterministic reconstruction, passing integrity checks and exact full championship
