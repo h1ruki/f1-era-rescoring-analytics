@@ -3,6 +3,6 @@ venv/
 __pycache__/
 .DS_Store
 .streamlit/
-apps/frontend/node_modules/
-apps/frontend/dist/
+node_modules/
+dist/
 /data/f1db_newsnapshot.db
