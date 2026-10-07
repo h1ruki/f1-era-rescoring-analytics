@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Team colour swatches</title>
+    <style>
+      body { margin: 0; padding: 24px 16px; font-family: system-ui, sans-serif; color: #e6e8ec; }
+      main { max-width: 760px; margin: 0 auto; }
+      h1 { font-size: 1.25rem; }
+      h2 { margin: 28px 0 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8b919a; }
+      .row { display: grid; grid-template-columns: 9rem 1fr; align-items: center; gap: 12px; margin: 6px 0; }
+      .row span { font-size: 0.85rem; }
+      .row small { display: block; color: #8b919a; font-variant-numeric: tabular-nums; }
+      .bar { height: 44px; border-radius: 3px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Team colours on the chart background</h1>
+      <div id="swatches"></div>
+    </main>
+    <script type="module">
+      import { CHART_BACKGROUND, TEAM_COLOURS } from '/src/teamColours.ts';
+      import { contrastRatio } from '/src/contrast.ts';
+
+      document.body.style.background = CHART_BACKGROUND;
+      const families = {
+        Reds: ['ferrari', 'alfa-romeo', 'maserati'],
+        'Orange / yellow / gold': ['mclaren', 'lotus', 'renault', 'brawn'],
+        Greens: ['cooper', 'brm', 'benetton'],
+        Blues: ['red-bull', 'williams', 'matra', 'tyrrell'],
+        'Silver / white': ['mercedes', 'brabham'],
+      };
+      const listed = Object.values(families).flat();
+      families.Other = Object.keys(TEAM_COLOURS).filter((id) => !listed.includes(id));
+      const root = document.getElementById('swatches');
+      for (const [family, ids] of Object.entries(families)) {
+        if (ids.length === 0) continue;
+        const h = document.createElement('h2');
+        h.textContent = family;
+        root.append(h);
+        for (const id of ids) {
+          const colour = TEAM_COLOURS[id];
+          const row = document.createElement('div');
+          row.className = 'row';
+          row.innerHTML = `<span>${id}<small>${colour} · ${contrastRatio(colour, CHART_BACKGROUND).toFixed(2)}:1</small></span><div class="bar" style="background:${colour}"></div>`;
+          root.append(row);
+        }
+      }
+    </script>
+  </body>
+</html>
