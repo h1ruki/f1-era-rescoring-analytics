@@ -4,6 +4,7 @@
   --text: #e6e8ec;
   --muted: #8b919a;
   --line: #262b33;
+  --thumb: 44px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -30,16 +31,16 @@ h1 {
   text-transform: uppercase;
 }
 
-.subtitle {
-  margin: 8px 0 28px;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.4;
-}
+.subtitle { margin: 8px 0 20px; color: var(--muted); line-height: 1.4; }
+
+.stat { margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5; }
+.stat p { margin: 0; }
+.stat-intro { margin-bottom: 4px !important; color: var(--muted); font-size: 0.85rem; }
+.stat span { color: var(--muted); }
 
 .toggle {
   display: inline-flex;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 3px;
@@ -58,21 +59,97 @@ h1 {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.toggle button[aria-pressed="true"] {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 600;
-}
-
+.toggle button[aria-pressed="true"] { background: var(--text); color: var(--bg); font-weight: 600; }
 .toggle button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 
-.chart {
+.range { max-width: 520px; margin-bottom: 8px; }
+.selects { display: flex; gap: 12px; }
+.selects label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 0.75rem; }
+.selects .view { flex: 1; min-width: 0; }
+
+select {
   width: 100%;
-  height: clamp(320px, 62vh, 520px);
+  min-height: 40px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #14171c;
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
 }
 
-footer {
-  margin-top: 24px;
-  color: var(--muted);
-  font-size: 0.8rem;
+.slider { position: relative; height: var(--thumb); margin-top: 4px; }
+.slider::before, .band {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+}
+.slider::before { left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); background: var(--line); }
+.band { background: var(--text); }
+
+/* Two native range inputs stacked; only the thumbs take pointer events. */
+.slider input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+}
+.slider input::-webkit-slider-runnable-track { background: none; height: var(--thumb); }
+.slider input::-moz-range-track { background: none; }
+.slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--text) 0 9px, transparent 10px);
+  cursor: grab;
+}
+.slider input::-moz-range-thumb {
+  pointer-events: auto;
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--text) 0 9px, transparent 10px);
+  cursor: grab;
+}
+.slider input:focus-visible { outline: none; }
+.slider input:focus-visible::-webkit-slider-thumb {
+  background: radial-gradient(circle, var(--text) 0 9px, transparent 10px 14px, var(--text) 15px 16px, transparent 17px);
+}
+.slider input:focus-visible::-moz-range-thumb {
+  background: radial-gradient(circle, var(--text) 0 9px, transparent 10px 14px, var(--text) 15px 16px, transparent 17px);
+}
+
+.range-text { margin: 0; color: var(--muted); font-size: 0.85rem; text-align: center; font-variant-numeric: tabular-nums; }
+
+.chart { width: 100%; height: clamp(320px, 62vh, 520px); margin-top: 12px; }
+
+.method { margin-top: 24px; color: var(--muted); font-size: 0.9rem; line-height: 1.55; max-width: 720px; }
+.method summary { color: var(--text); cursor: pointer; }
+.method p, .method ul { margin: 10px 0 0; }
+.method strong { color: var(--text); font-weight: 600; }
+.method a { color: var(--text); }
+
+footer { margin-top: 20px; color: var(--muted); font-size: 0.8rem; }
+
+@media (max-width: 639px) {
+  main { padding-top: 24px; }
+  .subtitle { margin: 6px 0 14px; }
+  .stat { margin-bottom: 14px; }
+  .toggle { margin-bottom: 12px; }
+  .selects { gap: 8px; }
+  .selects label:not(.view) { width: 84px; }
+  .chart { margin-top: 4px; }
 }

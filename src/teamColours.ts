@@ -5,7 +5,7 @@ export const CHART_BACKGROUND = '#0B0C0F';
 export const TEAM_COLOURS: Record<string, string> = {
   // Reds
   ferrari: '#E8002D',
-  'alfa-romeo': '#C2194A', // crimson, cooler and darker than Ferrari
+  'alfa-romeo': '#B83A3A', // brick red, darker and duller than Ferrari
   maserati: '#B0506A', // burgundy, lifted to wine-rose to pass 3:1
   // Orange / yellow / gold
   mclaren: '#FF8000',
@@ -22,8 +22,8 @@ export const TEAM_COLOURS: Record<string, string> = {
   matra: '#5568F0', // French blue, pushed towards ultramarine
   tyrrell: '#2A8FBD', // Elf blue, pushed towards cyan
   // Silver / white
-  mercedes: '#C8CCD0',
-  brabham: '#F2F8FF', // pale blue-white
+  mercedes: '#BFC3C7',
+  brabham: '#FFFFFF', // white
 };
 
 export function teamColour(teamId: string): string {

@@ -1,12 +1,16 @@
 import type { BarSeriesOption } from 'echarts/charts';
 import type { EChartsCoreOption } from 'echarts/core';
 import type { Metric, Orientation, Season } from './types';
+import { visibleBands } from './bands';
+import { NOTES } from './notes';
 import { CHART_BACKGROUND, teamColour } from './teamColours';
 
 export const ROW_HEIGHT = 22; // px per season in the horizontal layout
 const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 const TEXT = '#8b919a';
 const GRID = '#1b1f26';
+const MIN_BAND_LABEL_SEASONS = 6;
+type BandArea = Extract<NonNullable<BarSeriesOption['markArea']>['data'], unknown[]>[number];
 
 export interface BarDatum {
   value: number;
@@ -32,31 +36,38 @@ export function tooltipHtml(s: Season): string {
   const { champion: c, runnerUp: r } = s;
   const line = (e: Season['champion']): string =>
     `${escapeHtml(e.name)} (${escapeHtml(e.nationality)}) · ${escapeHtml(e.teamName)} · ${e.points} pts`;
+  const note = NOTES[s.year];
   return [
     `<strong>${s.year}</strong>`,
     line(c),
     `beat ${line(r)}`,
     `Margin ${percent(s)} · ${s.gapPoints} pts`,
+    ...(note === undefined ? [] : [`<span style="color:${TEXT}">${escapeHtml(note)}</span>`]),
   ].join('<br/>');
 }
 
+// Label every year when few are shown, otherwise every 5th or 10th.
+const labelStep = (count: number): number => (count <= 15 ? 1 : count <= 40 ? 5 : 10);
+
 export function buildOption(
-  seasons: readonly Season[],
+  input: readonly Season[],
   metric: Metric,
   orientation: Orientation,
 ): ChartOption {
   const horizontal = orientation === 'horizontal';
-  const years = seasons.map((s) => String(s.year));
+  // Category axes run bottom-to-top, so reverse the rows to put 1950 at the top.
+  const seasons = horizontal ? [...input].reverse() : input;
+  const years = seasons.map((s) => s.year);
+  const step = labelStep(years.length);
   const category = {
     type: 'category' as const,
-    data: years,
-    inverse: horizontal, // 1950 at the top
+    data: years.map(String),
     axisLine: { lineStyle: { color: GRID } },
-    axisTick: { show: false },
+    axisTick: { show: false, interval: 0 }, // markArea snaps to ticks, so keep one per season
     axisLabel: {
       color: TEXT,
       fontSize: 11,
-      interval: horizontal ? 0 : (_: number, year: string) => Number(year) % 10 === 0,
+      interval: horizontal ? 0 : (_: number, year: string) => Number(year) % step === 0,
     },
   };
   const value = {
@@ -65,6 +76,21 @@ export function buildOption(
     axisLabel: { color: TEXT, fontSize: 11, formatter: (v: number) => axisValue(v, metric) },
     splitLine: { lineStyle: { color: GRID } },
   };
+  // Shaded points-scale bands, from the first bar to the last (bar markAreas snap to ticks).
+  const bands = visibleBands(input.map((s) => s.year)).map((b): BandArea => {
+    const [i, j] = [years.indexOf(b.first), years.indexOf(b.last)];
+    const [a, z] = [Math.min(i, j), Math.max(i, j)];
+    const label = {
+      show: b.last - b.first + 1 >= MIN_BAND_LABEL_SEASONS,
+      position: horizontal ? ('insideRight' as const) : ('insideTop' as const),
+      rotate: horizontal ? 90 : 0,
+      formatter: horizontal ? b.label : b.label.replace(' · ', '\n'),
+    };
+    const itemStyle = { color: b.tone % 2 === 0 ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.015)' };
+    return horizontal
+      ? [{ yAxis: a, itemStyle, label }, { yAxis: z }]
+      : [{ xAxis: a, itemStyle, label }, { xAxis: z }];
+  });
 
   return {
     backgroundColor: CHART_BACKGROUND,
@@ -87,7 +113,8 @@ export function buildOption(
       axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(255,255,255,0.06)' } },
       backgroundColor: '#14171c',
       borderColor: '#2a2f38',
-      textStyle: { color: '#d7dae0', fontSize: 12, lineHeight: 18 },
+      padding: horizontal ? 7 : 10,
+      textStyle: { color: '#d7dae0', fontSize: horizontal ? 11 : 12, lineHeight: horizontal ? 16 : 18 },
       extraCssText: 'white-space: normal; max-width: min(340px, 92vw);',
       formatter: (params: { dataIndex: number } | { dataIndex: number }[]): string => {
         const first = Array.isArray(params) ? params[0] : params;
@@ -99,16 +126,22 @@ export function buildOption(
       {
         type: 'bar',
         barCategoryGap: '28%',
+        barMaxWidth: 48,
         itemStyle: { borderRadius: horizontal ? [0, 2, 2, 0] : [2, 2, 0, 0] },
         label: {
           show: horizontal,
           position: 'right',
-          color: TEXT,
-          fontSize: 10,
+          color: '#a9afb9',
+          fontSize: 11,
           formatter: ({ dataIndex }: { dataIndex: number }): string => {
             const s = seasons[dataIndex];
             return s === undefined ? '' : metric === 'percent' ? percent(s) : `${s.gapPoints}`;
           },
+        },
+        markArea: {
+          silent: true,
+          label: { color: '#6f7580', fontSize: 10, lineHeight: 12 },
+          data: bands,
         },
         data: seasons.map((s) => ({
           value: metric === 'percent' ? s.gapPercent : s.gapPoints,

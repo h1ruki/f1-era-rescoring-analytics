@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react';
 import { init, use } from 'echarts/core';
 import type { ECharts } from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent } from 'echarts/components';
+import { GridComponent, MarkAreaComponent, TooltipComponent } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 import { ROW_HEIGHT, buildOption } from './chartOption';
 import type { Metric, Orientation, Season } from './types';
 
-use([BarChart, GridComponent, TooltipComponent, SVGRenderer]);
+use([BarChart, GridComponent, MarkAreaComponent, TooltipComponent, SVGRenderer]);
 
 interface Props {
   seasons: readonly Season[];

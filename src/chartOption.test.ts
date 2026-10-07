@@ -47,3 +47,10 @@ describe('tooltipHtml', () => {
     expect(html).toContain('A&amp;B');
   });
 });
+
+describe('season notes', () => {
+  it('adds the 1997 note to that season only', () => {
+    expect(tooltipHtml(find(1997))).toContain('Heinz-Harald Frentzen as P2');
+    expect(tooltipHtml(find(1996))).not.toContain('Frentzen as P2');
+  });
+});
