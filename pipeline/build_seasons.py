@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 import sqlite3
 import sys
 import urllib.request
@@ -25,15 +26,15 @@ class Entry(TypedDict):
     nationality: str
     teamId: str
     teamName: str
-    points: int | float
+    points: Decimal
 
 
 class Season(TypedDict):
     year: int
     champion: Entry
     runnerUp: Entry
-    gapPoints: int | float
-    gapPercent: int | float
+    gapPoints: Decimal
+    gapPercent: Decimal
 
 
 def is_completed(champion_flags: int, race_result_counts: list[int]) -> bool:
@@ -62,9 +63,27 @@ def pick_team(year: int, driver_id: str, totals: dict[str, Decimal]) -> str:
     return ranked[0][0]
 
 
-def json_number(value: Decimal) -> int | float:
-    """Natural JSON form of an already-rounded 2 dp value (40, 395.5, 25.14)."""
-    return int(value) if value == value.to_integral_value() else float(value)
+def format_decimal(value: Decimal) -> str:
+    """Fixed-point literal: no exponent, trailing zeros removed (40, 395.5, 25.14, 0)."""
+    text = format(value, "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def to_json(value: Decimal | int | str | list | dict, level: int = 0) -> str:
+    """Serialize our fixed shape (dict, list, str, int, Decimal), 2-space indented."""
+    if isinstance(value, Decimal):
+        return format_decimal(value)
+    if isinstance(value, str):
+        return json.dumps(value, ensure_ascii=False)
+    if isinstance(value, int):
+        return str(value)
+    pad, inner = "  " * level, "  " * (level + 1)
+    if isinstance(value, list):
+        items, (open_, close) = [f"{inner}{to_json(v, level + 1)}" for v in value], "[]"
+    else:
+        pairs = ((json.dumps(k, ensure_ascii=False), to_json(v, level + 1)) for k, v in value.items())
+        items, (open_, close) = [f"{inner}{k}: {v}" for k, v in pairs], "{}"
+    return f"{open_}\n" + ",\n".join(items) + f"\n{pad}{close}"
 
 
 def sha256_of(path: Path) -> str:
@@ -140,7 +159,7 @@ def build(conn: sqlite3.Connection) -> list[Season]:
             nationality=nationality,
             teamId=team_id,
             teamName=team_names.get(team_id, ""),
-            points=json_number(points),
+            points=points,
         )
         return result, points
 
@@ -163,8 +182,8 @@ def build(conn: sqlite3.Connection) -> list[Season]:
                 year=year,
                 champion=champion,
                 runnerUp=runner_up,
-                gapPoints=json_number(gap),
-                gapPercent=json_number(percent),
+                gapPoints=gap,
+                gapPercent=percent,
             )
         )
     years = [s["year"] for s in seasons]
@@ -186,8 +205,9 @@ def main() -> int:
     except ValueError as err:
         print(f"build failed: {err}", file=sys.stderr)
         return 1
-    text = json.dumps(seasons, indent=2, ensure_ascii=False) + "\n"
-    OUT_PATH.write_text(text, encoding="utf-8", newline="\n")
+    tmp = OUT_PATH.with_suffix(".json.tmp")
+    tmp.write_text(to_json(seasons) + "\n", encoding="utf-8", newline="\n")
+    os.replace(tmp, OUT_PATH)
     print(f"wrote {len(seasons)} seasons to {OUT_PATH.relative_to(ROOT)}")
     return 0
 
