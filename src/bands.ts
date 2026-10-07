@@ -1,4 +1,5 @@
-// Main Grand Prix finishing-points scale only: not every historical scoring rule.
+// Main Grand Prix finishing-points scale only: not every historical scoring rule. "Points to P6"
+// means finishing points were awarded down to sixth place, not that six results counted.
 export interface Band {
   from: number;
   to: number | null; // null = open-ended, up to the latest season
@@ -7,10 +8,10 @@ export interface Band {
 
 export const BANDS: readonly Band[] = [
   { from: 1950, to: 1960, label: 'Win = 8 pts' },
-  { from: 1961, to: 1990, label: 'Win = 9 pts' },
-  { from: 1991, to: 2002, label: 'Win = 10 · top 6 score' },
-  { from: 2003, to: 2009, label: 'Win = 10 · top 8 score' },
-  { from: 2010, to: null, label: 'Win = 25 · top 10 score' },
+  { from: 1961, to: 1990, label: 'Win = 9 pts · Points to P6' },
+  { from: 1991, to: 2002, label: 'Win = 10 pts · Points to P6' },
+  { from: 2003, to: 2009, label: 'Win = 10 pts · Points to P8' },
+  { from: 2010, to: null, label: 'Win = 25 pts · Points to P10' },
 ];
 
 export interface VisibleBand {

@@ -1,6 +1,7 @@
 export interface Entrant {
   driverId: string;
   name: string;
+  abbreviation: string; // F1DB driver code, display only
   nationality: string;
   teamId: string;
   teamName: string;

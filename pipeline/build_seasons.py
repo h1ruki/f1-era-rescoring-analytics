@@ -23,6 +23,7 @@ CENT = Decimal("0.01")
 class Entry(TypedDict):
     driverId: str
     name: str
+    abbreviation: str
     nationality: str
     teamId: str
     teamName: str
@@ -133,7 +134,7 @@ def build(conn: sqlite3.Connection) -> list[Season]:
 
     def entry(year: int, position: int) -> tuple[Entry, Decimal]:
         rows = conn.execute(
-            "SELECT s.driver_id, d.name, c.name, CAST(s.points AS TEXT) "
+            "SELECT s.driver_id, d.name, d.abbreviation, c.name, CAST(s.points AS TEXT) "
             "FROM season_driver_standing s JOIN driver d ON d.id = s.driver_id "
             "LEFT JOIN country c ON c.id = d.nationality_country_id "
             "WHERE s.year = ? AND s.position_number = ? ORDER BY s.driver_id",
@@ -141,7 +142,7 @@ def build(conn: sqlite3.Connection) -> list[Season]:
         ).fetchall()
         if len(rows) != 1:
             raise ValueError(f"{year}: expected one driver at position {position}, got {len(rows)}")
-        driver_id, name, nationality, points_text = rows[0]
+        driver_id, name, abbreviation, nationality, points_text = rows[0]
         totals: dict[str, Decimal] = {}
         for team_id, race_points in conn.execute(
             "SELECT d.constructor_id, CAST(COALESCE(d.race_points, 0) AS TEXT) "
@@ -156,6 +157,7 @@ def build(conn: sqlite3.Connection) -> list[Season]:
         result = Entry(
             driverId=driver_id,
             name=name,
+            abbreviation=abbreviation,
             nationality=nationality,
             teamId=team_id,
             teamName=team_names.get(team_id, ""),

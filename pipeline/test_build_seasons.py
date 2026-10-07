@@ -54,8 +54,17 @@ def test_margin_champion_below_runner_up_raises() -> None:
         margin(Decimal(40), Decimal(41))
 
 
-def check(s: dict, role: str, driver_id: str, points: float | None = None, team: str | None = None) -> None:
+def check(
+    s: dict,
+    role: str,
+    driver_id: str,
+    points: float | None = None,
+    team: str | None = None,
+    abbreviation: str | None = None,
+) -> None:
     assert s[role]["driverId"] == driver_id
+    if abbreviation is not None:
+        assert s[role]["abbreviation"] == abbreviation
     if points is not None:
         assert s[role]["points"] == points
     if team is not None:
@@ -64,7 +73,7 @@ def check(s: dict, role: str, driver_id: str, points: float | None = None, team:
 
 def test_1954(seasons: dict[int, dict]) -> None:
     check(seasons[1954], "champion", "juan-manuel-fangio", 42, "mercedes")
-    check(seasons[1954], "runnerUp", "jose-froilan-gonzalez", 25.14)
+    check(seasons[1954], "runnerUp", "jose-froilan-gonzalez", 25.14, abbreviation="GON")
 
 
 def test_1957(seasons: dict[int, dict]) -> None:
@@ -95,8 +104,12 @@ def test_1988(seasons: dict[int, dict]) -> None:
     assert seasons[1988]["gapPercent"] == 3.33
 
 
+def test_2001(seasons: dict[int, dict]) -> None:
+    check(seasons[2001], "champion", "michael-schumacher", abbreviation="MSC")
+
+
 def test_2021(seasons: dict[int, dict]) -> None:
-    check(seasons[2021], "champion", "max-verstappen", 395.5)
+    check(seasons[2021], "champion", "max-verstappen", 395.5, abbreviation="VER")
     check(seasons[2021], "runnerUp", "lewis-hamilton", 387.5)
 
 
@@ -104,6 +117,12 @@ def test_2025(seasons: dict[int, dict]) -> None:
     check(seasons[2025], "champion", "lando-norris", 423)
     check(seasons[2025], "runnerUp", "max-verstappen", 421)
     assert seasons[2025]["gapPercent"] == 0.47
+
+
+def test_every_champion_and_runner_up_has_an_abbreviation(seasons: dict[int, dict]) -> None:
+    for s in seasons.values():
+        for role in ("champion", "runnerUp"):
+            assert s[role]["abbreviation"], f"{s['year']} {role}"
 
 
 def test_year_range(seasons: dict[int, dict]) -> None:

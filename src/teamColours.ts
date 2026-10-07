@@ -1,33 +1,46 @@
-// One colour per champion team, used for every season. Every value must reach
-// 3:1 contrast against CHART_BACKGROUND (enforced in teamColours.test.ts).
+// The one palette registry, keyed by F1DB teamId: one exact identity colour per constructor,
+// used for the bars and for the constructor names in the tooltip. Every champion and
+// runner-up team in the data needs an entry (see teamColours.test.ts); add one line when a
+// new team appears.
 export const CHART_BACKGROUND = '#0B0C0F';
+export const TOOLTIP_BACKGROUND = '#000000';
+
+// Shown for a team that has no explicit entry (the coverage test keeps this from shipping).
+export const FALLBACK_COLOUR = '#8B919A';
 
 export const TEAM_COLOURS: Record<string, string> = {
   // Reds
-  ferrari: '#E8002D',
-  'alfa-romeo': '#B83A3A', // brick red, darker and duller than Ferrari
-  maserati: '#B0506A', // burgundy, lifted to wine-rose to pass 3:1
+  ferrari: '#E80020',
+  'alfa-romeo': '#971B29',
   // Orange / yellow / gold
   mclaren: '#FF8000',
-  lotus: '#C99A2E', // JPS gold
-  renault: '#FFF500',
-  brawn: '#C6F31E', // fluorescent yellow-green
+  brabham: '#B8860B',
+  renault: '#F7B100',
+  brawn: '#C8FF00',
+  march: '#F05A28',
   // Greens
-  cooper: '#2E9B5E', // British racing green, lifted
-  brm: '#8F9A3C', // warm olive
-  benetton: '#12D6B4', // bright green-teal
+  cooper: '#006B54',
+  lotus: '#004225',
+  brm: '#4B5D52',
+  benetton: '#008860',
+  vanwall: '#4CAF50',
   // Blues
   'red-bull': '#3671C6',
   williams: '#64C4FF',
-  matra: '#5568F0', // French blue, pushed towards ultramarine
-  tyrrell: '#2A8FBD', // Elf blue, pushed towards cyan
-  // Silver / white
-  mercedes: '#BFC3C7',
-  brabham: '#FFFFFF', // white
+  maserati: '#0C2340',
+  matra: '#318CE7',
+  tyrrell: '#003B73',
+  wolf: '#6F8FE8',
+  // Silver / turquoise: the modern Petronas colour; see MERCEDES_SILVER for 1954-55
+  mercedes: '#27F4D2',
 };
 
-export function teamColour(teamId: string): string {
-  const colour = TEAM_COLOURS[teamId];
-  if (colour === undefined) throw new Error(`No colour for team "${teamId}"`);
-  return colour;
+// The 1954-55 Mercedes were silver. This is the one historical exception to the registry.
+export const MERCEDES_SILVER = '#BFC3C7';
+
+export const hasTeamColour = (teamId: string): boolean => Object.hasOwn(TEAM_COLOURS, teamId);
+
+export function teamColour(teamId: string, year: number): string {
+  if (teamId === 'mercedes' && year >= 1954 && year <= 1955) return MERCEDES_SILVER;
+  return (hasTeamColour(teamId) ? TEAM_COLOURS[teamId] : undefined) ?? FALLBACK_COLOUR;
 }

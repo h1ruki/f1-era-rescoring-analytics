@@ -33,7 +33,8 @@ h1 {
 
 .subtitle { margin: 8px 0 20px; color: var(--muted); line-height: 1.4; }
 
-.stat { margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5; }
+/* Reserves the multi-season height so the controls never move when the range or metric changes. */
+.stat { min-height: 4.4rem; margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5; }
 .stat p { margin: 0; }
 .stat-intro { margin-bottom: 4px !important; color: var(--muted); font-size: 0.85rem; }
 .stat span { color: var(--muted); }
@@ -79,7 +80,8 @@ select {
   font-size: 1rem;
 }
 
-.slider { position: relative; height: var(--thumb); margin-top: 4px; }
+/* One pointer handler on the track drives both thumbs; vertical swipes still scroll the page. */
+.slider { position: relative; height: var(--thumb); margin-top: 4px; touch-action: pan-y; user-select: none; cursor: grab; }
 .slider::before, .band {
   content: "";
   position: absolute;
@@ -91,7 +93,7 @@ select {
 .slider::before { left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); background: var(--line); }
 .band { background: var(--text); }
 
-/* Two native range inputs stacked; only the thumbs take pointer events. */
+/* Two native range inputs for keyboard and screen readers only; they ignore the pointer. */
 .slider input {
   position: absolute;
   inset: 0;
@@ -107,7 +109,6 @@ select {
 .slider input::-moz-range-track { background: none; }
 .slider input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  pointer-events: auto;
   width: var(--thumb);
   height: var(--thumb);
   border: 0;
@@ -116,7 +117,6 @@ select {
   cursor: grab;
 }
 .slider input::-moz-range-thumb {
-  pointer-events: auto;
   width: var(--thumb);
   height: var(--thumb);
   border: 0;
@@ -141,15 +141,35 @@ select {
 .method p, .method ul { margin: 10px 0 0; }
 .method strong { color: var(--text); font-weight: 600; }
 .method a { color: var(--text); }
+.method h3 { margin: 22px 0 0; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+.method h4 { margin: 16px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.method h3 + h4 { margin-top: 8px; }
+.method table { width: 100%; max-width: 520px; margin-top: 8px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.method th, .method td { padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.method th { color: var(--text); font-size: 0.8rem; font-weight: 600; }
+.method td:first-child, .method th:first-child { white-space: nowrap; }
 
 footer { margin-top: 20px; color: var(--muted); font-size: 0.8rem; }
 
 @media (max-width: 639px) {
   main { padding-top: 24px; }
   .subtitle { margin: 6px 0 14px; }
-  .stat { margin-bottom: 14px; }
+  .stat { min-height: 8.5rem; margin-bottom: 14px; }
   .toggle { margin-bottom: 12px; }
   .selects { gap: 8px; }
   .selects label:not(.view) { width: 84px; }
   .chart { margin-top: 4px; }
+}
+
+/* Desktop tooltip: driver and margin rows stay on one line and the box widens to fit them;
+   season notes wrap as prose. (On mobile the tooltip is capped to the viewport and rows wrap.) */
+@media (min-width: 640px) {
+  .tip-row { white-space: nowrap; }
+  .tip-note { max-width: 340px; }
+}
+
+/* On narrow phones the View select takes its own row so the longest era name fits. */
+@media (max-width: 480px) {
+  .selects { flex-wrap: wrap; }
+  .selects .view { flex: 1 1 100%; }
 }

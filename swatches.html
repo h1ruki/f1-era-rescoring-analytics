@@ -10,44 +10,68 @@
       main { max-width: 760px; margin: 0 auto; }
       h1 { font-size: 1.25rem; }
       h2 { margin: 28px 0 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8b919a; }
-      .row { display: grid; grid-template-columns: 9rem 1fr; align-items: center; gap: 12px; margin: 6px 0; }
+      .row { display: grid; grid-template-columns: 15rem 1fr; align-items: center; gap: 12px; margin: 6px 0; }
       .row span { font-size: 0.85rem; }
       .row small { display: block; color: #8b919a; font-variant-numeric: tabular-nums; }
-      .bar { height: 44px; border-radius: 3px; }
+      .bar { height: 44px; border-radius: 3px; box-sizing: border-box; }
+      .tip { max-width: 340px; margin: 10px 0; padding: 10px; border: 1px solid #343a44; border-radius: 4px; font-size: 12px; line-height: 18px; color: #d7dae0; }
     </style>
   </head>
   <body>
     <main>
       <h1>Team colours on the chart background</h1>
+      <p style="color: #8b919a; font-size: 0.85rem">
+        Each line shows the exact hex and, for information only, its contrast against the chart
+        background and the tooltip background. Colours are never adjusted for contrast.
+      </p>
       <div id="swatches"></div>
+      <h2>Tooltip text preview (constructor names in their colours, on the tooltip background)</h2>
+      <div id="tooltips"></div>
     </main>
     <script type="module">
-      import { CHART_BACKGROUND, TEAM_COLOURS } from '/src/teamColours.ts';
+      import { CHART_BACKGROUND, TOOLTIP_BACKGROUND, MERCEDES_SILVER, TEAM_COLOURS } from '/src/teamColours.ts';
       import { contrastRatio } from '/src/contrast.ts';
+      import { tooltipHtml } from '/src/chartOption.ts';
+      import seasons from '/data/seasons.json';
 
       document.body.style.background = CHART_BACKGROUND;
-      const families = {
-        Reds: ['ferrari', 'alfa-romeo', 'maserati'],
-        'Orange / yellow / gold': ['mclaren', 'lotus', 'renault', 'brawn'],
-        Greens: ['cooper', 'brm', 'benetton'],
-        Blues: ['red-bull', 'williams', 'matra', 'tyrrell'],
-        'Silver / white': ['mercedes', 'brabham'],
+      const entry = (id, label = id) => ({ label, colour: TEAM_COLOURS[id] });
+      const groups = {
+        Italian: [entry('ferrari'), entry('alfa-romeo'), entry('maserati')],
+        Blues: ['maserati', 'tyrrell', 'red-bull', 'matra', 'williams', 'wolf'].map((id) => entry(id)),
+        Greens: ['lotus', 'brm', 'cooper', 'benetton', 'vanwall'].map((id) => entry(id)),
+        'Renault vs Brawn': [entry('renault'), entry('brawn')],
+        Brabham: [entry('brabham')],
+        'Ferrari vs McLaren vs March': [entry('ferrari'), entry('mclaren'), entry('march')],
+        'Mercedes: silver (1954-55) vs turquoise (modern)': [
+          { label: 'mercedes 1954-55', colour: MERCEDES_SILVER },
+          { label: 'mercedes modern', colour: TEAM_COLOURS.mercedes },
+        ],
       };
-      const listed = Object.values(families).flat();
-      families.Other = Object.keys(TEAM_COLOURS).filter((id) => !listed.includes(id));
       const root = document.getElementById('swatches');
-      for (const [family, ids] of Object.entries(families)) {
-        if (ids.length === 0) continue;
+      for (const [group, items] of Object.entries(groups)) {
         const h = document.createElement('h2');
-        h.textContent = family;
+        h.textContent = group;
         root.append(h);
-        for (const id of ids) {
-          const colour = TEAM_COLOURS[id];
+        for (const { label, colour } of items) {
+          const onChart = contrastRatio(colour, CHART_BACKGROUND).toFixed(2);
+          const onTip = contrastRatio(colour, TOOLTIP_BACKGROUND).toFixed(2);
           const row = document.createElement('div');
           row.className = 'row';
-          row.innerHTML = `<span>${id}<small>${colour} · ${contrastRatio(colour, CHART_BACKGROUND).toFixed(2)}:1</small></span><div class="bar" style="background:${colour}"></div>`;
+          row.innerHTML = `<span>${label}<small>${colour} · chart ${onChart}:1 · tooltip ${onTip}:1</small></span><div class="bar" style="background:${colour}"></div>`;
           root.append(row);
         }
+      }
+
+      // The real tooltip formatter (constructor colours included), so the preview is what the chart shows.
+      const previews = document.getElementById('tooltips');
+      for (const year of [2023, 2001, 1951, 1957, 1962, 1971, 1978, 1959, 1955, 2014]) {
+        const season = seasons.find((s) => s.year === year);
+        const tip = document.createElement('div');
+        tip.className = 'tip';
+        tip.style.background = TOOLTIP_BACKGROUND;
+        tip.innerHTML = tooltipHtml(season);
+        previews.append(tip);
       }
     </script>
   </body>
