@@ -1,6 +1,7 @@
 import { NOTES } from './notes';
 
-// Main Grand Prix finishing points: one row per scale, matching the shaded bands.
+// Main Grand Prix finishing points, one row per scale. The chart's shaded bands are coarser:
+// 1950–1959 and 1960 share one band there, because both award 8 points for a win.
 const SCALES: [seasons: string, points: string][] = [
   ['1950–1959', '8–6–4–3–2 (P1–P5)'],
   ['1960', '8–6–4–3–2–1 (P1–P6)'],
@@ -70,7 +71,7 @@ export function Methodology({ version }: { version: string }) {
 
       <h4>Counted championship points</h4>
       <p>
-        Separately, until 1990 a driver’s championship total was not simply the sum of their
+        Separately, through 1990 a driver’s championship total was not simply the sum of their
         results. Under best-results rules, which changed several times, only a set number of each
         driver’s results counted and the rest were dropped. In 1964 Graham Hill’s results earned 41
         points and John Surtees’ 40, but after dropped scores the counted totals were Surtees 40,
@@ -96,6 +97,10 @@ export function Methodology({ version }: { version: string }) {
         <strong>Stripes.</strong> Striped bars mark a less-frequent champion within a consecutive
         run of titles won by the same constructor; the driver with the most titles in that run, or
         tied leaders, stay solid.
+      </p>
+      <p>
+        <strong>Constructors.</strong> If a driver raced for more than one constructor in a season,
+        the chart uses the constructor with which they earned the most points from race results.
       </p>
       <p>
         <strong>Views and the average line.</strong> The era views are curated shortcuts to

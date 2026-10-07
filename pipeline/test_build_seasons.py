@@ -71,6 +71,12 @@ def check(
         assert s[role]["teamId"] == team
 
 
+def test_1952(seasons: dict[int, dict]) -> None:
+    check(seasons[1952], "champion", "alberto-ascari", 36)
+    check(seasons[1952], "runnerUp", "nino-farina", 24)
+    assert seasons[1952]["gapPercent"] == 33.33
+
+
 def test_1954(seasons: dict[int, dict]) -> None:
     check(seasons[1954], "champion", "juan-manuel-fangio", 42, "mercedes")
     check(seasons[1954], "runnerUp", "jose-froilan-gonzalez", 25.14, abbreviation="GON")
@@ -104,6 +110,10 @@ def test_1988(seasons: dict[int, dict]) -> None:
     assert seasons[1988]["gapPercent"] == 3.33
 
 
+def test_1997(seasons: dict[int, dict]) -> None:
+    check(seasons[1997], "runnerUp", "heinz-harald-frentzen")
+
+
 def test_2001(seasons: dict[int, dict]) -> None:
     check(seasons[2001], "champion", "michael-schumacher", abbreviation="MSC")
 
@@ -123,6 +133,21 @@ def test_every_champion_and_runner_up_has_an_abbreviation(seasons: dict[int, dic
     for s in seasons.values():
         for role in ("champion", "runnerUp"):
             assert s[role]["abbreviation"], f"{s['year']} {role}"
+
+
+def test_no_championship_through_2025_finished_level(seasons: dict[int, dict]) -> None:
+    # Pins the Methodology's "1950 to 2025" claim only; a later season may finish level on points.
+    for year in range(1950, 2026):
+        assert seasons[year]["gapPoints"] > 0, year
+
+
+def test_points_are_whole_hundredths(seasons: dict[int, dict]) -> None:
+    # The frontend ranks headline extremes on integer hundredths of a point (src/stats.ts).
+    # Finer precision in the data must fail here so that comparator is revisited, not rounded.
+    for s in seasons.values():
+        for role in ("champion", "runnerUp"):
+            hundredths = Decimal(str(s[role]["points"])) * 100
+            assert hundredths == hundredths.to_integral_value(), f"{s['year']} {role}"
 
 
 def test_year_range(seasons: dict[int, dict]) -> None:

@@ -2,10 +2,8 @@ venv/
 .venv/
 __pycache__/
 .DS_Store
-.streamlit/
 node_modules/
 dist/
-/data/f1db_newsnapshot.db
 .cache/
 .pytest_cache/
 .ruff_cache/

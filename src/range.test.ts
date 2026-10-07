@@ -19,7 +19,7 @@ describe('view presets', () => {
       ['3-Litre Era', 1966, 1976],
       ['First Turbo Era', 1977, 1988],
       ['3.5-Litre Era', 1989, 1994],
-      ['3.0-Litre Era', 1995, 1999],
+      ['1990s 3-Litre Era', 1995, 1999],
       ['V10 Era', 2000, 2005],
       ['V8 Era', 2006, 2013],
       ['Turbo-Hybrid Era', 2014, 2025],

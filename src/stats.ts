@@ -10,10 +10,19 @@ export const percent = (s: Season): string => `${s.gapPercent.toFixed(2)}%`;
 // The one points formatter: exactly 1 is singular (1 pt), everything else plural (0.5 pts, 290 pts).
 export const points = (n: number): string => `${n} ${n === 1 ? 'pt' : 'pts'}`;
 
-// What each metric ranks by and how the headline words it.
+// Championship points as integer hundredths. The dataset carries at most two decimal places
+// (pinned by a pipeline test), so extremes and ties can be compared exactly in integers
+// rather than on rounded percentages or floating-point differences.
+const hundredths = (n: number): number => Math.round(n * 100);
+const gap = (s: Season): number => hundredths(s.champion.points) - hundredths(s.runnerUp.points);
+
+// What each metric ranks by and how the headline words it. `compare` is positive when a's
+// value is larger than b's and 0 only when the two are exactly equal.
 const METRICS = {
   percent: {
-    key: 'gapPercent',
+    // gap(a)/champion(a) vs gap(b)/champion(b), cross-multiplied to stay in integers.
+    compare: (a: Season, b: Season): number =>
+      gap(a) * hundredths(b.champion.points) - gap(b) * hundredths(a.champion.points),
     measure: 'percentage title margin',
     largest: 'Most dominant:',
     smallest: 'Closest:',
@@ -21,7 +30,7 @@ const METRICS = {
     value: percent,
   },
   points: {
-    key: 'gapPoints',
+    compare: (a: Season, b: Season): number => gap(a) - gap(b),
     measure: 'championship points gap',
     largest: 'Largest points gap:',
     smallest: 'Smallest points gap:',
@@ -30,11 +39,20 @@ const METRICS = {
   },
 } as const;
 
-// Extremes by the metric's value; a tie keeps the earlier season.
-function pick(seasons: readonly Season[], key: 'gapPercent' | 'gapPoints', direction: 1 | -1): Season {
-  return seasons.reduce((best, s) =>
-    (s[key] - best[key]) * direction > 0 || (s[key] === best[key] && s.year < best.year) ? s : best,
-  );
+type Compare = (a: Season, b: Season) => number;
+
+// The extreme by the metric's exact comparison, plus the years of every other season exactly
+// tied with it, ascending. A tie keeps the earliest season as the extreme.
+function pick(seasons: readonly Season[], compare: Compare, direction: 1 | -1): { season: Season; tied: number[] } {
+  const season = seasons.reduce((best, s) => {
+    const c = compare(s, best) * direction;
+    return c > 0 || (c === 0 && s.year < best.year) ? s : best;
+  });
+  const tied = seasons
+    .filter((s) => s !== season && compare(s, season) === 0)
+    .map((s) => s.year)
+    .sort((a, b) => a - b);
+  return { season, tied };
 }
 
 // Headline for the seasons currently shown, ranked by the active metric.
@@ -42,7 +60,11 @@ export function headline(seasons: readonly Season[], metric: Metric): Headline |
   const [first] = seasons;
   if (first === undefined) return undefined;
   const m = METRICS[metric];
-  const row = (s: Season): string => `${s.champion.name}, ${s.year} — ${m.value(s)} over ${s.runnerUp.name}`;
+  const row = (direction: 1 | -1): string => {
+    const { season: s, tied } = pick(seasons, m.compare, direction);
+    const ties = tied.length > 0 ? ` (tied with ${tied.join(', ')})` : '';
+    return `${s.champion.name}, ${s.year}${ties} — ${m.value(s)} over ${s.runnerUp.name}`;
+  };
   if (seasons.length === 1) {
     return {
       rows: [
@@ -57,8 +79,8 @@ export function headline(seasons: readonly Season[], metric: Metric): Headline |
   return {
     intro: `Across ${seasons.length} championships (${Math.min(...years)}–${Math.max(...years)}), by ${m.measure} over the runner-up:`,
     rows: [
-      { label: m.largest, text: row(pick(seasons, m.key, 1)) },
-      { label: m.smallest, text: row(pick(seasons, m.key, -1)) },
+      { label: m.largest, text: row(1) },
+      { label: m.smallest, text: row(-1) },
     ],
   };
 }

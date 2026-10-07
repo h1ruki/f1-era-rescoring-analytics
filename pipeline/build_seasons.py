@@ -1,21 +1,19 @@
 """Build data/seasons.json (champion vs runner-up margins) from a pinned F1DB release."""
 
-import hashlib
 import json
 import os
 import sqlite3
 import sys
-import urllib.request
-import zipfile
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import TypedDict
 
+from f1db_cache import ensure
+
 ROOT = Path(__file__).resolve().parent.parent
 PIN_PATH = ROOT / "data" / "f1db-release.json"
 OUT_PATH = ROOT / "data" / "seasons.json"
-CACHE = ROOT / ".cache"
-DB_NAME = "f1db.db"
+CACHE_ROOT = ROOT / ".cache" / "f1db"
 FIRST_YEAR = 1950
 CENT = Decimal("0.01")
 
@@ -87,33 +85,10 @@ def to_json(value: Decimal | int | str | list | dict, level: int = 0) -> str:
     return f"{open_}\n" + ",\n".join(items) + f"\n{pad}{close}"
 
 
-def sha256_of(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def ensure_database() -> Path:
+    """The cached database of the one release this project analyses: the tracked pin."""
     pin = json.loads(PIN_PATH.read_text(encoding="utf-8"))
-    zip_path = CACHE / pin["asset"]
-    CACHE.mkdir(exist_ok=True)
-    if not zip_path.exists() or sha256_of(zip_path) != pin["sha256"]:
-        url = f"https://github.com/f1db/f1db/releases/download/{pin['version']}/{pin['asset']}"
-        tmp = zip_path.with_suffix(".part")
-        with urllib.request.urlopen(url) as resp, tmp.open("wb") as f:
-            while chunk := resp.read(1 << 20):
-                f.write(chunk)
-        if sha256_of(tmp) != pin["sha256"]:
-            tmp.unlink()
-            raise ValueError(f"SHA-256 mismatch for downloaded {pin['asset']}")
-        tmp.replace(zip_path)
-    db_path = CACHE / DB_NAME
-    with zipfile.ZipFile(zip_path) as z, z.open(DB_NAME) as src, db_path.open("wb") as dst:
-        while chunk := src.read(1 << 20):
-            dst.write(chunk)
-    return db_path
+    return ensure(pin, CACHE_ROOT)
 
 
 def build(conn: sqlite3.Connection) -> list[Season]:

@@ -18,7 +18,7 @@ const PRESETS: readonly View[] = [
   { id: 'litre-3', label: '3-Litre Era', from: 1966, to: 1976 },
   { id: 'turbo-1', label: 'First Turbo Era', from: 1977, to: 1988 },
   { id: 'litre-3.5', label: '3.5-Litre Era', from: 1989, to: 1994 },
-  { id: 'litre-3.0', label: '3.0-Litre Era', from: 1995, to: 1999 },
+  { id: 'litre-3.0', label: '1990s 3-Litre Era', from: 1995, to: 1999 },
   { id: 'v10', label: 'V10 Era', from: 2000, to: 2005 },
   { id: 'v8', label: 'V8 Era', from: 2006, to: 2013 },
   { id: 'hybrid', label: 'Turbo-Hybrid Era', from: 2014, to: 2025 },
