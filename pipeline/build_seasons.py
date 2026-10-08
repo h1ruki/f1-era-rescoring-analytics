@@ -1,5 +1,6 @@
 """Build data/seasons.json (champion vs runner-up margins) from a pinned F1DB release."""
 
+import contextlib
 import json
 import os
 import sqlite3
@@ -177,7 +178,7 @@ def build(conn: sqlite3.Connection) -> list[Season]:
 def main() -> int:
     try:
         db_path = ensure_database()
-        with sqlite3.connect(f"{db_path.as_uri()}?mode=ro", uri=True) as conn:
+        with contextlib.closing(sqlite3.connect(f"{db_path.as_uri()}?mode=ro", uri=True)) as conn:
             seasons = build(conn)
     except ValueError as err:
         print(f"build failed: {err}", file=sys.stderr)

@@ -37,7 +37,7 @@ export function App() {
   );
   const stat = headline(visible, metric); // follows the range and the active metric
   const what = metric === 'percent' ? 'percentage margin' : 'points gap';
-  const label = `Bar chart of the ${what} between the champion and runner-up in each F1 season from ${fromYear} to ${toYear}. Bars are coloured by the champion's team. Select a bar for details.`;
+  const label = `Bar chart of the ${what} between the champion and runner-up in each F1 season from ${fromYear} to ${toYear}. Bars are coloured by the champion's team.`;
 
   return (
     <main>

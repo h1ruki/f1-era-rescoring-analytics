@@ -8,6 +8,9 @@ import { MARGIN, ROW_HEIGHT, buildOption } from './chartOption';
 import type { Metric, Orientation, Season } from './types';
 
 use([BarChart, GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent, SVGRenderer]);
+// While this matches, ECharts' one `animation` switch is off: no animated first draw, updates
+// or entering bars. Read on every update, so a changed preference applies from the next one.
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 interface Props {
   seasons: readonly Season[];
@@ -46,7 +49,7 @@ export function Chart({ seasons, metric, orientation, striped, label }: Props) {
     // the axes entirely, so it replaces the option instead.
     chart.current?.resize();
     chart.current?.setOption(
-      buildOption(seasons, metric, orientation, width, striped),
+      { ...buildOption(seasons, metric, orientation, width, striped), animation: !REDUCED_MOTION.matches },
       lastOrientation.current !== orientation,
     );
     lastOrientation.current = orientation;
