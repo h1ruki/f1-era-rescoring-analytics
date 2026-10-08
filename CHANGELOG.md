@@ -4,6 +4,27 @@ Notable changes to F1 Title Margins are documented here.
 
 ## Pre-release
 
+### 8 October 2026
+
+#### Added
+
+- Continuous integration verifies every pull request to `main` and every push to it: the Python
+  lint and tests, a rebuild from the pinned F1DB release that must leave `data/seasons.json`
+  unchanged, and the frontend tests, type-check and production build on Node 24.
+- Reduced-motion support: chart animation is disabled when the visitor's system asks for reduced
+  motion.
+- A README covering the project, its architecture and data source, local setup, and copyright
+  and reuse terms.
+
+#### Fixed
+
+- The chart's accessible description no longer tells users to select a bar for details; bars
+  cannot be reached from the keyboard.
+
+#### Changed
+
+- The methodology's source note names F1DB's CC BY 4.0 licence and links to it.
+
 ### 7 October 2026
 
 #### Fixed

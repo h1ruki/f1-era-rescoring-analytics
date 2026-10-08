@@ -122,7 +122,11 @@ export function Methodology({ version }: { version: string }) {
         <a href="https://github.com/f1db/f1db" target="_blank" rel="noreferrer">
           github.com/f1db/f1db
         </a>
-        ). Its recorded final standings are treated as this project’s source of truth.
+        ), licensed under{' '}
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">
+          CC BY 4.0
+        </a>
+        . Its recorded final standings are treated as this project’s source of truth.
       </p>
     </details>
   );

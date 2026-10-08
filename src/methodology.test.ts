@@ -38,7 +38,7 @@ describe('methodology scoring copy', () => {
   });
 
   it('keeps the approved non-scoring content', () => {
-    for (const phrase of ['Striped bars mark a less-frequent champion', 'dashed line is the arithmetic mean', 'Heinz-Harald Frentzen as P2', 'F1DB v-test', 'github.com/f1db/f1db']) {
+    for (const phrase of ['Striped bars mark a less-frequent champion', 'dashed line is the arithmetic mean', 'Heinz-Harald Frentzen as P2', 'F1DB v-test', 'github.com/f1db/f1db', 'licensed under CC BY 4.0']) {
       expect(text).toContain(phrase);
     }
   });
