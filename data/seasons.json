@@ -1,0 +1,1750 @@
+[
+  {
+    "year": 1950,
+    "champion": {
+      "driverId": "nino-farina",
+      "name": "Nino Farina",
+      "abbreviation": "FAR",
+      "nationality": "Italy",
+      "teamId": "alfa-romeo",
+      "teamName": "Alfa Romeo",
+      "points": 30
+    },
+    "runnerUp": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "alfa-romeo",
+      "teamName": "Alfa Romeo",
+      "points": 27
+    },
+    "gapPoints": 3,
+    "gapPercent": 10
+  },
+  {
+    "year": 1951,
+    "champion": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "alfa-romeo",
+      "teamName": "Alfa Romeo",
+      "points": 31
+    },
+    "runnerUp": {
+      "driverId": "alberto-ascari",
+      "name": "Alberto Ascari",
+      "abbreviation": "ASC",
+      "nationality": "Italy",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 25
+    },
+    "gapPoints": 6,
+    "gapPercent": 19.35
+  },
+  {
+    "year": 1952,
+    "champion": {
+      "driverId": "alberto-ascari",
+      "name": "Alberto Ascari",
+      "abbreviation": "ASC",
+      "nationality": "Italy",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 36
+    },
+    "runnerUp": {
+      "driverId": "nino-farina",
+      "name": "Nino Farina",
+      "abbreviation": "FAR",
+      "nationality": "Italy",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 24
+    },
+    "gapPoints": 12,
+    "gapPercent": 33.33
+  },
+  {
+    "year": 1953,
+    "champion": {
+      "driverId": "alberto-ascari",
+      "name": "Alberto Ascari",
+      "abbreviation": "ASC",
+      "nationality": "Italy",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 34.5
+    },
+    "runnerUp": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "maserati",
+      "teamName": "Maserati",
+      "points": 28
+    },
+    "gapPoints": 6.5,
+    "gapPercent": 18.84
+  },
+  {
+    "year": 1954,
+    "champion": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 42
+    },
+    "runnerUp": {
+      "driverId": "jose-froilan-gonzalez",
+      "name": "José Froilán González",
+      "abbreviation": "GON",
+      "nationality": "Argentina",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 25.14
+    },
+    "gapPoints": 16.86,
+    "gapPercent": 40.14
+  },
+  {
+    "year": 1955,
+    "champion": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 40
+    },
+    "runnerUp": {
+      "driverId": "stirling-moss",
+      "name": "Stirling Moss",
+      "abbreviation": "MOS",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 23
+    },
+    "gapPoints": 17,
+    "gapPercent": 42.5
+  },
+  {
+    "year": 1956,
+    "champion": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 30
+    },
+    "runnerUp": {
+      "driverId": "stirling-moss",
+      "name": "Stirling Moss",
+      "abbreviation": "MOS",
+      "nationality": "United Kingdom",
+      "teamId": "maserati",
+      "teamName": "Maserati",
+      "points": 27
+    },
+    "gapPoints": 3,
+    "gapPercent": 10
+  },
+  {
+    "year": 1957,
+    "champion": {
+      "driverId": "juan-manuel-fangio",
+      "name": "Juan Manuel Fangio",
+      "abbreviation": "FAN",
+      "nationality": "Argentina",
+      "teamId": "maserati",
+      "teamName": "Maserati",
+      "points": 40
+    },
+    "runnerUp": {
+      "driverId": "stirling-moss",
+      "name": "Stirling Moss",
+      "abbreviation": "MOS",
+      "nationality": "United Kingdom",
+      "teamId": "vanwall",
+      "teamName": "Vanwall",
+      "points": 25
+    },
+    "gapPoints": 15,
+    "gapPercent": 37.5
+  },
+  {
+    "year": 1958,
+    "champion": {
+      "driverId": "mike-hawthorn",
+      "name": "Mike Hawthorn",
+      "abbreviation": "HAW",
+      "nationality": "United Kingdom",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 42
+    },
+    "runnerUp": {
+      "driverId": "stirling-moss",
+      "name": "Stirling Moss",
+      "abbreviation": "MOS",
+      "nationality": "United Kingdom",
+      "teamId": "vanwall",
+      "teamName": "Vanwall",
+      "points": 41
+    },
+    "gapPoints": 1,
+    "gapPercent": 2.38
+  },
+  {
+    "year": 1959,
+    "champion": {
+      "driverId": "jack-brabham",
+      "name": "Jack Brabham",
+      "abbreviation": "BRA",
+      "nationality": "Australia",
+      "teamId": "cooper",
+      "teamName": "Cooper",
+      "points": 31
+    },
+    "runnerUp": {
+      "driverId": "tony-brooks",
+      "name": "Tony Brooks",
+      "abbreviation": "BRO",
+      "nationality": "United Kingdom",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 27
+    },
+    "gapPoints": 4,
+    "gapPercent": 12.9
+  },
+  {
+    "year": 1960,
+    "champion": {
+      "driverId": "jack-brabham",
+      "name": "Jack Brabham",
+      "abbreviation": "BRA",
+      "nationality": "Australia",
+      "teamId": "cooper",
+      "teamName": "Cooper",
+      "points": 43
+    },
+    "runnerUp": {
+      "driverId": "bruce-mclaren",
+      "name": "Bruce McLaren",
+      "abbreviation": "MCL",
+      "nationality": "New Zealand",
+      "teamId": "cooper",
+      "teamName": "Cooper",
+      "points": 34
+    },
+    "gapPoints": 9,
+    "gapPercent": 20.93
+  },
+  {
+    "year": 1961,
+    "champion": {
+      "driverId": "phil-hill",
+      "name": "Phil Hill",
+      "abbreviation": "HIL",
+      "nationality": "United States of America",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 34
+    },
+    "runnerUp": {
+      "driverId": "wolfgang-von-trips",
+      "name": "Wolfgang von Trips",
+      "abbreviation": "VON",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 33
+    },
+    "gapPoints": 1,
+    "gapPercent": 2.94
+  },
+  {
+    "year": 1962,
+    "champion": {
+      "driverId": "graham-hill",
+      "name": "Graham Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "brm",
+      "teamName": "BRM",
+      "points": 42
+    },
+    "runnerUp": {
+      "driverId": "jim-clark",
+      "name": "Jim Clark",
+      "abbreviation": "CLA",
+      "nationality": "United Kingdom",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 30
+    },
+    "gapPoints": 12,
+    "gapPercent": 28.57
+  },
+  {
+    "year": 1963,
+    "champion": {
+      "driverId": "jim-clark",
+      "name": "Jim Clark",
+      "abbreviation": "CLA",
+      "nationality": "United Kingdom",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 54
+    },
+    "runnerUp": {
+      "driverId": "graham-hill",
+      "name": "Graham Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "brm",
+      "teamName": "BRM",
+      "points": 29
+    },
+    "gapPoints": 25,
+    "gapPercent": 46.3
+  },
+  {
+    "year": 1964,
+    "champion": {
+      "driverId": "john-surtees",
+      "name": "John Surtees",
+      "abbreviation": "SUR",
+      "nationality": "United Kingdom",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 40
+    },
+    "runnerUp": {
+      "driverId": "graham-hill",
+      "name": "Graham Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "brm",
+      "teamName": "BRM",
+      "points": 39
+    },
+    "gapPoints": 1,
+    "gapPercent": 2.5
+  },
+  {
+    "year": 1965,
+    "champion": {
+      "driverId": "jim-clark",
+      "name": "Jim Clark",
+      "abbreviation": "CLA",
+      "nationality": "United Kingdom",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 54
+    },
+    "runnerUp": {
+      "driverId": "graham-hill",
+      "name": "Graham Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "brm",
+      "teamName": "BRM",
+      "points": 40
+    },
+    "gapPoints": 14,
+    "gapPercent": 25.93
+  },
+  {
+    "year": 1966,
+    "champion": {
+      "driverId": "jack-brabham",
+      "name": "Jack Brabham",
+      "abbreviation": "BRA",
+      "nationality": "Australia",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 42
+    },
+    "runnerUp": {
+      "driverId": "john-surtees",
+      "name": "John Surtees",
+      "abbreviation": "SUR",
+      "nationality": "United Kingdom",
+      "teamId": "cooper",
+      "teamName": "Cooper",
+      "points": 28
+    },
+    "gapPoints": 14,
+    "gapPercent": 33.33
+  },
+  {
+    "year": 1967,
+    "champion": {
+      "driverId": "denny-hulme",
+      "name": "Denny Hulme",
+      "abbreviation": "HUL",
+      "nationality": "New Zealand",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 51
+    },
+    "runnerUp": {
+      "driverId": "jack-brabham",
+      "name": "Jack Brabham",
+      "abbreviation": "BRA",
+      "nationality": "Australia",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 46
+    },
+    "gapPoints": 5,
+    "gapPercent": 9.8
+  },
+  {
+    "year": 1968,
+    "champion": {
+      "driverId": "graham-hill",
+      "name": "Graham Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 48
+    },
+    "runnerUp": {
+      "driverId": "jackie-stewart",
+      "name": "Jackie Stewart",
+      "abbreviation": "STE",
+      "nationality": "United Kingdom",
+      "teamId": "matra",
+      "teamName": "Matra",
+      "points": 36
+    },
+    "gapPoints": 12,
+    "gapPercent": 25
+  },
+  {
+    "year": 1969,
+    "champion": {
+      "driverId": "jackie-stewart",
+      "name": "Jackie Stewart",
+      "abbreviation": "STE",
+      "nationality": "United Kingdom",
+      "teamId": "matra",
+      "teamName": "Matra",
+      "points": 63
+    },
+    "runnerUp": {
+      "driverId": "jacky-ickx",
+      "name": "Jacky Ickx",
+      "abbreviation": "ICK",
+      "nationality": "Belgium",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 37
+    },
+    "gapPoints": 26,
+    "gapPercent": 41.27
+  },
+  {
+    "year": 1970,
+    "champion": {
+      "driverId": "jochen-rindt",
+      "name": "Jochen Rindt",
+      "abbreviation": "RIN",
+      "nationality": "Austria",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 45
+    },
+    "runnerUp": {
+      "driverId": "jacky-ickx",
+      "name": "Jacky Ickx",
+      "abbreviation": "ICK",
+      "nationality": "Belgium",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 40
+    },
+    "gapPoints": 5,
+    "gapPercent": 11.11
+  },
+  {
+    "year": 1971,
+    "champion": {
+      "driverId": "jackie-stewart",
+      "name": "Jackie Stewart",
+      "abbreviation": "STE",
+      "nationality": "United Kingdom",
+      "teamId": "tyrrell",
+      "teamName": "Tyrrell",
+      "points": 62
+    },
+    "runnerUp": {
+      "driverId": "ronnie-peterson",
+      "name": "Ronnie Peterson",
+      "abbreviation": "PET",
+      "nationality": "Sweden",
+      "teamId": "march",
+      "teamName": "March",
+      "points": 33
+    },
+    "gapPoints": 29,
+    "gapPercent": 46.77
+  },
+  {
+    "year": 1972,
+    "champion": {
+      "driverId": "emerson-fittipaldi",
+      "name": "Emerson Fittipaldi",
+      "abbreviation": "FIT",
+      "nationality": "Brazil",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 61
+    },
+    "runnerUp": {
+      "driverId": "jackie-stewart",
+      "name": "Jackie Stewart",
+      "abbreviation": "STE",
+      "nationality": "United Kingdom",
+      "teamId": "tyrrell",
+      "teamName": "Tyrrell",
+      "points": 45
+    },
+    "gapPoints": 16,
+    "gapPercent": 26.23
+  },
+  {
+    "year": 1973,
+    "champion": {
+      "driverId": "jackie-stewart",
+      "name": "Jackie Stewart",
+      "abbreviation": "STE",
+      "nationality": "United Kingdom",
+      "teamId": "tyrrell",
+      "teamName": "Tyrrell",
+      "points": 71
+    },
+    "runnerUp": {
+      "driverId": "emerson-fittipaldi",
+      "name": "Emerson Fittipaldi",
+      "abbreviation": "FIT",
+      "nationality": "Brazil",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 55
+    },
+    "gapPoints": 16,
+    "gapPercent": 22.54
+  },
+  {
+    "year": 1974,
+    "champion": {
+      "driverId": "emerson-fittipaldi",
+      "name": "Emerson Fittipaldi",
+      "abbreviation": "FIT",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 55
+    },
+    "runnerUp": {
+      "driverId": "clay-regazzoni",
+      "name": "Clay Regazzoni",
+      "abbreviation": "REG",
+      "nationality": "Switzerland",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 52
+    },
+    "gapPoints": 3,
+    "gapPercent": 5.45
+  },
+  {
+    "year": 1975,
+    "champion": {
+      "driverId": "niki-lauda",
+      "name": "Niki Lauda",
+      "abbreviation": "LAU",
+      "nationality": "Austria",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 64.5
+    },
+    "runnerUp": {
+      "driverId": "emerson-fittipaldi",
+      "name": "Emerson Fittipaldi",
+      "abbreviation": "FIT",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 45
+    },
+    "gapPoints": 19.5,
+    "gapPercent": 30.23
+  },
+  {
+    "year": 1976,
+    "champion": {
+      "driverId": "james-hunt",
+      "name": "James Hunt",
+      "abbreviation": "HUN",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 69
+    },
+    "runnerUp": {
+      "driverId": "niki-lauda",
+      "name": "Niki Lauda",
+      "abbreviation": "LAU",
+      "nationality": "Austria",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 68
+    },
+    "gapPoints": 1,
+    "gapPercent": 1.45
+  },
+  {
+    "year": 1977,
+    "champion": {
+      "driverId": "niki-lauda",
+      "name": "Niki Lauda",
+      "abbreviation": "LAU",
+      "nationality": "Austria",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 72
+    },
+    "runnerUp": {
+      "driverId": "jody-scheckter",
+      "name": "Jody Scheckter",
+      "abbreviation": "SCH",
+      "nationality": "South Africa",
+      "teamId": "wolf",
+      "teamName": "Wolf",
+      "points": 55
+    },
+    "gapPoints": 17,
+    "gapPercent": 23.61
+  },
+  {
+    "year": 1978,
+    "champion": {
+      "driverId": "mario-andretti",
+      "name": "Mario Andretti",
+      "abbreviation": "AND",
+      "nationality": "United States of America",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 64
+    },
+    "runnerUp": {
+      "driverId": "ronnie-peterson",
+      "name": "Ronnie Peterson",
+      "abbreviation": "PET",
+      "nationality": "Sweden",
+      "teamId": "lotus",
+      "teamName": "Lotus",
+      "points": 51
+    },
+    "gapPoints": 13,
+    "gapPercent": 20.31
+  },
+  {
+    "year": 1979,
+    "champion": {
+      "driverId": "jody-scheckter",
+      "name": "Jody Scheckter",
+      "abbreviation": "SCH",
+      "nationality": "South Africa",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 51
+    },
+    "runnerUp": {
+      "driverId": "gilles-villeneuve",
+      "name": "Gilles Villeneuve",
+      "abbreviation": "VIL",
+      "nationality": "Canada",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 47
+    },
+    "gapPoints": 4,
+    "gapPercent": 7.84
+  },
+  {
+    "year": 1980,
+    "champion": {
+      "driverId": "alan-jones",
+      "name": "Alan Jones",
+      "abbreviation": "JON",
+      "nationality": "Australia",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 67
+    },
+    "runnerUp": {
+      "driverId": "nelson-piquet",
+      "name": "Nelson Piquet",
+      "abbreviation": "PIQ",
+      "nationality": "Brazil",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 54
+    },
+    "gapPoints": 13,
+    "gapPercent": 19.4
+  },
+  {
+    "year": 1981,
+    "champion": {
+      "driverId": "nelson-piquet",
+      "name": "Nelson Piquet",
+      "abbreviation": "PIQ",
+      "nationality": "Brazil",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 50
+    },
+    "runnerUp": {
+      "driverId": "carlos-reutemann",
+      "name": "Carlos Reutemann",
+      "abbreviation": "REU",
+      "nationality": "Argentina",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 49
+    },
+    "gapPoints": 1,
+    "gapPercent": 2
+  },
+  {
+    "year": 1982,
+    "champion": {
+      "driverId": "keke-rosberg",
+      "name": "Keke Rosberg",
+      "abbreviation": "ROS",
+      "nationality": "Finland",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 44
+    },
+    "runnerUp": {
+      "driverId": "didier-pironi",
+      "name": "Didier Pironi",
+      "abbreviation": "PIR",
+      "nationality": "France",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 39
+    },
+    "gapPoints": 5,
+    "gapPercent": 11.36
+  },
+  {
+    "year": 1983,
+    "champion": {
+      "driverId": "nelson-piquet",
+      "name": "Nelson Piquet",
+      "abbreviation": "PIQ",
+      "nationality": "Brazil",
+      "teamId": "brabham",
+      "teamName": "Brabham",
+      "points": 59
+    },
+    "runnerUp": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "renault",
+      "teamName": "Renault",
+      "points": 57
+    },
+    "gapPoints": 2,
+    "gapPercent": 3.39
+  },
+  {
+    "year": 1984,
+    "champion": {
+      "driverId": "niki-lauda",
+      "name": "Niki Lauda",
+      "abbreviation": "LAU",
+      "nationality": "Austria",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 72
+    },
+    "runnerUp": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 71.5
+    },
+    "gapPoints": 0.5,
+    "gapPercent": 0.69
+  },
+  {
+    "year": 1985,
+    "champion": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 73
+    },
+    "runnerUp": {
+      "driverId": "michele-alboreto",
+      "name": "Michele Alboreto",
+      "abbreviation": "ALB",
+      "nationality": "Italy",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 53
+    },
+    "gapPoints": 20,
+    "gapPercent": 27.4
+  },
+  {
+    "year": 1986,
+    "champion": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 72
+    },
+    "runnerUp": {
+      "driverId": "nigel-mansell",
+      "name": "Nigel Mansell",
+      "abbreviation": "MAN",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 70
+    },
+    "gapPoints": 2,
+    "gapPercent": 2.78
+  },
+  {
+    "year": 1987,
+    "champion": {
+      "driverId": "nelson-piquet",
+      "name": "Nelson Piquet",
+      "abbreviation": "PIQ",
+      "nationality": "Brazil",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 73
+    },
+    "runnerUp": {
+      "driverId": "nigel-mansell",
+      "name": "Nigel Mansell",
+      "abbreviation": "MAN",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 61
+    },
+    "gapPoints": 12,
+    "gapPercent": 16.44
+  },
+  {
+    "year": 1988,
+    "champion": {
+      "driverId": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "abbreviation": "SEN",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 90
+    },
+    "runnerUp": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 87
+    },
+    "gapPoints": 3,
+    "gapPercent": 3.33
+  },
+  {
+    "year": 1989,
+    "champion": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 76
+    },
+    "runnerUp": {
+      "driverId": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "abbreviation": "SEN",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 60
+    },
+    "gapPoints": 16,
+    "gapPercent": 21.05
+  },
+  {
+    "year": 1990,
+    "champion": {
+      "driverId": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "abbreviation": "SEN",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 78
+    },
+    "runnerUp": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 71
+    },
+    "gapPoints": 7,
+    "gapPercent": 8.97
+  },
+  {
+    "year": 1991,
+    "champion": {
+      "driverId": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "abbreviation": "SEN",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 96
+    },
+    "runnerUp": {
+      "driverId": "nigel-mansell",
+      "name": "Nigel Mansell",
+      "abbreviation": "MAN",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 72
+    },
+    "gapPoints": 24,
+    "gapPercent": 25
+  },
+  {
+    "year": 1992,
+    "champion": {
+      "driverId": "nigel-mansell",
+      "name": "Nigel Mansell",
+      "abbreviation": "MAN",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 108
+    },
+    "runnerUp": {
+      "driverId": "riccardo-patrese",
+      "name": "Riccardo Patrese",
+      "abbreviation": "PAT",
+      "nationality": "Italy",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 56
+    },
+    "gapPoints": 52,
+    "gapPercent": 48.15
+  },
+  {
+    "year": 1993,
+    "champion": {
+      "driverId": "alain-prost",
+      "name": "Alain Prost",
+      "abbreviation": "PRO",
+      "nationality": "France",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 99
+    },
+    "runnerUp": {
+      "driverId": "ayrton-senna",
+      "name": "Ayrton Senna",
+      "abbreviation": "SEN",
+      "nationality": "Brazil",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 73
+    },
+    "gapPoints": 26,
+    "gapPercent": 26.26
+  },
+  {
+    "year": 1994,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "benetton",
+      "teamName": "Benetton",
+      "points": 92
+    },
+    "runnerUp": {
+      "driverId": "damon-hill",
+      "name": "Damon Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 91
+    },
+    "gapPoints": 1,
+    "gapPercent": 1.09
+  },
+  {
+    "year": 1995,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "benetton",
+      "teamName": "Benetton",
+      "points": 102
+    },
+    "runnerUp": {
+      "driverId": "damon-hill",
+      "name": "Damon Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 69
+    },
+    "gapPoints": 33,
+    "gapPercent": 32.35
+  },
+  {
+    "year": 1996,
+    "champion": {
+      "driverId": "damon-hill",
+      "name": "Damon Hill",
+      "abbreviation": "HIL",
+      "nationality": "United Kingdom",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 97
+    },
+    "runnerUp": {
+      "driverId": "jacques-villeneuve",
+      "name": "Jacques Villeneuve",
+      "abbreviation": "VIL",
+      "nationality": "Canada",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 78
+    },
+    "gapPoints": 19,
+    "gapPercent": 19.59
+  },
+  {
+    "year": 1997,
+    "champion": {
+      "driverId": "jacques-villeneuve",
+      "name": "Jacques Villeneuve",
+      "abbreviation": "VIL",
+      "nationality": "Canada",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 81
+    },
+    "runnerUp": {
+      "driverId": "heinz-harald-frentzen",
+      "name": "Heinz-Harald Frentzen",
+      "abbreviation": "FRE",
+      "nationality": "Germany",
+      "teamId": "williams",
+      "teamName": "Williams",
+      "points": 42
+    },
+    "gapPoints": 39,
+    "gapPercent": 48.15
+  },
+  {
+    "year": 1998,
+    "champion": {
+      "driverId": "mika-hakkinen",
+      "name": "Mika Häkkinen",
+      "abbreviation": "HAK",
+      "nationality": "Finland",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 100
+    },
+    "runnerUp": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 86
+    },
+    "gapPoints": 14,
+    "gapPercent": 14
+  },
+  {
+    "year": 1999,
+    "champion": {
+      "driverId": "mika-hakkinen",
+      "name": "Mika Häkkinen",
+      "abbreviation": "HAK",
+      "nationality": "Finland",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 76
+    },
+    "runnerUp": {
+      "driverId": "eddie-irvine",
+      "name": "Eddie Irvine",
+      "abbreviation": "IRV",
+      "nationality": "United Kingdom",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 74
+    },
+    "gapPoints": 2,
+    "gapPercent": 2.63
+  },
+  {
+    "year": 2000,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 108
+    },
+    "runnerUp": {
+      "driverId": "mika-hakkinen",
+      "name": "Mika Häkkinen",
+      "abbreviation": "HAK",
+      "nationality": "Finland",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 89
+    },
+    "gapPoints": 19,
+    "gapPercent": 17.59
+  },
+  {
+    "year": 2001,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 123
+    },
+    "runnerUp": {
+      "driverId": "david-coulthard",
+      "name": "David Coulthard",
+      "abbreviation": "COU",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 65
+    },
+    "gapPoints": 58,
+    "gapPercent": 47.15
+  },
+  {
+    "year": 2002,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 144
+    },
+    "runnerUp": {
+      "driverId": "rubens-barrichello",
+      "name": "Rubens Barrichello",
+      "abbreviation": "BAR",
+      "nationality": "Brazil",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 77
+    },
+    "gapPoints": 67,
+    "gapPercent": 46.53
+  },
+  {
+    "year": 2003,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 93
+    },
+    "runnerUp": {
+      "driverId": "kimi-raikkonen",
+      "name": "Kimi Räikkönen",
+      "abbreviation": "RAI",
+      "nationality": "Finland",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 91
+    },
+    "gapPoints": 2,
+    "gapPercent": 2.15
+  },
+  {
+    "year": 2004,
+    "champion": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 148
+    },
+    "runnerUp": {
+      "driverId": "rubens-barrichello",
+      "name": "Rubens Barrichello",
+      "abbreviation": "BAR",
+      "nationality": "Brazil",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 114
+    },
+    "gapPoints": 34,
+    "gapPercent": 22.97
+  },
+  {
+    "year": 2005,
+    "champion": {
+      "driverId": "fernando-alonso",
+      "name": "Fernando Alonso",
+      "abbreviation": "ALO",
+      "nationality": "Spain",
+      "teamId": "renault",
+      "teamName": "Renault",
+      "points": 133
+    },
+    "runnerUp": {
+      "driverId": "kimi-raikkonen",
+      "name": "Kimi Räikkönen",
+      "abbreviation": "RAI",
+      "nationality": "Finland",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 112
+    },
+    "gapPoints": 21,
+    "gapPercent": 15.79
+  },
+  {
+    "year": 2006,
+    "champion": {
+      "driverId": "fernando-alonso",
+      "name": "Fernando Alonso",
+      "abbreviation": "ALO",
+      "nationality": "Spain",
+      "teamId": "renault",
+      "teamName": "Renault",
+      "points": 134
+    },
+    "runnerUp": {
+      "driverId": "michael-schumacher",
+      "name": "Michael Schumacher",
+      "abbreviation": "MSC",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 121
+    },
+    "gapPoints": 13,
+    "gapPercent": 9.7
+  },
+  {
+    "year": 2007,
+    "champion": {
+      "driverId": "kimi-raikkonen",
+      "name": "Kimi Räikkönen",
+      "abbreviation": "RAI",
+      "nationality": "Finland",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 110
+    },
+    "runnerUp": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 109
+    },
+    "gapPoints": 1,
+    "gapPercent": 0.91
+  },
+  {
+    "year": 2008,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 98
+    },
+    "runnerUp": {
+      "driverId": "felipe-massa",
+      "name": "Felipe Massa",
+      "abbreviation": "MAS",
+      "nationality": "Brazil",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 97
+    },
+    "gapPoints": 1,
+    "gapPercent": 1.02
+  },
+  {
+    "year": 2009,
+    "champion": {
+      "driverId": "jenson-button",
+      "name": "Jenson Button",
+      "abbreviation": "BUT",
+      "nationality": "United Kingdom",
+      "teamId": "brawn",
+      "teamName": "Brawn",
+      "points": 95
+    },
+    "runnerUp": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 84
+    },
+    "gapPoints": 11,
+    "gapPercent": 11.58
+  },
+  {
+    "year": 2010,
+    "champion": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 256
+    },
+    "runnerUp": {
+      "driverId": "fernando-alonso",
+      "name": "Fernando Alonso",
+      "abbreviation": "ALO",
+      "nationality": "Spain",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 252
+    },
+    "gapPoints": 4,
+    "gapPercent": 1.56
+  },
+  {
+    "year": 2011,
+    "champion": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 392
+    },
+    "runnerUp": {
+      "driverId": "jenson-button",
+      "name": "Jenson Button",
+      "abbreviation": "BUT",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 270
+    },
+    "gapPoints": 122,
+    "gapPercent": 31.12
+  },
+  {
+    "year": 2012,
+    "champion": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 281
+    },
+    "runnerUp": {
+      "driverId": "fernando-alonso",
+      "name": "Fernando Alonso",
+      "abbreviation": "ALO",
+      "nationality": "Spain",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 278
+    },
+    "gapPoints": 3,
+    "gapPercent": 1.07
+  },
+  {
+    "year": 2013,
+    "champion": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 397
+    },
+    "runnerUp": {
+      "driverId": "fernando-alonso",
+      "name": "Fernando Alonso",
+      "abbreviation": "ALO",
+      "nationality": "Spain",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 242
+    },
+    "gapPoints": 155,
+    "gapPercent": 39.04
+  },
+  {
+    "year": 2014,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 384
+    },
+    "runnerUp": {
+      "driverId": "nico-rosberg",
+      "name": "Nico Rosberg",
+      "abbreviation": "ROS",
+      "nationality": "Germany",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 317
+    },
+    "gapPoints": 67,
+    "gapPercent": 17.45
+  },
+  {
+    "year": 2015,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 381
+    },
+    "runnerUp": {
+      "driverId": "nico-rosberg",
+      "name": "Nico Rosberg",
+      "abbreviation": "ROS",
+      "nationality": "Germany",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 322
+    },
+    "gapPoints": 59,
+    "gapPercent": 15.49
+  },
+  {
+    "year": 2016,
+    "champion": {
+      "driverId": "nico-rosberg",
+      "name": "Nico Rosberg",
+      "abbreviation": "ROS",
+      "nationality": "Germany",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 385
+    },
+    "runnerUp": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 380
+    },
+    "gapPoints": 5,
+    "gapPercent": 1.3
+  },
+  {
+    "year": 2017,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 363
+    },
+    "runnerUp": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 317
+    },
+    "gapPoints": 46,
+    "gapPercent": 12.67
+  },
+  {
+    "year": 2018,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 408
+    },
+    "runnerUp": {
+      "driverId": "sebastian-vettel",
+      "name": "Sebastian Vettel",
+      "abbreviation": "VET",
+      "nationality": "Germany",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 320
+    },
+    "gapPoints": 88,
+    "gapPercent": 21.57
+  },
+  {
+    "year": 2019,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 413
+    },
+    "runnerUp": {
+      "driverId": "valtteri-bottas",
+      "name": "Valtteri Bottas",
+      "abbreviation": "BOT",
+      "nationality": "Finland",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 326
+    },
+    "gapPoints": 87,
+    "gapPercent": 21.07
+  },
+  {
+    "year": 2020,
+    "champion": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 347
+    },
+    "runnerUp": {
+      "driverId": "valtteri-bottas",
+      "name": "Valtteri Bottas",
+      "abbreviation": "BOT",
+      "nationality": "Finland",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 223
+    },
+    "gapPoints": 124,
+    "gapPercent": 35.73
+  },
+  {
+    "year": 2021,
+    "champion": {
+      "driverId": "max-verstappen",
+      "name": "Max Verstappen",
+      "abbreviation": "VER",
+      "nationality": "Netherlands",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 395.5
+    },
+    "runnerUp": {
+      "driverId": "lewis-hamilton",
+      "name": "Lewis Hamilton",
+      "abbreviation": "HAM",
+      "nationality": "United Kingdom",
+      "teamId": "mercedes",
+      "teamName": "Mercedes",
+      "points": 387.5
+    },
+    "gapPoints": 8,
+    "gapPercent": 2.02
+  },
+  {
+    "year": 2022,
+    "champion": {
+      "driverId": "max-verstappen",
+      "name": "Max Verstappen",
+      "abbreviation": "VER",
+      "nationality": "Netherlands",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 454
+    },
+    "runnerUp": {
+      "driverId": "charles-leclerc",
+      "name": "Charles Leclerc",
+      "abbreviation": "LEC",
+      "nationality": "Monaco",
+      "teamId": "ferrari",
+      "teamName": "Ferrari",
+      "points": 308
+    },
+    "gapPoints": 146,
+    "gapPercent": 32.16
+  },
+  {
+    "year": 2023,
+    "champion": {
+      "driverId": "max-verstappen",
+      "name": "Max Verstappen",
+      "abbreviation": "VER",
+      "nationality": "Netherlands",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 575
+    },
+    "runnerUp": {
+      "driverId": "sergio-perez",
+      "name": "Sergio Pérez",
+      "abbreviation": "PER",
+      "nationality": "Mexico",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 285
+    },
+    "gapPoints": 290,
+    "gapPercent": 50.43
+  },
+  {
+    "year": 2024,
+    "champion": {
+      "driverId": "max-verstappen",
+      "name": "Max Verstappen",
+      "abbreviation": "VER",
+      "nationality": "Netherlands",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 437
+    },
+    "runnerUp": {
+      "driverId": "lando-norris",
+      "name": "Lando Norris",
+      "abbreviation": "NOR",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 374
+    },
+    "gapPoints": 63,
+    "gapPercent": 14.42
+  },
+  {
+    "year": 2025,
+    "champion": {
+      "driverId": "lando-norris",
+      "name": "Lando Norris",
+      "abbreviation": "NOR",
+      "nationality": "United Kingdom",
+      "teamId": "mclaren",
+      "teamName": "McLaren",
+      "points": 423
+    },
+    "runnerUp": {
+      "driverId": "max-verstappen",
+      "name": "Max Verstappen",
+      "abbreviation": "VER",
+      "nationality": "Netherlands",
+      "teamId": "red-bull",
+      "teamName": "Red Bull",
+      "points": 421
+    },
+    "gapPoints": 2,
+    "gapPercent": 0.47
+  }
+]
