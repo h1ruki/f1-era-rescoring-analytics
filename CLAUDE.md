@@ -35,8 +35,9 @@ Durable rules for coding agents working in this repository.
 
 ## Verification
 
-- `.github/workflows/ci.yml` is the canonical release verification contract. Read it and run the
-  equivalent checks appropriate to your change; do not copy its commands into other files.
+- `.github/workflows/ci.yml` is the canonical full release-verification
+  sequence. Do not duplicate the full sequence elsewhere; README commands are
+  convenience commands for humans.
 
 ## Git safety
 

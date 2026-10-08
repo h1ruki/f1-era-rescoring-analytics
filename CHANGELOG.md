@@ -2,11 +2,9 @@
 
 Notable changes to F1 Title Margins are documented here.
 
-## Pre-release
+## v1.0.0 (8 October 2026)
 
-### 8 October 2026
-
-#### Added
+### Added
 
 - Continuous integration verifies every pull request to `main` and every push to it: the Python
   lint and tests, a rebuild from the pinned F1DB release that must leave `data/seasons.json`
@@ -16,27 +14,9 @@ Notable changes to F1 Title Margins are documented here.
 - A README covering the project, its architecture and data source, local setup, and copyright
   and reuse terms.
 
-#### Fixed
-
-- The chart's accessible description no longer tells users to select a bar for details; bars
-  cannot be reached from the keyboard.
-
-#### Changed
+### Changed
 
 - The methodology's source note names F1DB's CC BY 4.0 licence and links to it.
-
-### 7 October 2026
-
-#### Fixed
-
-- Headline extremes (most dominant, closest, largest and smallest points gap) are ranked from
-  the underlying championship points rather than a rounded percentage, so genuine ties are told
-  apart from margins that merely round to the same figure.
-- The methodology now says dropped-score rules applied through 1990, making clear that 1990 is
-  included.
-
-#### Changed
-
 - Seasons that genuinely tie for a headline extreme are disclosed beside the named season, for
   example "2007 (tied with 2008)".
 - The 1995–1999 view is labelled "1990s 3-Litre Era" to distinguish it from the 1966–1976
@@ -51,7 +31,17 @@ Notable changes to F1 Title Margins are documented here.
   release plus one previous/reference snapshot. Release archives are verified in memory and
   never persisted.
 
-#### Removed
+### Fixed
+
+- The chart's accessible description no longer tells users to select a bar for details; bars
+  cannot be reached from the keyboard.
+- Headline extremes (most dominant, closest, largest and smallest points gap) are ranked from
+  the underlying championship points rather than a rounded percentage, so genuine ties are told
+  apart from margins that merely round to the same figure.
+- The methodology now says dropped-score rules applied through 1990, making clear that 1990 is
+  included.
+
+### Removed
 
 - Archived legacy implementations from the active source tree; they remain recoverable through
   Git history.
